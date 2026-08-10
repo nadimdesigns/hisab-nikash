@@ -169,6 +169,17 @@
     animation: shimmer-sweep 2.6s ease-in-out infinite;
     mix-blend-mode: screen;
   }
+
+  /* Hide the scrollbar track/thumb while keeping the element scrollable
+     (wheel, touch, keyboard). Use on a container that already sets
+     overflow-auto/-scroll. */
+  .scrollbar-none {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* old Edge/IE */
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, new Edge */
+  }
 }
 
 @layer base {
