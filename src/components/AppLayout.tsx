@@ -36,9 +36,7 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
               <SidebarTrigger />
             </div>
             <div className="flex items-center gap-2 md:hidden">
-              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg">
-                <BrandLogo className="h-8 w-8" />
-              </div>
+              <BrandLogo className="h-8 w-8" />
             </div>
             <h1 className={typography("h3", "shrink-0 text-sidebar-foreground")}>{title}</h1>
             {headerSlot && (

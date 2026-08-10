@@ -4,12 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
-import { currency, formatDate } from "@/lib/format";
+import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
 import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
+import { unitLabel } from "@/lib/copy";
 
 const Index = () => {
   const { products, sales } = useShop();
@@ -62,14 +63,14 @@ const Index = () => {
   }, [sales]);
 
   return (
-    <AppLayout title="Dashboard">
+    <AppLayout title="হোম">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
         {hydrated ? (
           <>
-            <StatCard icon={Wallet} iconColor="text-sky-500" iconBg="bg-sky-500/10" label="Revenue" value={currency(stats.todayRevenue)} />
-            <StatCard icon={LineChart} iconColor="text-emerald-500" iconBg="bg-emerald-500/10" label="Profit (30d)" value={currency(stats.monthProfit)} />
-            <StatCard icon={Package} iconColor="text-violet-500" iconBg="bg-violet-500/10" label="Stock Value" value={currency(stats.inventoryValue)} />
-            <StatCard icon={AlertTriangle} iconColor="text-amber-500" iconBg="bg-amber-500/10" label="Low Stock" value={String(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
+            <StatCard icon={Wallet} iconColor="text-sky-500" iconBg="bg-sky-500/10" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} />
+            <StatCard icon={LineChart} iconColor="text-emerald-500" iconBg="bg-emerald-500/10" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} />
+            <StatCard icon={Package} iconColor="text-violet-500" iconBg="bg-violet-500/10" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} />
+            <StatCard icon={AlertTriangle} iconColor="text-amber-500" iconBg="bg-amber-500/10" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
           </>
         ) : (
           Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
@@ -79,7 +80,7 @@ const Index = () => {
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2 shadow-soft">
           <CardHeader>
-            <CardTitle>Revenue — last 14 days</CardTitle>
+            <CardTitle>গত ১৪ দিনের বিক্রি</CardTitle>
           </CardHeader>
           <CardContent className="h-[280px]">
             {hydrated ? (
@@ -115,7 +116,7 @@ const Index = () => {
         <Card className="shadow-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-primary" /> Best selling products
+              <TrendingUp className="h-4 w-4 text-primary" /> সবচেয়ে বেশি বিক্রি
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -133,7 +134,7 @@ const Index = () => {
                 ))}
               </ul>
             ) : stats.bestSelling.length === 0 ? (
-              <p className={typography("body-muted")}>No sales recorded in the last 30 days.</p>
+              <p className={typography("body-muted")}>গত ৩০ দিনে কোনো বিক্রি হয়নি।</p>
             ) : (
               <ul className="space-y-[17px]">
                 {stats.bestSelling.map((p, idx) => (
@@ -143,9 +144,9 @@ const Index = () => {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={typography("body-strong", "truncate")}>{p.name}</p>
-                      <p className={typography("body-muted")}>{currency(p.revenue)} revenue</p>
+                      <p className={typography("body-muted")}>{currency(p.revenue)} বিক্রি</p>
                     </div>
-                    <Badge variant="secondary">{p.qty} sold</Badge>
+                    <Badge variant="secondary">{bnNumber(p.qty)} বিক্রি</Badge>
                   </li>
                 ))}
               </ul>
@@ -158,7 +159,7 @@ const Index = () => {
         <Card className="mt-6 shadow-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-warning" /> Low stock items
+              <AlertTriangle className="h-4 w-4 text-warning" /> কম স্টকের পণ্য
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -168,13 +169,13 @@ const Index = () => {
                   key={m.id}
                   to={`/edit-product/${m.id}`}
                   className="flex items-center justify-between rounded-lg border bg-card p-3 transition-colors hover:bg-accent hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label={`Manage stock for ${m.name}`}
+                  aria-label={`${m.name} এর স্টক দেখুন`}
                 >
                   <div>
                     <p className={typography("body-strong")}>{m.name}</p>
                     <p className={typography("body-muted")}>{m.sku}</p>
                   </div>
-                  <Badge variant="destructive">{m.stock} left</Badge>
+                  <Badge variant="destructive">{bnNumber(m.stock)} {unitLabel(m.unit)} বাকি</Badge>
                 </Link>
               ))}
             </div>

@@ -42,9 +42,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-elevated">
-            <BrandLogo className="h-9 w-9" />
-          </div>
+          <BrandLogo className="h-9 w-9 shadow-elevated rounded-lg" />
           {!collapsed && (
             <div className="flex flex-col leading-tight">
               <span className={typography("body-strong", "text-sidebar-foreground")}>{APP_NAME}</span>
