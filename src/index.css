@@ -1,0 +1,191 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* PharmaSee design system — clean medical dashboard.
+   All colors MUST be HSL. */
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    /* Brand: medical teal */
+    --primary: 174 72% 36%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 174 72% 50%;
+
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 46%;
+
+    --accent: 174 60% 94%;
+    --accent-foreground: 174 72% 22%;
+
+    --success: 142 71% 38%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 93%;
+    --ring: 174 72% 36%;
+
+    --radius: 0.75rem;
+
+    /* Gradients & shadows */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-glow)));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(210 40% 98%));
+    --shadow-soft: 0 1px 2px hsl(222 47% 11% / 0.04), 0 4px 12px hsl(222 47% 11% / 0.04);
+    --shadow-elevated: 0 8px 32px -8px hsl(var(--primary) / 0.25);
+
+    /* Sidebar — dark slate */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 174 72% 46%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 18%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 18%;
+    --sidebar-ring: 174 72% 46%;
+  }
+
+  .dark {
+    --background: 222 47% 3%;
+    --foreground: 210 40% 98%;
+    --card: 222 47% 6%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 47% 6%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 174 72% 46%;
+    --primary-foreground: 222 47% 7%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 63% 40%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 174 72% 46%;
+    --sidebar-background: 222 47% 2%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 174 72% 46%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 12%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 12%;
+    --sidebar-ring: 174 72% 46%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  /* Responsive global typography scaling.
+     The root (html) font-size drives every rem-based Tailwind token —
+     headings, spacing helpers, etc. — so it acts as the "primary"
+     typography scale. Body text is then pinned to a slightly smaller
+     px size for comfortable reading without shrinking headings.
+     - Mobile  (<640px):  primary 16px · body 15px
+     - Tablet  (640–1023): primary 17px · body 16px
+     - Desktop (≥1024px): primary 18px · body 17px                    */
+  html {
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    html { font-size: 17px; }
+  }
+  @media (min-width: 1024px) {
+    html { font-size: 18px; }
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Outfit', system-ui, sans-serif;
+    font-size: 15px;
+  }
+  @media (min-width: 640px) {
+    body { font-size: 16px; }
+  }
+  @media (min-width: 1024px) {
+    body { font-size: 17px; }
+  }
+  h1, h2, h3, h4, h5, h6,
+  p, span, a, li, label, small,
+  blockquote, figcaption,
+  button, input, textarea, select, optgroup,
+  th, td, code, pre, kbd, samp {
+    font-family: inherit;
+  }
+}
+
+@layer utilities {
+  /* Reusable item/medicine name cell style — clamp to 2 lines, wrap long words. */
+  .item-name-cell {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Shimmer sweep — diagonal highlight that slides across the element. */
+  @keyframes shimmer-sweep {
+    0%   { transform: translateX(-180%) skewX(-20deg); }
+    60%  { transform: translateX(180%)  skewX(-20deg); }
+    100% { transform: translateX(180%)  skewX(-20deg); }
+  }
+  .shimmer-overlay > .shimmer-streak {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 55%;
+    height: 100%;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 15%,
+      hsl(0 0% 100% / 0.55) 50%,
+      transparent 85%
+    );
+    animation: shimmer-sweep 2.6s ease-in-out infinite;
+    mix-blend-mode: screen;
+  }
+}
+
+@layer base {
+  /* Global placeholder color (#bbbbbb) for every field across the app —
+     covers native inputs/textareas as well as Radix Select's placeholder span. */
+  ::placeholder { color: #bbbbbb !important; opacity: 1; }
+  ::-webkit-input-placeholder { color: #bbbbbb !important; }
+  ::-moz-placeholder { color: #bbbbbb !important; opacity: 1; }
+  :-ms-input-placeholder { color: #bbbbbb !important; }
+  [data-placeholder] { color: #bbbbbb !important; }
+}
+
+@layer base {
+  /* Sidebar wrapper's default border-r uses --border (light) which shows as a
+     white seam against the dark sidebar. Force it to the sidebar-border token. */
+  [data-sidebar="sidebar"],
+  .group\/sidebar-wrapper [data-side="left"] > div:last-child {
+    border-color: hsl(var(--sidebar-border)) !important;
+  }
+}
