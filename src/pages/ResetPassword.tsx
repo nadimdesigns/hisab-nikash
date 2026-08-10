@@ -10,7 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
+import { BrandLockup } from "@/components/BrandLogo";
 
 const passwordSchema = z
   .string()
@@ -66,12 +66,10 @@ const ResetPassword = () => {
     <main className="h-[100svh] w-full bg-background flex items-center justify-center p-4 overflow-hidden">
       <Card className="w-full max-w-sm shadow-soft">
         <CardHeader className="items-center text-center space-y-px">
-          <div className="mb-2 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl shadow-elevated">
-            <BrandLogo className="h-14 w-14" />
-          </div>
-          <CardTitle>Set a new password</CardTitle>
+          <BrandLockup className="mb-3" iconClassName="h-11 w-11" />
+          <CardTitle>নতুন পাসওয়ার্ড দিন</CardTitle>
           <CardDescription>
-            {ready ? "Choose a new password for your account." : "Verifying your reset link…"}
+            {ready ? "আপনার অ্যাকাউন্টের জন্য নতুন পাসওয়ার্ড দিন।" : "রিসেট লিংক যাচাই করা হচ্ছে…"}
           </CardDescription>
         </CardHeader>
         <CardContent>

@@ -160,7 +160,7 @@ export default function Settings() {
                   Reset to demo data
                 </p>
                 <p className={typography("body-muted")}>
-                  Replaces all medicines, sales, and purchases with the seed dataset.
+                  Replaces all products, sales, and purchases with the seed dataset.
                 </p>
               </div>
               <Button

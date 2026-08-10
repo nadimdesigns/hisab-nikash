@@ -1,6 +1,7 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Truck, BarChart3, LineChart, Palette, Settings as SettingsIcon, Users } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Truck, BarChart3, LineChart, Palette, Settings as SettingsIcon, Users, Wallet } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
+import { APP_NAME, APP_TAGLINE, NAV } from "@/lib/copy";
 import {
   Sidebar,
   SidebarContent,
@@ -17,15 +18,16 @@ import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard, end: true },
-  { title: "Stocks", url: "/stocks", icon: Package },
-  { title: "Sales", url: "/sales", icon: ShoppingCart },
-  { title: "Customers", url: "/customers", icon: Users },
-  { title: "Purchases", url: "/purchases", icon: Truck },
-  { title: "Accounting", url: "/accounting", icon: BarChart3 },
-  { title: "Analytics", url: "/analytics", icon: LineChart },
-  { title: "Style Guide", url: "/style-guide", icon: Palette },
-  { title: "Settings", url: "/settings", icon: SettingsIcon },
+  { title: NAV.dashboard, url: "/", icon: LayoutDashboard, end: true },
+  { title: NAV.stocks, url: "/stocks", icon: Package },
+  { title: NAV.sales, url: "/sales", icon: ShoppingCart },
+  { title: NAV.customers, url: "/customers", icon: Users },
+  { title: NAV.purchases, url: "/purchases", icon: Truck },
+  { title: NAV.expenses, url: "/expenses", icon: Wallet },
+  { title: NAV.accounting, url: "/accounting", icon: BarChart3 },
+  { title: NAV.analytics, url: "/analytics", icon: LineChart },
+  { title: NAV.styleGuide, url: "/style-guide", icon: Palette },
+  { title: NAV.settings, url: "/settings", icon: SettingsIcon },
 ];
 
 export function AppSidebar() {
@@ -40,20 +42,18 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-3 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg shadow-elevated">
-            <BrandLogo className="h-9 w-9" />
-          </div>
+          <BrandLogo className="h-9 w-9 shadow-elevated rounded-lg" />
           {!collapsed && (
             <div className="flex flex-col leading-tight">
-              <span className={typography("body-strong", "text-sidebar-foreground")}>PharmaSee</span>
-              <span className={typography("body-muted", "text-sidebar-foreground/60")}>Pharmacy Manager</span>
+              <span className={typography("body-strong", "text-sidebar-foreground")}>{APP_NAME}</span>
+              <span className={typography("body-muted", "text-sidebar-foreground/60")}>{APP_TAGLINE}</span>
             </div>
           )}
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarGroupLabel>{NAV.workspace}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {

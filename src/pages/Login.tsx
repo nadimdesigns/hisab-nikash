@@ -19,15 +19,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
-import { Eye, EyeOff, Copy } from "lucide-react";
-import { BrandLogo } from "@/components/BrandLogo";
-import { DEMO_USERNAME, DEMO_PASSWORD, enableDemoMode } from "@/lib/demoMode";
+import { Eye, EyeOff, PlayCircle } from "lucide-react";
+import { BrandLockup } from "@/components/BrandLogo";
+import { DEMO_USERNAME, DEMO_PASSWORD, enableDemoMode, setCachedRole } from "@/lib/demoMode";
 
 const credentialsSchema = z.object({
   email: z
     .string()
     .trim()
-    .email({ message: "Enter a valid email address" })
+    .email({ message: "সঠিক ইমেইল দিন" })
     .max(255, { message: "Email must be less than 255 characters" }),
   password: z
     .string()
@@ -71,9 +71,9 @@ const Login = () => {
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = z.string().trim().email({ message: "Enter a valid email address" }).safeParse(forgotEmail);
+    const result = z.string().trim().email({ message: "সঠিক ইমেইল দিন" }).safeParse(forgotEmail);
     if (!result.success) {
-      setForgotError(result.error.issues[0]?.message ?? "Invalid email");
+      setForgotError(result.error.issues[0]?.message ?? "সঠিক ইমেইল দিন");
       return;
     }
     setForgotError(undefined);
@@ -96,17 +96,28 @@ const Login = () => {
     }, 150);
   };
 
+  /**
+   * Enter the demo sandbox. Purely client-side — no backend call. Every
+   * persisted key gets a `demo:` prefix, so this cannot touch real data.
+   */
+  const loginAsDemo = () => {
+    enableDemoMode();
+    // A previous real login may have cached a `demo` server role, which the
+    // write guard still honours. Clear it, or the sandbox would open
+    // read-only for no reason the visitor can see.
+    setCachedRole(null);
+    window.dispatchEvent(new Event("pharmasee-demo-changed"));
+    toast({ title: "ডেমো মোড", description: "নমুনা তথ্য দিয়ে অ্যাপটি ঘুরে দেখুন।" });
+    // Reload so persisted stores re-init under the demo namespace.
+    window.location.replace(from);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
 
-    // Demo account short-circuit (purely client-side, no backend call).
     if (mode === "login" && email.trim().toLowerCase() === DEMO_USERNAME && password === DEMO_PASSWORD) {
-      enableDemoMode();
-      window.dispatchEvent(new Event("pharmasee-demo-changed"));
-      toast({ title: "Demo mode", description: "Logged in as demo user." });
-      // Reload so persisted stores re-init under the demo namespace.
-      window.location.replace(from);
+      loginAsDemo();
       return;
     }
 
@@ -131,7 +142,7 @@ const Login = () => {
         if (error) {
           setErrors({ form: error.message });
         } else {
-          toast({ title: "Welcome back", description: "Logged in successfully." });
+          toast({ title: "স্বাগতম", description: "লগইন সফল হয়েছে।" });
           navigate(from, { replace: true });
         }
       } else {
@@ -143,7 +154,7 @@ const Login = () => {
         if (error) {
           setErrors({ form: error.message });
         } else {
-          toast({ title: "Account created", description: "You're now signed in." });
+          toast({ title: "অ্যাকাউন্ট তৈরি হয়েছে", description: "আপনি এখন লগইন করা আছেন।" });
           navigate(from, { replace: true });
         }
       }
@@ -157,20 +168,17 @@ const Login = () => {
     <main className="fixed inset-0 h-[100svh] w-full bg-background flex items-center justify-center p-4 overflow-y-auto [padding-top:max(1rem,env(safe-area-inset-top))] [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
       <Card className="w-full max-w-sm shadow-soft">
         <CardHeader className="items-center text-center space-y-px">
-          <div className="mb-2 flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl shadow-elevated">
-            <BrandLogo className="h-14 w-14" />
-          </div>
-          <CardTitle>PharmaSee</CardTitle>
+          <BrandLockup className="mb-3" iconClassName="h-11 w-11" withTagline />
           <CardDescription>
             {mode === "login"
-              ? "Please Login to access your dashboard."
-              : "Create an account to get started."}
+              ? "দোকানের হিসাব দেখতে লগইন করুন।"
+              : "শুরু করতে একটি অ্যাকাউন্ট খুলুন।"}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
-              <Label htmlFor="email" className={typography("body-strong")}>Email</Label>
+              <Label htmlFor="email" className={typography("body-strong")}>ইমেইল</Label>
               <Input
                 id="email"
                 type="email"
@@ -191,7 +199,7 @@ const Login = () => {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className={typography("body-strong")}>Password</Label>
+              <Label htmlFor="password" className={typography("body-strong")}>পাসওয়ার্ড</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -231,7 +239,7 @@ const Login = () => {
                   onClick={() => setForgotOpen(true)}
                   className="text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                 >
-                  Forgot password?
+                  পাসওয়ার্ড ভুলে গেছেন?
                 </button>
               </div>
             )}
@@ -245,12 +253,12 @@ const Login = () => {
             <Button type="submit" size="lg" className="w-full" disabled={submitting}>
               {submitting
                 ? mode === "login" ? "Logging in…" : "Creating account…"
-                : mode === "login" ? "Log in" : "Sign up"}
+                : mode === "login" ? "লগইন" : "অ্যাকাউন্ট খুলুন"}
             </Button>
 
 
             <p className={typography("muted", "text-center")}>
-              {mode === "login" ? "Don't have an account?" : "Already have an account?"}{" "}
+              {mode === "login" ? "অ্যাকাউন্ট নেই?" : "অ্যাকাউন্ট আছে?"}{" "}
               <button
                 type="button"
                 onClick={() => {
@@ -259,38 +267,38 @@ const Login = () => {
                 }}
                 className="font-medium text-primary hover:underline"
               >
-                {mode === "login" ? "Sign up" : "Log in"}
+                {mode === "login" ? "অ্যাকাউন্ট খুলুন" : "লগইন"}
               </button>
             </p>
 
             {mode === "login" && (
               <div className="space-y-2">
-                <p className={typography("muted", "text-center")}>Try the demo account</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { label: "Username", value: DEMO_USERNAME, field: "email" as const },
-                    { label: "Password", value: DEMO_PASSWORD, field: "password" as const },
-                  ].map(({ label, value, field }) => (
-                    <button
-                      key={label}
-                      type="button"
-                      onClick={() => {
-                        if (field === "email") setEmail(value);
-                        else setPassword(value);
-                        setErrors({});
-                        navigator.clipboard?.writeText(value).catch(() => {});
-                      }}
-                      className="group flex items-center justify-between gap-2 rounded-md border border-dashed border-border bg-muted/40 px-3 py-2 text-left transition-colors hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      aria-label={`Copy demo ${label.toLowerCase()} and fill ${label.toLowerCase()} field`}
-                    >
-                      <div className="min-w-0">
-                        <p className={typography("muted", "text-[11px] leading-none")}>{label}</p>
-                        <p className={typography("body-strong", "truncate text-sm")}>{value}</p>
-                      </div>
-                      <Copy className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
-                    </button>
-                  ))}
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center" aria-hidden>
+                    <span className="w-full border-t border-border" />
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className={typography("muted", "bg-card px-2")}>অথবা</span>
+                  </div>
                 </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={loginAsDemo}
+                >
+                  <PlayCircle className="h-4 w-4" />
+                  ডেমো অ্যাকাউন্ট দিয়ে দেখুন
+                </Button>
+
+                <p className={typography("muted", "text-center text-[11px]")}>
+                  নমুনা তথ্য দিয়ে অ্যাপটি ঘুরে দেখুন — বিক্রি, বাকি ও স্টক সবই যোগ করা যাবে।
+                  আপনার আসল তথ্য আলাদা থাকবে।
+                  <br />
+                  ইউজারনেম <span className="font-medium text-foreground">{DEMO_USERNAME}</span>
+                  {" · "}পাসওয়ার্ড <span className="font-medium text-foreground">{DEMO_PASSWORD}</span>
+                </p>
               </div>
             )}
           </form>
@@ -300,7 +308,7 @@ const Login = () => {
       <Dialog open={forgotOpen} onOpenChange={(open) => (open ? setForgotOpen(true) : closeForgot())}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Reset your password</DialogTitle>
+            <DialogTitle>পাসওয়ার্ড রিসেট</DialogTitle>
             <DialogDescription>
               {forgotSent
                 ? "If an account exists for that email, password reset instructions are on their way."
@@ -316,7 +324,7 @@ const Login = () => {
           ) : (
             <form onSubmit={handleForgotSubmit} className="space-y-4" noValidate>
               <div className="space-y-2">
-                <Label htmlFor="forgot-email">Email</Label>
+                <Label htmlFor="forgot-email">ইমেইল</Label>
                 <Input
                   id="forgot-email"
                   type="email"

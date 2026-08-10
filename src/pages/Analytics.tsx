@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Package, ShoppingCart, Truck, type LucideIcon } from "lucide-react";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +23,8 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useShop, useShopHydrated } from "@/store/shop";
-import { currency } from "@/lib/format";
+import { bnNumber, currency, formatDate } from "@/lib/format";
+import { printReport } from "@/lib/printReport";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { format, startOfDay, subDays } from "date-fns";
 import { ArrowDown, ArrowUp, ArrowUpDown, CalendarIcon, Download, X } from "lucide-react";
@@ -38,7 +37,7 @@ type Txn = {
   date: string;
   reference: string;
   item: string;
-  medicineId: string;
+  productId: string;
   qty: number;
   unit: number;
   total: number;
@@ -48,7 +47,7 @@ type Txn = {
 };
 
 export default function Analytics() {
-  const { sales, purchases, medicines } = useShop();
+  const { sales, purchases, products } = useShop();
   const hydrated = useShopHydrated();
 
   // ---------- Stats period filter ----------
@@ -115,7 +114,7 @@ export default function Analytics() {
             date: s.date,
             reference: s.customer,
             item: i.name,
-            medicineId: i.medicineId,
+            productId: i.productId,
             qty: i.qty,
             unit: i.unitPrice,
             total,
@@ -133,7 +132,7 @@ export default function Analytics() {
             date: p.date,
             reference: p.supplier,
             item: i.name,
-            medicineId: i.medicineId,
+            productId: i.productId,
             qty: i.qty,
             unit: i.unitCost,
             total,
@@ -155,7 +154,7 @@ export default function Analytics() {
       const ts = new Date(t.date).getTime();
       if (ts < fromTs || ts > toTs) return false;
       if (typeFilter !== "all" && t.type !== typeFilter) return false;
-      if (itemFilter !== "all" && t.medicineId !== itemFilter) return false;
+      if (itemFilter !== "all" && t.productId !== itemFilter) return false;
       if (q && !t.reference.toLowerCase().includes(q) && !t.item.toLowerCase().includes(q)) return false;
       return true;
     });
@@ -237,14 +236,14 @@ export default function Analytics() {
     const buckets: Record<string, { date: string; revenue: number; cost: number; profit: number }> = {};
     for (let i = days - 1; i >= 0; i--) {
       const d = startOfDay(subDays(new Date(), i));
-      const k = format(d, "MMM d");
+      const k = formatDate(d, "MMM d");
       buckets[k] = { date: k, revenue: 0, cost: 0, profit: 0 };
     }
     sales.forEach((s) => {
       const d = startOfDay(new Date(s.date));
       const diff = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
       if (diff < days) {
-        const k = format(d, "MMM d");
+        const k = formatDate(d, "MMM d");
         if (buckets[k]) {
           buckets[k].revenue += s.total;
           buckets[k].cost += s.cost;
@@ -271,9 +270,9 @@ export default function Analytics() {
     const map: Record<string, { name: string; qty: number; revenue: number }> = {};
     sales.forEach((s) =>
       s.items.forEach((i) => {
-        if (!map[i.medicineId]) map[i.medicineId] = { name: i.name, qty: 0, revenue: 0 };
-        map[i.medicineId].qty += i.qty;
-        map[i.medicineId].revenue += i.qty * i.unitPrice;
+        if (!map[i.productId]) map[i.productId] = { name: i.name, qty: 0, revenue: 0 };
+        map[i.productId].qty += i.qty;
+        map[i.productId].revenue += i.qty * i.unitPrice;
       }),
     );
     return Object.values(map).sort((a, b) => b.revenue - a.revenue).slice(0, 6);
@@ -286,7 +285,7 @@ export default function Analytics() {
     if (toDate) filterParts.push(`To ${toDate}`);
     if (typeFilter !== "all") filterParts.push(`Type: ${typeFilter}`);
     if (itemFilter !== "all") {
-      const m = medicines.find((x) => x.id === itemFilter);
+      const m = products.find((x) => x.id === itemFilter);
       filterParts.push(`Item: ${m?.name ?? itemFilter}`);
     }
     if (search.trim()) filterParts.push(`Search: ${search.trim()}`);
@@ -304,48 +303,48 @@ export default function Analytics() {
       ...filteredTxns.map((t) => [t.type, t.date, t.reference, t.item, t.qty, t.unit, t.total, t.profit, t.net]),
     ];
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    // BOM so Excel reads the Bengali as UTF-8 rather than the platform codepage.
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `PharmaSee-analytics-${format(new Date(), "yyyyMMdd")}.csv`;
+    a.download = `HisabNikash-report-${format(new Date(), "yyyyMMdd")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
 
   const exportPDF = () => {
-    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
-    const pageWidth = doc.internal.pageSize.getWidth();
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("Analytics Report", 40, 40);
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 40, 58);
-    doc.text(
-      `${medicines.length} SKUs · ${sales.length} sales · ${purchases.length} purchases`,
-      pageWidth - 40,
-      58,
-      { align: "right" },
-    );
-
-    autoTable(doc, {
-      startY: 78,
-      head: [[`Filtered Totals — ${rangeLabel} (${filteredTxns.length} txns)`, "Value"]],
-      body: [
-        ["Total Revenue", currency(filteredTotals.revenue)],
-        ["Total Cost", currency(filteredTotals.cost)],
-        ["Net Profit", currency(filteredTotals.netProfit)],
+    printReport({
+      title: "রিপোর্ট",
+      summary: [
+        `তৈরি: ${formatDate(new Date(), "dd MMM yyyy, h:mm a")}`,
+        `${bnNumber(products.length)} পণ্য · ${bnNumber(sales.length)} বিক্রি · ${bnNumber(purchases.length)} ক্রয়`,
+        `${rangeLabel} — ${bnNumber(filteredTxns.length)} লেনদেন`,
+        `মোট আয়: ${currency(filteredTotals.revenue)} · মোট খরচ: ${currency(filteredTotals.cost)} · নিট লাভ: ${currency(filteredTotals.netProfit)}`,
       ],
-      styles: { fontSize: 10, cellPadding: 6 },
-      headStyles: { fillColor: [22, 101, 52], textColor: 255 },
-      columnStyles: { 0: { cellWidth: 240 }, 1: { halign: "right" } },
+      columns: [
+        { header: "ধরন" },
+        { header: "তারিখ" },
+        { header: "রেফারেন্স" },
+        { header: "পণ্য" },
+        { header: "পরিমাণ", align: "right" },
+        { header: "একক" },
+        { header: "মোট", align: "right" },
+        { header: "লাভ", align: "right" },
+      ],
+      rows: filteredTxns.map((t) => [
+        t.type,
+        t.date,
+        t.reference,
+        t.item,
+        t.qty,
+        t.unit,
+        t.total,
+        t.profit,
+      ]),
     });
-
-    doc.save(`PharmaSee-analytics-${format(new Date(), "yyyyMMdd")}.pdf`);
   };
+
 
   return (
     <AppLayout title="Analytics">
@@ -358,7 +357,7 @@ export default function Analytics() {
               iconColor="text-violet-500"
               iconBg="bg-violet-500/10"
               label="SKUs"
-              value={String(medicines.length)}
+              value={String(products.length)}
             />
             <AnalyticsStatCard
               to="/sales"
@@ -470,7 +469,7 @@ export default function Analytics() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All items</SelectItem>
-                  {medicines.map((m) => (
+                  {products.map((m) => (
                     <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
                   ))}
                 </SelectContent>
@@ -548,7 +547,7 @@ export default function Analytics() {
                   </TableRow>
                 ) : (
                   pagedTxns.map((t, idx) => (
-                    <TableRow key={`${t.type}-${t.date}-${t.medicineId}-${pageStart + idx}`}>
+                    <TableRow key={`${t.type}-${t.date}-${t.productId}-${pageStart + idx}`}>
                       <TableCell>{t.type}</TableCell>
                       <TableCell>{t.date}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{t.reference}</TableCell>
@@ -600,7 +599,7 @@ export default function Analytics() {
       </Card>
 
       <Card className="mt-6 shadow-soft">
-        <CardHeader><CardTitle>Top selling medicines</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Top selling products</CardTitle></CardHeader>
         <CardContent>
           {topProducts.length === 0 ? (
             <p className={typography("body-muted")}>No sales data yet.</p>

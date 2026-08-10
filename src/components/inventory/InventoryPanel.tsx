@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -32,24 +33,26 @@ import {
 } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Pencil, Trash2, CalendarIcon, ImagePlus, Upload, X, Pill } from "lucide-react";
-import { Medicine, useShop, useShopHydrated } from "@/store/shop";
+import { Pencil, Trash2, CalendarIcon, ImagePlus, Upload, X, ShoppingBasket } from "lucide-react";
+import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { currency, daysUntil } from "@/lib/format";
+import { bnNumber, currency, daysUntil, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
+import { DEFAULT_UNIT, UNITS, unitLabel, type UnitCode } from "@/lib/copy";
 import CrossTabSyncBanner from "./CrossTabSyncBanner";
-import { filterAndSortMedicines, type SortKey } from "@/lib/inventoryFilters";
-import { findDraftReferences, removeMedicineFromDrafts, type DraftReference } from "@/lib/drafts";
+import { filterAndSortProducts, type ExpiryFilter, type SortKey } from "@/lib/inventoryFilters";
+import { findDraftReferences, removeProductFromDrafts, type DraftReference } from "@/lib/drafts";
 import { useDraftsListener } from "@/hooks/use-drafts-listener";
 import { typography } from "@/lib/typography";
 
-const empty: Omit<Medicine, "id"> = {
+const empty: Omit<Product, "id"> = {
   name: "",
   sku: "",
   category: "",
+  unit: DEFAULT_UNIT,
   batch: "",
   expiry: new Date().toISOString().slice(0, 10),
   stock: 0,
@@ -105,42 +108,42 @@ export default function InventoryPanel({
   batchQuery?: string;
   category?: string;
   stockFilter?: "all" | "low" | "out" | "in";
-  expiryFilter?: "all" | "expired" | "30" | "60" | "90";
+  expiryFilter?: ExpiryFilter;
   sort?: SortKey;
   addOpen?: boolean;
   setAddOpen?: (v: boolean) => void;
   focusId?: string | null;
   onFocusHandled?: () => void;
 }) {
-  const { medicines, sales, purchases, addMedicine, updateMedicine, deleteMedicine, restoreMedicine } = useShop();
+  const { products, sales, purchases, addProduct, updateProduct, deleteProduct, restoreProduct } = useShop();
   const hydrated = useShopHydrated();
   const navigate = useNavigate();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = addOpen ?? internalOpen;
   const setOpen = setAddOpen ?? setInternalOpen;
-  const [editing, setEditing] = useState<Medicine | null>(null);
-  const [form, setForm] = useState<Omit<Medicine, "id">>(empty);
-  const [pendingDelete, setPendingDelete] = useState<Medicine | null>(null);
+  const [editing, setEditing] = useState<Product | null>(null);
+  const [form, setForm] = useState<Omit<Product, "id">>(empty);
+  const [pendingDelete, setPendingDelete] = useState<Product | null>(null);
 
-  // Count history that references the medicine being deleted, so we can warn the user.
+  // Count history that references the product being deleted, so we can warn the user.
   const deleteImpact = useMemo(() => {
     if (!pendingDelete) return { sales: 0, purchases: 0, soldQty: 0 };
     let salesCount = 0;
     let soldQty = 0;
     sales.forEach((s) => {
-      const items = s.items.filter((i) => i.medicineId === pendingDelete.id);
+      const items = s.items.filter((i) => i.productId === pendingDelete.id);
       if (items.length) {
         salesCount += 1;
         soldQty += items.reduce((sum, i) => sum + i.qty, 0);
       }
     });
     const purchaseCount = purchases.filter((p) =>
-      p.items.some((i) => i.medicineId === pendingDelete.id)
+      p.items.some((i) => i.productId === pendingDelete.id)
     ).length;
     return { sales: salesCount, purchases: purchaseCount, soldQty };
   }, [pendingDelete, sales, purchases]);
 
-  // Active draft cart references for the medicine being deleted. We recompute
+  // Active draft cart references for the product being deleted. We recompute
   // whenever the deletion target changes AND when drafts are mutated in any
   // tab, so the warning stays accurate while the dialog is open.
   const [draftRefs, setDraftRefs] = useState<DraftReference[]>([]);
@@ -176,7 +179,7 @@ export default function InventoryPanel({
     if (wasBlockedRef.current && refs.length === 0) {
       // The other tab cleared the conflicting cart — surface that so the
       // user knows they can now proceed without re-checking the dialog.
-      // Throttle per medicine id so a burst of cross-tab updates only
+      // Throttle per product id so a burst of cross-tab updates only
       // results in a single toast within the configured window.
       const itemId = pendingDelete.id;
       const now = Date.now();
@@ -195,7 +198,7 @@ export default function InventoryPanel({
 
   const filtered = useMemo(
     () =>
-      filterAndSortMedicines(medicines, {
+      filterAndSortProducts(products, {
         query,
         batchQuery,
         category,
@@ -203,7 +206,7 @@ export default function InventoryPanel({
         expiryFilter,
         sort,
       }),
-    [medicines, query, batchQuery, category, stockFilter, expiryFilter, sort],
+    [products, query, batchQuery, category, stockFilter, expiryFilter, sort],
   );
 
   // Reset form to "new" mode whenever the dialog is opened from outside (e.g. header CTA)
@@ -218,14 +221,14 @@ export default function InventoryPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  // When asked to focus a specific medicine (e.g., from the global quick
+  // When asked to focus a specific product (e.g., from the global quick
   // search), scroll its row into view and flash a temporary highlight.
   const [highlightId, setHighlightId] = useState<string | null>(null);
   useEffect(() => {
     if (!focusId) return;
     setHighlightId(focusId);
     const el = document.querySelector<HTMLTableRowElement>(
-      `[data-medicine-id="${focusId}"]`,
+      `[data-product-id="${focusId}"]`,
     );
     if (el) {
       el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -236,10 +239,10 @@ export default function InventoryPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusId]);
 
-  const openEdit = (m: Medicine) => {
+  const openEdit = (m: Product) => {
     // Edits now live on a dedicated page rather than the off-canvas dialog,
     // which kept stale form state and felt cramped on mobile.
-    navigate(`/edit-medicine/${m.id}`);
+    navigate(`/edit-product/${m.id}`);
   };
 
   const submit = () => {
@@ -251,11 +254,11 @@ export default function InventoryPanel({
       toast({ title: "Sell price is below cost price", description: "Double-check pricing before saving." });
     }
     if (editing) {
-      updateMedicine(editing.id, form);
-      toast({ title: "Medicine updated" });
+      updateProduct(editing.id, form);
+      toast({ title: "Product updated" });
     } else {
-      addMedicine(form);
-      toast({ title: "Medicine added" });
+      addProduct(form);
+      toast({ title: "Product added" });
     }
     setOpen(false);
   };
@@ -275,20 +278,20 @@ export default function InventoryPanel({
       return;
     }
     const snapshot = pendingDelete;
-    const originalIndex = medicines.findIndex((m) => m.id === snapshot.id);
-    deleteMedicine(snapshot.id);
+    const originalIndex = products.findIndex((m) => m.id === snapshot.id);
+    deleteProduct(snapshot.id);
     setPendingDelete(null);
     const t = toast({
-      title: "Medicine deleted",
+      title: "Product deleted",
       description: `${snapshot.name} — undo within 8 seconds`,
       duration: 8000,
       action: (
         <ToastAction
           altText="Undo delete"
           onClick={() => {
-            restoreMedicine(snapshot, originalIndex);
+            restoreProduct(snapshot, originalIndex);
             t.dismiss();
-            toast({ title: "Medicine restored", description: snapshot.name });
+            toast({ title: "Product restored", description: snapshot.name });
           }}
         >
           Undo
@@ -302,7 +305,7 @@ export default function InventoryPanel({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit medicine" : "Add medicine"}</DialogTitle>
+            <DialogTitle>{editing ? "Edit product" : "Add product"}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Product image" className="col-span-2">
@@ -320,6 +323,23 @@ export default function InventoryPanel({
             </Field>
             <Field label="Category">
               <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+            </Field>
+            <Field label="একক">
+              <Select
+                value={form.unit}
+                onValueChange={(v) => setForm({ ...form, unit: v as UnitCode })}
+              >
+                <SelectTrigger aria-label="একক">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {UNITS.map((u) => (
+                    <SelectItem key={u.code} value={u.code}>
+                      {u.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
             <Field label="Batch">
               <Input value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />
@@ -346,7 +366,7 @@ export default function InventoryPanel({
                       .filter(Boolean),
                   })
                 }
-                placeholder="e.g. Paracetamol, Acetaminophen, Tylenol"
+                placeholder="যেমন: মিনিকেট, চাল, rice"
                 autoComplete="off"
               />
             </Field>
@@ -362,7 +382,7 @@ export default function InventoryPanel({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />
-                    {form.expiry ? format(parseISO(form.expiry), "PPP") : "Pick a date"}
+                    {form.expiry ? formatDate(parseISO(form.expiry), "PPP") : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -405,7 +425,7 @@ export default function InventoryPanel({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[180px] md:min-w-0">Medicine</TableHead>
+                <TableHead className="min-w-[180px] md:min-w-0">Product</TableHead>
                 <TableHead>SKU</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead className="min-w-[160px] md:min-w-0">Batch / Expiry</TableHead>
@@ -450,7 +470,7 @@ export default function InventoryPanel({
                     return (
                       <TableRow
                         key={m.id}
-                        data-medicine-id={m.id}
+                        data-product-id={m.id}
                         className={cn(
                           "transition-colors",
                           highlightId === m.id && "bg-primary/15 ring-2 ring-primary/40",
@@ -467,7 +487,7 @@ export default function InventoryPanel({
                                   loading="lazy"
                                 />
                               ) : (
-                                <Pill className="h-4 w-4 text-muted-foreground" aria-hidden />
+                                <ShoppingBasket className="h-4 w-4 text-muted-foreground" aria-hidden />
                               )}
                             </div>
                             <span className="item-name-cell">{m.name}</span>
@@ -482,7 +502,7 @@ export default function InventoryPanel({
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Badge variant={low ? "destructive" : "secondary"}>{m.stock}</Badge>
+                          <Badge variant={low ? "destructive" : "secondary"}>{bnNumber(m.stock)} {unitLabel(m.unit)}</Badge>
                         </TableCell>
                         <TableCell className="text-right">{currency(m.costPrice)}</TableCell>
                         <TableCell className="text-right">{currency(m.sellPrice)}</TableCell>
@@ -507,7 +527,7 @@ export default function InventoryPanel({
                   {filtered.length === 0 && (
                     <TableRow>
                       <TableCell colSpan={8} className={typography("body-muted", "py-10 text-center")}>
-                        No medicines found.
+                        No products found.
                       </TableCell>
                     </TableRow>
                   )}
@@ -521,7 +541,7 @@ export default function InventoryPanel({
       <AlertDialog open={!!pendingDelete} onOpenChange={(v) => !v && setPendingDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this medicine?</AlertDialogTitle>
+            <AlertDialogTitle>Delete this product?</AlertDialogTitle>
             <AlertDialogDescription asChild>
               {pendingDelete ? (
                 <div className="space-y-3">
@@ -533,7 +553,7 @@ export default function InventoryPanel({
                   {blockedByDraft && (
                     <div className={typography("body", "rounded-md border border-destructive/50 bg-destructive/10 p-3 text-foreground")}>
                       <p className="mb-1.5 font-medium text-destructive">
-                        Blocked — this medicine is in {draftRefs.length === 1 ? "an open draft cart" : `${draftRefs.length} open draft carts`}
+                        Blocked — this product is in {draftRefs.length === 1 ? "an open draft cart" : `${draftRefs.length} open draft carts`}
                       </p>
                       <ul className="space-y-2">
                         {draftRefs.map((r) => (
@@ -555,7 +575,7 @@ export default function InventoryPanel({
                               variant="outline"
                               onClick={() => {
                                 if (!pendingDelete) return;
-                                removeMedicineFromDrafts(pendingDelete.id, r.kind);
+                                removeProductFromDrafts(pendingDelete.id, r.kind);
                                 toast({
                                   title: "Removed from draft",
                                   description: `${pendingDelete.name} cleared from the ${r.kind === "cash" ? "cash sale" : "due / credit"} draft.`,
@@ -575,7 +595,7 @@ export default function InventoryPanel({
                             variant="destructive"
                             onClick={() => {
                               if (!pendingDelete) return;
-                              const n = removeMedicineFromDrafts(pendingDelete.id);
+                              const n = removeProductFromDrafts(pendingDelete.id);
                               toast({
                                 title: "Removed from all drafts",
                                 description: `${pendingDelete.name} cleared from ${n} draft${n === 1 ? "" : "s"}. You can now delete it.`,
@@ -593,7 +613,7 @@ export default function InventoryPanel({
                     <p className="mb-1.5 font-medium text-foreground">What will happen</p>
                     <ul className="space-y-1">
                       <li>
-                        Removes <span className="font-medium text-foreground">{pendingDelete.stock}</span> in current stock
+                        Removes <span className="font-medium text-foreground">{bnNumber(pendingDelete.stock)} {unitLabel(pendingDelete.unit)}</span> in current stock
                         worth <span className="font-medium text-foreground">{currency(pendingDelete.stock * pendingDelete.costPrice)}</span> from inventory.
                       </li>
                       <li>
@@ -609,7 +629,7 @@ export default function InventoryPanel({
 
                   {!blockedByDraft && (deleteImpact.sales > 0 || deleteImpact.purchases > 0) && (
                     <p className={typography("body", "rounded-md border border-warning/40 bg-warning/10 p-2 text-foreground")}>
-                      Heads up — this medicine has <span className="font-medium">{deleteImpact.sales + deleteImpact.purchases}</span> related transaction{deleteImpact.sales + deleteImpact.purchases === 1 ? "" : "s"}.
+                      Heads up — this product has <span className="font-medium">{deleteImpact.sales + deleteImpact.purchases}</span> related transaction{deleteImpact.sales + deleteImpact.purchases === 1 ? "" : "s"}.
                       Consider setting stock to 0 or renaming instead if you only want to retire it.
                     </p>
                   )}
@@ -624,7 +644,7 @@ export default function InventoryPanel({
               disabled={blockedByDraft}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {blockedByDraft ? "Cannot delete" : "Delete medicine"}
+              {blockedByDraft ? "Cannot delete" : "Delete product"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -681,7 +701,7 @@ export function ImageUploadField({
 
   // Fallback label shown beside the box when the product hasn't been named
   // yet — keeps the layout balanced instead of leaving an empty column.
-  const titleText = productName?.trim() || "Untitled medicine";
+  const titleText = productName?.trim() || "Untitled product";
 
   return (
     <div className="flex items-start gap-3">
@@ -697,7 +717,7 @@ export function ImageUploadField({
         className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted transition-colors hover:border-primary hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {value ? (
-          <img src={value} alt="Medicine preview" className="h-full w-full object-cover" />
+          <img src={value} alt="Product preview" className="h-full w-full object-cover" />
         ) : (
           <Upload className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
         )}

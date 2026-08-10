@@ -45,7 +45,7 @@ import {
 
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { currency, useResponsiveCurrency } from "@/lib/format";
+import { currency, formatDate, useResponsiveCurrency } from "@/lib/format";
 import { typography } from "@/lib/typography";
 import { useShop, type SaleItem } from "@/store/shop";
 import { loadProfiles } from "@/lib/customerProfiles";
@@ -383,7 +383,7 @@ export default function CustomersPanel() {
       "Type",
       "Transaction ID",
       "Item",
-      "Medicine ID",
+      "Product ID",
       "Quantity",
       "Unit Price",
       "Line Total",
@@ -399,7 +399,7 @@ export default function CustomersPanel() {
           typeLabel,
           h.id,
           it.name,
-          it.medicineId,
+          it.productId,
           String(it.qty),
           it.unitPrice.toFixed(2),
           (it.qty * it.unitPrice).toFixed(2),
@@ -422,7 +422,7 @@ export default function CustomersPanel() {
     const safeName = selectedRow.name.replace(/[^a-z0-9-_]+/gi, "_");
     const a = document.createElement("a");
     a.href = url;
-    a.download = `PharmaSee_${safeName}_transactions_${format(new Date(), "yyyyMMdd")}.csv`;
+    a.download = `HisabNikash_${safeName}_transactions_${format(new Date(), "yyyyMMdd")}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -598,12 +598,12 @@ export default function CustomersPanel() {
                         {draftCustDateRange?.from ? (
                           draftCustDateRange.to ? (
                             <span className="truncate">
-                              {format(draftCustDateRange.from, "LLL d, y")} –{" "}
-                              {format(draftCustDateRange.to, "LLL d, y")}
+                              {formatDate(draftCustDateRange.from, "LLL d, y")} –{" "}
+                              {formatDate(draftCustDateRange.to, "LLL d, y")}
                             </span>
                           ) : (
                             <span className="truncate">
-                              {format(draftCustDateRange.from, "LLL d, y")}
+                              {formatDate(draftCustDateRange.from, "LLL d, y")}
                             </span>
                           )
                         ) : (
@@ -681,7 +681,7 @@ export default function CustomersPanel() {
                           <span className={typography("body-muted", "truncate")}>
                             {c.purchases + c.dueEntries} txn ·{" "}
                             {c.lastPurchase
-                              ? format(new Date(c.lastPurchase), "MMM d, yyyy")
+                              ? formatDate(c.lastPurchase, "MMM d, yyyy")
                               : "No activity"}
                           </span>
                           <span className="shrink-0 tabular-nums">
@@ -719,7 +719,7 @@ export default function CustomersPanel() {
                         selectedRow.purchases + selectedRow.dueEntries === 1 ? "" : "s"
                       } · Last purchase ${
                         selectedRow.lastPurchase
-                          ? format(new Date(selectedRow.lastPurchase), "MMM d, yyyy")
+                          ? formatDate(selectedRow.lastPurchase, "MMM d, yyyy")
                           : "—"
                       }`
                     : ""}
@@ -861,7 +861,7 @@ export default function CustomersPanel() {
                                 {h.kind === "due" ? "Due" : "Cash"}
                               </Badge>
                               <span className={typography("body-muted")}>
-                                {format(new Date(h.date), "MMM d, yyyy · HH:mm")}
+                                {formatDate(h.date, "MMM d, yyyy · HH:mm")}
                               </span>
                             </div>
                             <span className={typography("body", "font-semibold")}>
@@ -871,7 +871,7 @@ export default function CustomersPanel() {
                           <ul className="space-y-0.5 pl-1">
                             {h.items.map((it) => (
                               <li
-                                key={it.medicineId}
+                                key={it.productId}
                                 className={typography(
                                   "body-muted",
                                   "flex items-center justify-between gap-2",

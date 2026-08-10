@@ -80,7 +80,7 @@ const loadDues = (): DueEntry[] => {
 };
 
 export default function Sales() {
-  const { medicines, sales, recordSale, updateSale, deleteSale } = useShop();
+  const { products, sales, recordSale, updateSale, deleteSale } = useShop();
   const hydrated = useShopHydrated();
   // Mobile-aware currency formatter — uses K / L / Cr suffixes on small
   // screens so big totals never overflow the stat cards.
@@ -101,7 +101,7 @@ export default function Sales() {
   }, [customer, items]);
 
   // If a draft is mutated externally (e.g., Inventory removed an item from
-  // this cart to allow a medicine deletion), reflect that here so we don't
+  // this cart to allow a product deletion), reflect that here so we don't
   // immediately overwrite the change on the next render.
   // Debounced so a rapid burst of draft mutations (e.g. fast quantity edits
   // or barcode scans in another tab) collapses into a single re-render.
@@ -111,7 +111,7 @@ export default function Sales() {
     setItems((prev) => {
       const sameLength = prev.length === next.length;
       const sameRefs = sameLength && prev.every((p, i) =>
-        p.medicineId === next[i].medicineId && p.qty === next[i].qty
+        p.productId === next[i].productId && p.qty === next[i].qty
       );
       return sameRefs ? prev : next;
     });
@@ -119,23 +119,23 @@ export default function Sales() {
 
   const total = useMemo(() => items.reduce((s, i) => s + i.qty * i.unitPrice, 0), [items]);
 
-  const addItemFor = (medicineId: string, quantity: number) => {
-    const m = medicines.find((x) => x.id === medicineId);
+  const addItemFor = (productId: string, quantity: number) => {
+    const m = products.find((x) => x.id === productId);
     if (!m) return;
     if (quantity < 1) return;
     if (m.stock < quantity) {
       toast({ title: `Only ${m.stock} in stock`, variant: "destructive" });
       return;
     }
-    const existing = items.find((i) => i.medicineId === m.id);
+    const existing = items.find((i) => i.productId === m.id);
     if (existing) {
-      setItems(items.map((i) => i.medicineId === m.id ? { ...i, qty: quantity } : i));
+      setItems(items.map((i) => i.productId === m.id ? { ...i, qty: quantity } : i));
     } else {
-      setItems([...items, { medicineId: m.id, name: m.name, qty: quantity, unitPrice: m.sellPrice, unitCost: m.costPrice }]);
+      setItems([...items, { productId: m.id, name: m.name, qty: quantity, unitPrice: m.sellPrice, unitCost: m.costPrice }]);
     }
   };
 
-  const handleSelectMedicine = (id: string) => {
+  const handleSelectProduct = (id: string) => {
     setPickId(id);
     addItemFor(id, qty);
   };
@@ -146,7 +146,7 @@ export default function Sales() {
     if (pickId) addItemFor(pickId, next);
   };
 
-  const removeItem = (id: string) => setItems(items.filter((i) => i.medicineId !== id));
+  const removeItem = (id: string) => setItems(items.filter((i) => i.productId !== id));
 
   const checkout = () => {
     if (items.length === 0) {
@@ -184,7 +184,7 @@ export default function Sales() {
     setDueItems((prev) => {
       const sameLength = prev.length === next.length;
       const sameRefs = sameLength && prev.every((p, i) =>
-        p.medicineId === next[i].medicineId && p.qty === next[i].qty
+        p.productId === next[i].productId && p.qty === next[i].qty
       );
       return sameRefs ? prev : next;
     });
@@ -208,19 +208,19 @@ export default function Sales() {
     [dues]
   );
 
-  const addDueItemFor = (medicineId: string, quantity: number) => {
-    const m = medicines.find((x) => x.id === medicineId);
+  const addDueItemFor = (productId: string, quantity: number) => {
+    const m = products.find((x) => x.id === productId);
     if (!m) return;
     if (quantity < 1) return;
-    const existing = dueItems.find((i) => i.medicineId === m.id);
+    const existing = dueItems.find((i) => i.productId === m.id);
     if (existing) {
-      setDueItems(dueItems.map((i) => i.medicineId === m.id ? { ...i, qty: quantity } : i));
+      setDueItems(dueItems.map((i) => i.productId === m.id ? { ...i, qty: quantity } : i));
     } else {
-      setDueItems([...dueItems, { medicineId: m.id, name: m.name, qty: quantity, unitPrice: m.sellPrice, unitCost: m.costPrice }]);
+      setDueItems([...dueItems, { productId: m.id, name: m.name, qty: quantity, unitPrice: m.sellPrice, unitCost: m.costPrice }]);
     }
   };
 
-  const handleDueSelectMedicine = (id: string) => {
+  const handleDueSelectProduct = (id: string) => {
     setDuePickId(id);
     addDueItemFor(id, dueQty);
   };
@@ -232,7 +232,7 @@ export default function Sales() {
   };
 
   const removeDueItem = (id: string) =>
-    setDueItems(dueItems.filter((i) => i.medicineId !== id));
+    setDueItems(dueItems.filter((i) => i.productId !== id));
 
   const recordDue = () => {
     if (!dueCustomer.trim()) {
@@ -581,7 +581,7 @@ export default function Sales() {
       "Type",
       "Transaction ID",
       "Item",
-      "Medicine ID",
+      "Product ID",
       "Quantity",
       "Unit Price",
       "Line Total",
@@ -597,7 +597,7 @@ export default function Sales() {
           typeLabel,
           h.id,
           it.name,
-          it.medicineId,
+          it.productId,
           String(it.qty),
           it.unitPrice.toFixed(2),
           (it.qty * it.unitPrice).toFixed(2),
@@ -831,7 +831,7 @@ export default function Sales() {
                   <Label>Items</Label>
                   <ul className="space-y-3">
                     {editDraft.items.map((it, idx) => (
-                      <li key={`${it.medicineId}-${idx}`} className="rounded-md border bg-muted/20 p-3">
+                      <li key={`${it.productId}-${idx}`} className="rounded-md border bg-muted/20 p-3">
                         <div className="space-y-2">
                           <div className="space-y-1.5">
                             <Label className={typography("body-muted")}>Item name</Label>

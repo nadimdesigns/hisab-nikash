@@ -1,8 +1,13 @@
-import { Medicine } from "@/store/shop";
+import { Product } from "@/store/shop";
 import { daysUntil } from "@/lib/format";
 
 export type StockFilter = "all" | "low" | "out" | "in";
-export type ExpiryFilter = "all" | "expired" | "30" | "60" | "90";
+/**
+ * Expiry windows are days, not months. A pharmacy cares about stock
+ * expiring within a quarter; a mudi dokan cares about milk going off
+ * tomorrow, so the buckets are 3 / 7 / 30 days.
+ */
+export type ExpiryFilter = "all" | "expired" | "3" | "7" | "30";
 export type SortKey =
   | "name-asc"
   | "name-desc"
@@ -23,8 +28,8 @@ export type InventoryFilters = {
   sort?: SortKey;
 };
 
-export function filterAndSortMedicines(
-  medicines: Medicine[],
+export function filterAndSortProducts(
+  products: Product[],
   {
     query = "",
     batchQuery = "",
@@ -33,10 +38,10 @@ export function filterAndSortMedicines(
     expiryFilter = "all",
     sort = "name-asc",
   }: InventoryFilters,
-): Medicine[] {
+): Product[] {
   const q = query.toLowerCase().trim();
   const bq = batchQuery.toLowerCase().trim();
-  const list = medicines.filter((m) => {
+  const list = products.filter((m) => {
     const matchesQuery =
       q === "" ||
       m.name.toLowerCase().includes(q) ||
@@ -56,15 +61,15 @@ export function filterAndSortMedicines(
     let matchesExpiry = true;
     const days = daysUntil(m.expiry);
     if (expiryFilter === "expired") matchesExpiry = days < 0;
+    else if (expiryFilter === "3") matchesExpiry = days >= 0 && days <= 3;
+    else if (expiryFilter === "7") matchesExpiry = days >= 0 && days <= 7;
     else if (expiryFilter === "30") matchesExpiry = days >= 0 && days <= 30;
-    else if (expiryFilter === "60") matchesExpiry = days >= 0 && days <= 60;
-    else if (expiryFilter === "90") matchesExpiry = days >= 0 && days <= 90;
 
     return matchesQuery && matchesBatch && matchesCategory && matchesStock && matchesExpiry;
   });
 
-  const indexById = new Map(medicines.map((m, i) => [m.id, i]));
-  const byName = (a: Medicine, b: Medicine) =>
+  const indexById = new Map(products.map((m, i) => [m.id, i]));
+  const byName = (a: Product, b: Product) =>
     a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
   const sorted = [...list];
   switch (sort) {

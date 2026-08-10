@@ -11,11 +11,11 @@ import {
 import { ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { currency } from "@/lib/format";
-import type { Medicine } from "@/store/shop";
+import type { Product } from "@/store/shop";
 import { typography } from "@/lib/typography";
 
 type Props = {
-  medicines: Medicine[];
+  products: Product[];
   value: string;
   onChange: (id: string) => void;
   placeholder?: string;
@@ -26,11 +26,11 @@ type Props = {
   className?: string;
 };
 
-export function MedicinePickerSheet({
-  medicines,
+export function ProductPickerSheet({
+  products,
   value,
   onChange,
-  placeholder = "Select Medicine...",
+  placeholder = "Select Product...",
   disableOutOfStock = false,
   showSaleInfo = false,
   className,
@@ -38,13 +38,13 @@ export function MedicinePickerSheet({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
-  const selected = medicines.find((m) => m.id === value);
+  const selected = products.find((m) => m.id === value);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return medicines;
-    return medicines.filter((m) => m.name.toLowerCase().includes(q));
-  }, [medicines, query]);
+    if (!q) return products;
+    return products.filter((m) => m.name.toLowerCase().includes(q));
+  }, [products, query]);
 
   const handlePick = (id: string) => {
     onChange(id);
@@ -77,7 +77,7 @@ export function MedicinePickerSheet({
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
         <SheetHeader className="px-6 pt-6">
-          <SheetTitle>Select Medicine</SheetTitle>
+          <SheetTitle>Select Product</SheetTitle>
         </SheetHeader>
 
         <div className="px-6 pt-3">
@@ -86,7 +86,7 @@ export function MedicinePickerSheet({
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search medicines..."
+              placeholder="Search products..."
               className="pl-9"
             />
           </div>
@@ -95,7 +95,7 @@ export function MedicinePickerSheet({
         <div className="flex-1 overflow-y-auto px-3 pb-6 -mt-2">
           {filtered.length === 0 ? (
             <p className={typography("body-muted", "py-6 text-center")}>
-              No medicines found.
+              No products found.
             </p>
           ) : (
             <ul className="space-y-1">
@@ -134,4 +134,4 @@ export function MedicinePickerSheet({
   );
 }
 
-export default MedicinePickerSheet;
+export default ProductPickerSheet;

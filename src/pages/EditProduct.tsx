@@ -4,20 +4,24 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Medicine, useShop, useShopHydrated } from "@/store/shop";
+import { DEFAULT_UNIT, UNITS, type UnitCode } from "@/lib/copy";
+import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { toast } from "@/hooks/use-toast";
 import { Field, ImageUploadField } from "@/components/inventory/InventoryPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const blank: Omit<Medicine, "id"> = {
+const blank: Omit<Product, "id"> = {
   name: "",
   sku: "",
   category: "",
+  unit: DEFAULT_UNIT,
   batch: "",
   expiry: new Date().toISOString().slice(0, 10),
   stock: 0,
@@ -29,13 +33,13 @@ const blank: Omit<Medicine, "id"> = {
   aliases: [],
 };
 
-export default function EditMedicine() {
+export default function EditProduct() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const hydrated = useShopHydrated();
-  const { medicines, updateMedicine } = useShop();
-  const target = medicines.find((m) => m.id === id);
-  const [form, setForm] = useState<Omit<Medicine, "id">>(blank);
+  const { products, updateProduct } = useShop();
+  const target = products.find((m) => m.id === id);
+  const [form, setForm] = useState<Omit<Product, "id">>(blank);
 
   // Seed the form once the store is hydrated and we found the target.
   useEffect(() => {
@@ -55,13 +59,13 @@ export default function EditMedicine() {
     if (form.sellPrice < form.costPrice) {
       toast({ title: "Sell price is below cost price", description: "Double-check pricing before saving." });
     }
-    updateMedicine(id, form);
-    toast({ title: "Medicine updated" });
+    updateProduct(id, form);
+    toast({ title: "Product updated" });
     navigate("/stocks");
   };
 
   return (
-    <AppLayout title="Edit medicine">
+    <AppLayout title="Edit product">
       <div className="mb-4">
         <Button variant="ghost" asChild className="gap-2 px-2">
           <Link to="/stocks">
@@ -80,7 +84,7 @@ export default function EditMedicine() {
             </div>
           ) : !target ? (
             <div className="space-y-3 text-center">
-              <p>Medicine not found.</p>
+              <p>Product not found.</p>
               <Button asChild>
                 <Link to="/stocks">Back to Stocks</Link>
               </Button>
@@ -103,6 +107,23 @@ export default function EditMedicine() {
                 </Field>
                 <Field label="Category">
                   <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+                </Field>
+                <Field label="একক">
+                  <Select
+                    value={form.unit}
+                    onValueChange={(v) => setForm({ ...form, unit: v as UnitCode })}
+                  >
+                    <SelectTrigger aria-label="একক">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {UNITS.map((u) => (
+                        <SelectItem key={u.code} value={u.code}>
+                          {u.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Batch">
                   <Input value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />
@@ -129,7 +150,7 @@ export default function EditMedicine() {
                           .filter(Boolean),
                       })
                     }
-                    placeholder="e.g. Paracetamol, Acetaminophen, Tylenol"
+                    placeholder="যেমন: মিনিকেট, চাল, rice"
                     autoComplete="off"
                   />
                 </Field>
@@ -146,7 +167,7 @@ export default function EditMedicine() {
                       >
                         <CalendarIcon className="mr-[3px] h-4 w-4 shrink-0 opacity-70" />
                         <span className="truncate">
-                          {form.expiry ? format(parseISO(form.expiry), "MMM do, yyyy") : "Pick a date"}
+                          {form.expiry ? formatDate(parseISO(form.expiry), "MMM do, yyyy") : "Pick a date"}
                         </span>
                       </Button>
                     </PopoverTrigger>

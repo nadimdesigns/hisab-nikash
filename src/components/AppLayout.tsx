@@ -11,7 +11,7 @@ import { useHeaderSlot } from "./HeaderSlot";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { openMedicineQuickSearch } from "./MedicineQuickSearch";
+import { openProductQuickSearch } from "./ProductQuickSearch";
 import { typography } from "@/lib/typography";
 import { useAuth } from "@/lib/auth";
 
@@ -36,9 +36,7 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
               <SidebarTrigger />
             </div>
             <div className="flex items-center gap-2 md:hidden">
-              <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg">
-                <BrandLogo className="h-8 w-8" />
-              </div>
+              <BrandLogo className="h-8 w-8" />
             </div>
             <h1 className={typography("h3", "shrink-0 text-sidebar-foreground")}>{title}</h1>
             {headerSlot && (
@@ -50,9 +48,9 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={openMedicineQuickSearch}
-                aria-label="Search medicines"
-                title="Search medicines (⌘K)"
+                onClick={openProductQuickSearch}
+                aria-label="Search products"
+                title="Search products (⌘K)"
               >
                 <Search className="h-4 w-4" />
               </Button>

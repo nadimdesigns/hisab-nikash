@@ -19,28 +19,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useShop } from "@/store/shop";
-import { filterAndSortMedicines } from "@/lib/inventoryFilters";
+import {
+  filterAndSortProducts,
+  type ExpiryFilter,
+  type SortKey,
+  type StockFilter,
+} from "@/lib/inventoryFilters";
 import { exportInventoryCSV, exportInventoryPDF } from "@/lib/inventoryExport";
 import { toast } from "@/hooks/use-toast";
 import { usePersistentState } from "@/hooks/use-persistent-state";
 import { typography, BODY_TEXT } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
-export type StockFilter = "all" | "low" | "out" | "in";
-export type ExpiryFilter = "all" | "expired" | "30" | "60" | "90";
-export type SortKey =
-  | "name-asc"
-  | "name-desc"
-  | "price-asc"
-  | "price-desc"
-  | "stock-asc"
-  | "stock-desc"
-  | "expiry-asc"
-  | "newest"
-  | "oldest";
-
 const STOCK_VALUES: StockFilter[] = ["all", "low", "out", "in"];
-const EXPIRY_VALUES: ExpiryFilter[] = ["all", "expired", "30", "60", "90"];
+const EXPIRY_VALUES: ExpiryFilter[] = ["all", "expired", "3", "7", "30"];
 const SORT_VALUES: SortKey[] = [
   "name-asc",
   "name-desc",
@@ -109,15 +101,15 @@ export default function Inventory() {
     setSearchParams(next, { replace: true });
   };
   
-  const { medicines } = useShop();
+  const { products } = useShop();
 
   const categories = useMemo(() => {
     const set = new Set<string>();
-    medicines.forEach((m) => {
+    products.forEach((m) => {
       if (m.category?.trim()) set.add(m.category.trim());
     });
     return Array.from(set).sort();
-  }, [medicines]);
+  }, [products]);
 
   const filtersActive =
     query !== "" ||
@@ -156,28 +148,28 @@ export default function Inventory() {
 
   const filteredForExport = useMemo(
     () =>
-      filterAndSortMedicines(medicines, {
+      filterAndSortProducts(products, {
         query,
         category,
         stockFilter,
         expiryFilter,
         sort,
       }),
-    [medicines, query, category, stockFilter, expiryFilter, sort],
+    [products, query, category, stockFilter, expiryFilter, sort],
   );
 
-  const handleExport = (format: "csv" | "pdf") => {
+  const handleExport = async (format: "csv" | "pdf") => {
     if (filteredForExport.length === 0) {
       toast({
         title: "Nothing to export",
-        description: "No medicines match the current filters.",
+        description: "No products match the current filters.",
         variant: "destructive",
       });
       return;
     }
     try {
       if (format === "csv") exportInventoryCSV(filteredForExport);
-      else exportInventoryPDF(filteredForExport);
+      else await exportInventoryPDF(filteredForExport);
       toast({
         title: `Exported ${filteredForExport.length} item${filteredForExport.length === 1 ? "" : "s"}`,
         description: `Inventory report saved as ${format.toUpperCase()}.`,
@@ -249,8 +241,8 @@ export default function Inventory() {
             asChild
             className="hidden shrink-0 gap-2 sm:ml-auto sm:inline-flex"
           >
-            <Link to="/add-medicine">
-              <Plus className="h-4 w-4" /> Add medicine
+            <Link to="/add-product">
+              <Plus className="h-4 w-4" /> Add product
             </Link>
           </Button>
 
@@ -284,9 +276,9 @@ export default function Inventory() {
                   <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Find a Medicine"
+                    placeholder="Find a Product"
                     className={cn("bg-white dark:bg-background", query ? "pr-[6.5rem]" : "pr-[4.5rem]")}
-                    aria-label="Search medicines"
+                    aria-label="Search products"
                   />
                   {query && (
                     <button
@@ -330,9 +322,9 @@ export default function Inventory() {
                   options={[
                     { value: "all", label: "Any expiry" },
                     { value: "expired", label: "Expired" },
-                    { value: "30", label: "Expiring ≤ 30 days" },
-                    { value: "60", label: "Expiring ≤ 60 days" },
-                    { value: "90", label: "Expiring ≤ 90 days" },
+                    { value: "3", label: "৩ দিনের মধ্যে মেয়াদ শেষ" },
+                    { value: "7", label: "৭ দিনের মধ্যে মেয়াদ শেষ" },
+                    { value: "30", label: "৩০ দিনের মধ্যে মেয়াদ শেষ" },
                   ]}
                 />
 
@@ -382,8 +374,8 @@ export default function Inventory() {
           asChild
           className="w-full gap-2 sm:hidden"
         >
-          <Link to="/add-medicine">
-            <Plus className="h-4 w-4" /> Add medicine
+          <Link to="/add-product">
+            <Plus className="h-4 w-4" /> Add product
           </Link>
         </Button>
       </div>

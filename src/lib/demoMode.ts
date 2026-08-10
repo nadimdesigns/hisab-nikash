@@ -52,12 +52,6 @@ export function dataKey(key: string): string {
 }
 
 /**
- * Demo accounts are strictly read-only — they can browse every page but
- * cannot mutate any persisted data. Call this from any write path; when it
- * returns true, abort the write and surface a toast so the user understands
- * why nothing happened.
- */
-/**
  * Cached server-side role for the signed-in user. We mirror it to
  * localStorage so the sync `isReadOnly()` check used inside zustand store
  * mutations can answer without awaiting an async role lookup.
@@ -84,8 +78,25 @@ export function setCachedRole(role: CachedRole | null): void {
   }
 }
 
+/**
+ * Whether writes should be blocked for the current user.
+ *
+ * Note this is deliberately NOT true for the local demo login. Demo mode
+ * already namespaces every persisted key with `demo:` (see `dataKey`), so a
+ * demo user physically cannot touch real data on the same browser — the
+ * read-only guard added no safety on top of that, and made the demo useless
+ * for its actual purpose: trying the app out. A demo visitor can now record
+ * sales, add stock and settle বাকি against their own sandboxed copy, and
+ * clear it all by logging out.
+ *
+ * A server-assigned `demo` role is still read-only. That one is handed out
+ * deliberately to accounts sharing real data, where the restriction is the
+ * point. Being client-side it is only a UI affordance, not a security
+ * boundary — RLS is what will actually enforce this once shop data moves to
+ * Postgres.
+ */
 export function isReadOnly(): boolean {
-  return isDemoMode() || getCachedRole() === "demo";
+  return getCachedRole() === "demo";
 }
 
 let lastReadOnlyToastAt = 0;

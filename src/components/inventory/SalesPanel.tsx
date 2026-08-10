@@ -24,37 +24,39 @@ import { currency } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { typography } from "@/lib/typography";
-import { MedicinePickerSheet } from "@/components/MedicinePickerSheet";
+import { ProductPickerSheet } from "@/components/ProductPickerSheet";
 import { QtyStepper } from "@/components/QtyStepper";
 
 export default function SalesPanel() {
-  const { medicines, sales, recordSale } = useShop();
+  const { products, sales, recordSale } = useShop();
   const [customer, setCustomer] = useState("Walk-in");
   const [items, setItems] = useState<SaleItem[]>([]);
   const [pickId, setPickId] = useState<string>("");
+  // Drives the quantity stepper's increment: কেজি moves in quarters, পিস in ones.
+  const pickedProduct = products.find((m) => m.id === pickId);
   const [qty, setQty] = useState<number>(1);
 
   const total = useMemo(() => items.reduce((s, i) => s + i.qty * i.unitPrice, 0), [items]);
 
   const addItem = () => {
-    const m = medicines.find((x) => x.id === pickId);
+    const m = products.find((x) => x.id === pickId);
     if (!m) return;
     if (qty < 1) return;
     if (m.stock < qty) {
       toast({ title: `Only ${m.stock} in stock`, variant: "destructive" });
       return;
     }
-    const existing = items.find((i) => i.medicineId === m.id);
+    const existing = items.find((i) => i.productId === m.id);
     if (existing) {
-      setItems(items.map((i) => i.medicineId === m.id ? { ...i, qty: i.qty + qty } : i));
+      setItems(items.map((i) => i.productId === m.id ? { ...i, qty: i.qty + qty } : i));
     } else {
-      setItems([...items, { medicineId: m.id, name: m.name, qty, unitPrice: m.sellPrice, unitCost: m.costPrice }]);
+      setItems([...items, { productId: m.id, name: m.name, qty, unitPrice: m.sellPrice, unitCost: m.costPrice }]);
     }
     setPickId("");
     setQty(1);
   };
 
-  const removeItem = (id: string) => setItems(items.filter((i) => i.medicineId !== id));
+  const removeItem = (id: string) => setItems(items.filter((i) => i.productId !== id));
 
   const checkout = () => {
     if (items.length === 0) {
@@ -82,19 +84,19 @@ export default function SalesPanel() {
         <CardContent className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-[1fr_120px_auto]">
             <div className="space-y-1.5">
-              <Label>Medicine</Label>
-              <MedicinePickerSheet
-                medicines={medicines}
+              <Label>Product</Label>
+              <ProductPickerSheet
+                products={products}
                 value={pickId}
                 onChange={setPickId}
-                placeholder="Select Medicine..."
+                placeholder="Select Product..."
                 disableOutOfStock
                 showSaleInfo
               />
             </div>
             <div className="space-y-1.5">
               <Label>Qty</Label>
-              <QtyStepper value={qty} onChange={setQty} min={1} />
+              <QtyStepper value={qty} onChange={setQty} unit={pickedProduct?.unit} />
             </div>
             <div className="flex items-end">
               <Button onClick={addItem} className="gap-2 w-full sm:w-auto">
@@ -118,12 +120,12 @@ export default function SalesPanel() {
                 {items.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className={typography("body-muted", "py-6 text-center")}>
-                      No items yet. Add medicines above.
+                      No items yet. Add products above.
                     </TableCell>
                   </TableRow>
                 ) : (
                   items.map((i) => (
-                    <TableRow key={i.medicineId}>
+                    <TableRow key={i.productId}>
                       <TableCell className="w-[44%] min-w-[160px] font-medium">
                         <span className="item-name-cell">{i.name}</span>
                       </TableCell>
@@ -131,7 +133,7 @@ export default function SalesPanel() {
                       <TableCell className="text-right">{currency(i.unitPrice)}</TableCell>
                       <TableCell className="text-right">{currency(i.qty * i.unitPrice)}</TableCell>
                       <TableCell>
-                        <Button size="icon" variant="ghost" onClick={() => removeItem(i.medicineId)}>
+                        <Button size="icon" variant="ghost" onClick={() => removeItem(i.productId)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>

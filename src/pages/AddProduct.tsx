@@ -4,19 +4,23 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Medicine, useShop } from "@/store/shop";
+import { DEFAULT_UNIT, UNITS, type UnitCode } from "@/lib/copy";
+import { Product, useShop } from "@/store/shop";
 import { toast } from "@/hooks/use-toast";
 import { Field, ImageUploadField } from "@/components/inventory/InventoryPanel";
 
-const empty: Omit<Medicine, "id"> = {
+const empty: Omit<Product, "id"> = {
   name: "",
   sku: "",
   category: "",
+  unit: DEFAULT_UNIT,
   batch: "",
   expiry: new Date().toISOString().slice(0, 10),
   stock: 0,
@@ -28,10 +32,10 @@ const empty: Omit<Medicine, "id"> = {
   aliases: [],
 };
 
-export default function AddMedicine() {
+export default function AddProduct() {
   const navigate = useNavigate();
-  const { addMedicine } = useShop();
-  const [form, setForm] = useState<Omit<Medicine, "id">>(empty);
+  const { addProduct } = useShop();
+  const [form, setForm] = useState<Omit<Product, "id">>(empty);
 
   const submit = () => {
     if (!form.name.trim() || !form.sku.trim()) {
@@ -41,13 +45,13 @@ export default function AddMedicine() {
     if (form.sellPrice < form.costPrice) {
       toast({ title: "Sell price is below cost price", description: "Double-check pricing before saving." });
     }
-    addMedicine(form);
-    toast({ title: "Medicine added" });
+    addProduct(form);
+    toast({ title: "Product added" });
     navigate("/stocks");
   };
 
   return (
-    <AppLayout title="Add medicine">
+    <AppLayout title="Add product">
       <div className="mb-4">
         <Button variant="ghost" asChild className="gap-2 px-2">
           <Link to="/stocks">
@@ -75,6 +79,23 @@ export default function AddMedicine() {
             <Field label="Category">
               <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
             </Field>
+            <Field label="একক">
+              <Select
+                value={form.unit}
+                onValueChange={(v) => setForm({ ...form, unit: v as UnitCode })}
+              >
+                <SelectTrigger aria-label="একক">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {UNITS.map((u) => (
+                    <SelectItem key={u.code} value={u.code}>
+                      {u.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
             <Field label="Batch">
               <Input value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />
             </Field>
@@ -100,7 +121,7 @@ export default function AddMedicine() {
                       .filter(Boolean),
                   })
                 }
-                placeholder="e.g. Paracetamol, Acetaminophen, Tylenol"
+                placeholder="যেমন: মিনিকেট, চাল, rice"
                 autoComplete="off"
               />
             </Field>
@@ -117,7 +138,7 @@ export default function AddMedicine() {
                   >
                     <CalendarIcon className="mr-[3px] h-4 w-4 shrink-0 opacity-70" />
                     <span className="truncate">
-                      {form.expiry ? format(parseISO(form.expiry), "MMM do, yyyy") : "Pick a date"}
+                      {form.expiry ? formatDate(parseISO(form.expiry), "MMM do, yyyy") : "Pick a date"}
                     </span>
                   </Button>
                 </PopoverTrigger>

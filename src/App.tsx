@@ -8,8 +8,8 @@ import DesignTokensProvider from "@/components/DesignTokensProvider";
 import { HeaderSlotProvider } from "@/components/HeaderSlot";
 import Index from "./pages/Index.tsx";
 import Inventory from "./pages/Inventory.tsx";
-import AddMedicine from "./pages/AddMedicine.tsx";
-import EditMedicine from "./pages/EditMedicine.tsx";
+import AddProduct from "./pages/AddProduct.tsx";
+import EditProduct from "./pages/EditProduct.tsx";
 import Sales from "./pages/Sales.tsx";
 import NewSale from "./pages/NewSale.tsx";
 import NewTransaction from "./pages/NewTransaction.tsx";
@@ -31,7 +31,7 @@ import Login from "./pages/Login.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import RequireAuth from "./components/RequireAuth";
 import TypographyHoverInspector from "./components/TypographyHoverInspector";
-import { MedicineQuickSearch } from "./components/MedicineQuickSearch";
+import { ProductQuickSearch } from "./components/ProductQuickSearch";
 import { ScrollToTop } from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
@@ -47,14 +47,14 @@ const App = () => (
         <BrowserRouter>
           <HeaderSlotProvider>
             <ScrollToTop />
-            <MedicineQuickSearch />
+            <ProductQuickSearch />
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
               <Route path="/stocks" element={<RequireAuth><Inventory /></RequireAuth>} />
-              <Route path="/add-medicine" element={<RequireAuth><AddMedicine /></RequireAuth>} />
-              <Route path="/edit-medicine/:id" element={<RequireAuth><EditMedicine /></RequireAuth>} />
+              <Route path="/add-product" element={<RequireAuth><AddProduct /></RequireAuth>} />
+              <Route path="/edit-product/:id" element={<RequireAuth><EditProduct /></RequireAuth>} />
               <Route path="/inventory" element={<Navigate to="/stocks" replace />} />
               <Route path="/sales" element={<RequireAuth><Sales /></RequireAuth>} />
               <Route path="/new-sale" element={<RequireAuth><NewSale /></RequireAuth>} />

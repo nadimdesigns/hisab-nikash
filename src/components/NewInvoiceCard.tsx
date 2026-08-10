@@ -19,25 +19,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Trash2, Receipt, Save } from "lucide-react";
-import { format } from "date-fns";
 import { useShop, SaleItem } from "@/store/shop";
-import { currency } from "@/lib/format";
+import { currency, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
 import { clearDraft, loadDrafts, saveDraft } from "@/lib/drafts";
 import { useDraftsListener } from "@/hooks/use-drafts-listener";
 import { typography } from "@/lib/typography";
-import { MedicinePickerSheet } from "@/components/MedicinePickerSheet";
+import { ProductPickerSheet } from "@/components/ProductPickerSheet";
 import { QtyStepper } from "@/components/QtyStepper";
 import { PaymentStatusBadge } from "@/components/sales/PaymentStatusBadge";
 import { loadProfiles, PROFILES_KEY } from "@/lib/customerProfiles";
 
 export default function NewInvoiceCard({ className, title = "Cash Sale" }: { className?: string; title?: string }) {
-  const { medicines, recordSale, sales } = useShop();
+  const { products, recordSale, sales } = useShop();
   const invoiceSaleType: "cash" | "credit" = title === "Due Sale" ? "credit" : "cash";
   const initialDrafts = useMemo(() => loadDrafts(), []);
   const [customer, setCustomer] = useState(initialDrafts.cash?.customer ?? "");
   const [items, setItems] = useState<SaleItem[]>(initialDrafts.cash?.items ?? []);
   const [pickId, setPickId] = useState<string>("");
+  // Drives the quantity stepper's increment: কেজি moves in quarters, পিস in ones.
+  const pickedProduct = products.find((m) => m.id === pickId);
   const [qty, setQty] = useState<number>(1);
   const [saleType, setSaleType] = useState<string>("");
   const [now, setNow] = useState<Date>(() => new Date());
@@ -57,7 +58,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
     setItems((prev) => {
       const sameLength = prev.length === next.length;
       const sameRefs = sameLength && prev.every((p, i) =>
-        p.medicineId === next[i].medicineId && p.qty === next[i].qty
+        p.productId === next[i].productId && p.qty === next[i].qty
       );
       return sameRefs ? prev : next;
     });
@@ -65,23 +66,23 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
 
   const total = useMemo(() => items.reduce((s, i) => s + i.qty * i.unitPrice, 0), [items]);
 
-  const addItemFor = (medicineId: string, quantity: number) => {
-    const m = medicines.find((x) => x.id === medicineId);
+  const addItemFor = (productId: string, quantity: number) => {
+    const m = products.find((x) => x.id === productId);
     if (!m) return;
     if (quantity < 1) return;
     if (m.stock < quantity) {
       toast({ title: `Only ${m.stock} in stock`, variant: "destructive" });
       return;
     }
-    const existing = items.find((i) => i.medicineId === m.id);
+    const existing = items.find((i) => i.productId === m.id);
     if (existing) {
-      setItems(items.map((i) => i.medicineId === m.id ? { ...i, qty: quantity } : i));
+      setItems(items.map((i) => i.productId === m.id ? { ...i, qty: quantity } : i));
     } else {
-      setItems([...items, { medicineId: m.id, name: m.name, qty: quantity, unitPrice: m.sellPrice, unitCost: m.costPrice }]);
+      setItems([...items, { productId: m.id, name: m.name, qty: quantity, unitPrice: m.sellPrice, unitCost: m.costPrice }]);
     }
   };
 
-  const handleSelectMedicine = (id: string) => {
+  const handleSelectProduct = (id: string) => {
     setPickId(id);
     addItemFor(id, qty);
   };
@@ -92,7 +93,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
     if (pickId) addItemFor(pickId, next);
   };
 
-  const removeItem = (id: string) => setItems(items.filter((i) => i.medicineId !== id));
+  const removeItem = (id: string) => setItems(items.filter((i) => i.productId !== id));
 
   const checkout = () => {
     if (items.length === 0) {
@@ -194,7 +195,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${tone.label}`}>
             Transaction Date
           </p>
-          <h2 className={typography("h4", "m-0 leading-tight")}>{format(now, "MMM d, yyyy")}</h2>
+          <h2 className={typography("h4", "m-0 leading-tight")}>{formatDate(now, "MMM d, yyyy")}</h2>
         </div>
         <div className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 ${tone.pillBg}`}>
           <span className={`h-2 w-2 rounded-full ${tone.pillDot} animate-pulse`} />
@@ -214,7 +215,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span className="text-xs font-medium tabular-nums">{format(now, "h:mm:ss a")}</span>
+        <span className="text-xs font-medium tabular-nums">{formatDate(now, "h:mm:ss a")}</span>
       </div>
 
       {/* Inputs */}
@@ -262,13 +263,13 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         <div className="grid grid-cols-12 gap-3">
           <div className="col-span-8 min-w-0">
             <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-              Medicine Name
+              Product Name
             </label>
-            <MedicinePickerSheet
-              medicines={medicines}
+            <ProductPickerSheet
+              products={products}
               value={pickId}
-              onChange={handleSelectMedicine}
-              placeholder="Select medicine..."
+              onChange={handleSelectProduct}
+              placeholder="Select product..."
               disableOutOfStock
               showSaleInfo
               className={`h-[46px] rounded-xl bg-muted/40 hover:bg-muted/40 dark:bg-white/5 dark:hover:bg-white/5 ${tone.focus}`}
@@ -281,7 +282,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             <QtyStepper
               value={qty}
               onChange={handleQtyChange}
-              min={1}
+              unit={pickedProduct?.unit}
               className="h-[46px] rounded-xl bg-muted/40 dark:bg-white/5"
             />
           </div>
@@ -314,14 +315,14 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
               </TableHeader>
               <TableBody>
                 {items.map((i) => (
-                  <TableRow key={i.medicineId}>
+                  <TableRow key={i.productId}>
                     <TableCell className="w-[34%] min-w-[130px] font-medium">
                       <span className="item-name-cell">{i.name}</span>
                     </TableCell>
                     <TableCell>{i.qty}</TableCell>
                     <TableCell>{currency(i.unitPrice)}</TableCell>
                     <TableCell>
-                      <Button size="icon" variant="ghost" onClick={() => removeItem(i.medicineId)}>
+                      <Button size="icon" variant="ghost" onClick={() => removeItem(i.productId)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </TableCell>

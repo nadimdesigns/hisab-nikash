@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { typography } from "@/lib/typography";
-import { useResponsiveCurrency } from "@/lib/format";
+import { formatDate, useResponsiveCurrency } from "@/lib/format";
 import { getPaymentStatus, type Sale } from "@/store/shop";
 
 type Row = {
@@ -104,10 +104,10 @@ export function DailySalesTable({ sales }: { sales: Sale[] }) {
                   <TableCell>
                     <div className="flex flex-col leading-tight">
                       <span className={typography("body-strong")}>
-                        {format(r.date, "MMM d, yyyy")}
+                        {formatDate(r.date, "MMM d, yyyy")}
                       </span>
                       <span className={typography("small", "text-muted-foreground")}>
-                        {r.isToday ? "Today" : format(r.date, "EEEE")}
+                        {r.isToday ? "Today" : formatDate(r.date, "EEEE")}
                       </span>
                     </div>
                   </TableCell>

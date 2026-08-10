@@ -8,7 +8,7 @@ import { isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
  * "due"  — items being prepared for a credit / due entry
  *
  * These are NOT confirmed transactions. They represent unsubmitted work that
- * survives reloads, so we can warn before letting the user delete a medicine
+ * survives reloads, so we can warn before letting the user delete a product
  * referenced by an open draft.
  */
 
@@ -81,16 +81,16 @@ export type DraftReference = {
 };
 
 /**
- * Find every open draft cart that references the given medicine, with the
+ * Find every open draft cart that references the given product, with the
  * total quantity reserved in each cart. Empty array means safe to delete.
  */
-export function findDraftReferences(medicineId: string): DraftReference[] {
+export function findDraftReferences(productId: string): DraftReference[] {
   const all = loadDrafts();
   const refs: DraftReference[] = [];
   (Object.values(all) as DraftCart[]).forEach((d) => {
     if (!d || !Array.isArray(d.items)) return;
     const qty = d.items
-      .filter((it) => it.medicineId === medicineId)
+      .filter((it) => it.productId === productId)
       .reduce((s, it) => s + it.qty, 0);
     if (qty > 0) {
       refs.push({ kind: d.kind, customer: d.customer || "Walk-in", qty });
@@ -100,11 +100,11 @@ export function findDraftReferences(medicineId: string): DraftReference[] {
 }
 
 /**
- * Remove a medicine from one draft (or all drafts when `kind` is omitted).
+ * Remove a product from one draft (or all drafts when `kind` is omitted).
  * If a draft becomes empty AND has no customer text, it is dropped entirely
  * to keep the storage clean. Returns the number of drafts touched.
  */
-export function removeMedicineFromDrafts(medicineId: string, kind?: DraftKind): number {
+export function removeProductFromDrafts(productId: string, kind?: DraftKind): number {
   if (typeof window === "undefined") return 0;
   if (isReadOnly()) { notifyReadOnlyBlocked(); return 0; }
   const all = loadDrafts();
@@ -114,7 +114,7 @@ export function removeMedicineFromDrafts(medicineId: string, kind?: DraftKind): 
     const d = all[k];
     if (!d) return;
     const before = d.items.length;
-    const items = d.items.filter((it) => it.medicineId !== medicineId);
+    const items = d.items.filter((it) => it.productId !== productId);
     if (items.length === before) return;
     touched += 1;
     if (items.length === 0 && !d.customer.trim()) {
