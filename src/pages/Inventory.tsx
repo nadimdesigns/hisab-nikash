@@ -158,7 +158,7 @@ export default function Inventory() {
     [products, query, category, stockFilter, expiryFilter, sort],
   );
 
-  const handleExport = (format: "csv" | "pdf") => {
+  const handleExport = async (format: "csv" | "pdf") => {
     if (filteredForExport.length === 0) {
       toast({
         title: "Nothing to export",
@@ -169,7 +169,7 @@ export default function Inventory() {
     }
     try {
       if (format === "csv") exportInventoryCSV(filteredForExport);
-      else exportInventoryPDF(filteredForExport);
+      else await exportInventoryPDF(filteredForExport);
       toast({
         title: `Exported ${filteredForExport.length} item${filteredForExport.length === 1 ? "" : "s"}`,
         description: `Inventory report saved as ${format.toUpperCase()}.`,

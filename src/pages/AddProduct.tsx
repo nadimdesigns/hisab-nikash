@@ -4,13 +4,14 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { DEFAULT_UNIT } from "@/lib/copy";
+import { DEFAULT_UNIT, UNITS, type UnitCode } from "@/lib/copy";
 import { Product, useShop } from "@/store/shop";
 import { toast } from "@/hooks/use-toast";
 import { Field, ImageUploadField } from "@/components/inventory/InventoryPanel";
@@ -77,6 +78,23 @@ export default function AddProduct() {
             </Field>
             <Field label="Category">
               <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+            </Field>
+            <Field label="একক">
+              <Select
+                value={form.unit}
+                onValueChange={(v) => setForm({ ...form, unit: v as UnitCode })}
+              >
+                <SelectTrigger aria-label="একক">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {UNITS.map((u) => (
+                    <SelectItem key={u.code} value={u.code}>
+                      {u.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
             <Field label="Batch">
               <Input value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />

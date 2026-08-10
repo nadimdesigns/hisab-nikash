@@ -37,6 +37,8 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
   const [customer, setCustomer] = useState(initialDrafts.cash?.customer ?? "");
   const [items, setItems] = useState<SaleItem[]>(initialDrafts.cash?.items ?? []);
   const [pickId, setPickId] = useState<string>("");
+  // Drives the quantity stepper's increment: কেজি moves in quarters, পিস in ones.
+  const pickedProduct = products.find((m) => m.id === pickId);
   const [qty, setQty] = useState<number>(1);
   const [saleType, setSaleType] = useState<string>("");
   const [now, setNow] = useState<Date>(() => new Date());
@@ -280,7 +282,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             <QtyStepper
               value={qty}
               onChange={handleQtyChange}
-              min={1}
+              unit={pickedProduct?.unit}
               className="h-[46px] rounded-xl bg-muted/40 dark:bg-white/5"
             />
           </div>

@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Package, ShoppingCart, Truck, type LucideIcon } from "lucide-react";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,7 +23,8 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useShop, useShopHydrated } from "@/store/shop";
-import { currency, formatDate } from "@/lib/format";
+import { bnNumber, currency, formatDate } from "@/lib/format";
+import { printReport } from "@/lib/printReport";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { format, startOfDay, subDays } from "date-fns";
 import { ArrowDown, ArrowUp, ArrowUpDown, CalendarIcon, Download, X } from "lucide-react";
@@ -304,7 +303,8 @@ export default function Analytics() {
       ...filteredTxns.map((t) => [t.type, t.date, t.reference, t.item, t.qty, t.unit, t.total, t.profit, t.net]),
     ];
     const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    // BOM so Excel reads the Bengali as UTF-8 rather than the platform codepage.
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -314,38 +314,37 @@ export default function Analytics() {
   };
 
   const exportPDF = () => {
-    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
-    const pageWidth = doc.internal.pageSize.getWidth();
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
-    doc.text("Analytics Report", 40, 40);
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 40, 58);
-    doc.text(
-      `${products.length} SKUs · ${sales.length} sales · ${purchases.length} purchases`,
-      pageWidth - 40,
-      58,
-      { align: "right" },
-    );
-
-    autoTable(doc, {
-      startY: 78,
-      head: [[`Filtered Totals — ${rangeLabel} (${filteredTxns.length} txns)`, "Value"]],
-      body: [
-        ["Total Revenue", currency(filteredTotals.revenue)],
-        ["Total Cost", currency(filteredTotals.cost)],
-        ["Net Profit", currency(filteredTotals.netProfit)],
+    printReport({
+      title: "রিপোর্ট",
+      summary: [
+        `তৈরি: ${formatDate(new Date(), "dd MMM yyyy, h:mm a")}`,
+        `${bnNumber(products.length)} পণ্য · ${bnNumber(sales.length)} বিক্রি · ${bnNumber(purchases.length)} ক্রয়`,
+        `${rangeLabel} — ${bnNumber(filteredTxns.length)} লেনদেন`,
+        `মোট আয়: ${currency(filteredTotals.revenue)} · মোট খরচ: ${currency(filteredTotals.cost)} · নিট লাভ: ${currency(filteredTotals.netProfit)}`,
       ],
-      styles: { fontSize: 10, cellPadding: 6 },
-      headStyles: { fillColor: [22, 101, 52], textColor: 255 },
-      columnStyles: { 0: { cellWidth: 240 }, 1: { halign: "right" } },
+      columns: [
+        { header: "ধরন" },
+        { header: "তারিখ" },
+        { header: "রেফারেন্স" },
+        { header: "পণ্য" },
+        { header: "পরিমাণ", align: "right" },
+        { header: "একক" },
+        { header: "মোট", align: "right" },
+        { header: "লাভ", align: "right" },
+      ],
+      rows: filteredTxns.map((t) => [
+        t.type,
+        t.date,
+        t.reference,
+        t.item,
+        t.qty,
+        t.unit,
+        t.total,
+        t.profit,
+      ]),
     });
-
-    doc.save(`HisabNikash-report-${format(new Date(), "yyyyMMdd")}.pdf`);
   };
+
 
   return (
     <AppLayout title="Analytics">

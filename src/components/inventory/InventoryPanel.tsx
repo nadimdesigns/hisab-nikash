@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -35,12 +36,12 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Pencil, Trash2, CalendarIcon, ImagePlus, Upload, X, ShoppingBasket } from "lucide-react";
 import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { currency, daysUntil, formatDate } from "@/lib/format";
+import { bnNumber, currency, daysUntil, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
-import { DEFAULT_UNIT } from "@/lib/copy";
+import { DEFAULT_UNIT, UNITS, unitLabel, type UnitCode } from "@/lib/copy";
 import CrossTabSyncBanner from "./CrossTabSyncBanner";
 import { filterAndSortProducts, type ExpiryFilter, type SortKey } from "@/lib/inventoryFilters";
 import { findDraftReferences, removeProductFromDrafts, type DraftReference } from "@/lib/drafts";
@@ -323,6 +324,23 @@ export default function InventoryPanel({
             <Field label="Category">
               <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
             </Field>
+            <Field label="একক">
+              <Select
+                value={form.unit}
+                onValueChange={(v) => setForm({ ...form, unit: v as UnitCode })}
+              >
+                <SelectTrigger aria-label="একক">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {UNITS.map((u) => (
+                    <SelectItem key={u.code} value={u.code}>
+                      {u.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </Field>
             <Field label="Batch">
               <Input value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />
             </Field>
@@ -484,7 +502,7 @@ export default function InventoryPanel({
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Badge variant={low ? "destructive" : "secondary"}>{m.stock}</Badge>
+                          <Badge variant={low ? "destructive" : "secondary"}>{bnNumber(m.stock)} {unitLabel(m.unit)}</Badge>
                         </TableCell>
                         <TableCell className="text-right">{currency(m.costPrice)}</TableCell>
                         <TableCell className="text-right">{currency(m.sellPrice)}</TableCell>
@@ -595,7 +613,7 @@ export default function InventoryPanel({
                     <p className="mb-1.5 font-medium text-foreground">What will happen</p>
                     <ul className="space-y-1">
                       <li>
-                        Removes <span className="font-medium text-foreground">{pendingDelete.stock}</span> in current stock
+                        Removes <span className="font-medium text-foreground">{bnNumber(pendingDelete.stock)} {unitLabel(pendingDelete.unit)}</span> in current stock
                         worth <span className="font-medium text-foreground">{currency(pendingDelete.stock * pendingDelete.costPrice)}</span> from inventory.
                       </li>
                       <li>

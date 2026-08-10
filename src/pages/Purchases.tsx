@@ -25,6 +25,8 @@ export default function Purchases() {
   const [supplier, setSupplier] = useState("");
   const [items, setItems] = useState<PurchaseItem[]>([]);
   const [pickId, setPickId] = useState("");
+  // Drives the quantity stepper's increment: কেজি moves in quarters, পিস in ones.
+  const pickedProduct = products.find((m) => m.id === pickId);
   const [qty, setQty] = useState<number>(10);
   const [cost, setCost] = useState<number>(0);
   const [now, setNow] = useState<Date>(() => new Date());
@@ -96,7 +98,7 @@ export default function Purchases() {
                 />
               </div>
               <div className="w-[120px] shrink-0">
-                <QtyStepper value={qty} onChange={setQty} min={1} className="bg-[#f7f7f7] dark:bg-white/5" />
+                <QtyStepper value={qty} onChange={setQty} unit={pickedProduct?.unit} className="bg-[#f7f7f7] dark:bg-white/5" />
               </div>
             </div>
 

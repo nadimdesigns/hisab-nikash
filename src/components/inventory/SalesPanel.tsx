@@ -32,6 +32,8 @@ export default function SalesPanel() {
   const [customer, setCustomer] = useState("Walk-in");
   const [items, setItems] = useState<SaleItem[]>([]);
   const [pickId, setPickId] = useState<string>("");
+  // Drives the quantity stepper's increment: কেজি moves in quarters, পিস in ones.
+  const pickedProduct = products.find((m) => m.id === pickId);
   const [qty, setQty] = useState<number>(1);
 
   const total = useMemo(() => items.reduce((s, i) => s + i.qty * i.unitPrice, 0), [items]);
@@ -94,7 +96,7 @@ export default function SalesPanel() {
             </div>
             <div className="space-y-1.5">
               <Label>Qty</Label>
-              <QtyStepper value={qty} onChange={setQty} min={1} />
+              <QtyStepper value={qty} onChange={setQty} unit={pickedProduct?.unit} />
             </div>
             <div className="flex items-end">
               <Button onClick={addItem} className="gap-2 w-full sm:w-auto">
