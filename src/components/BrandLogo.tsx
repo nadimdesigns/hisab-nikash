@@ -7,42 +7,18 @@ type BrandLogoProps = {
 };
 
 /**
- * হিসাব নিকাশ mark — a khata (ledger) page with ruled lines.
- *
- * Inline SVG, not an image file: the previous mark was a raster asset on a
- * Lovable-hosted `/__l5e/...` URL that does not exist on this deployment, so
- * the SPA rewrite answered it with index.html and the logo rendered broken.
- * Inline markup also costs no request and still draws with the network down.
- *
- * Kept deliberately geometric — no text inside the SVG — so it does not
- * depend on a webfont having loaded, and stays legible down to 16px. The
- * fill uses the design tokens, so it tracks light and dark automatically.
+ * হিসাব নিকাশ mark — the khata + calculator app icon, served from
+ * /logo.png (public/, so it's a static asset the SPA rewrite never
+ * intercepts). It already bakes in its own rounded tile and shadow, so
+ * callers only control the rendered size via className.
  */
 export function BrandLogo({ className }: BrandLogoProps) {
   return (
-    <svg
-      viewBox="0 0 32 32"
-      role="img"
-      aria-label={APP_NAME}
-      className={cn("h-5 w-5 shrink-0", className)}
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        <linearGradient id="hn-mark" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="hsl(var(--primary-glow))" />
-          <stop offset="100%" stopColor="hsl(var(--primary))" />
-        </linearGradient>
-      </defs>
-
-      {/* Rounded tile */}
-      <rect x="0" y="0" width="32" height="32" rx="8" fill="url(#hn-mark)" />
-
-      {/* Ledger lines, shortening down the page */}
-      <rect x="8" y="10" width="16" height="2.6" rx="1.3" fill="#fff" opacity="0.95" />
-      <rect x="8" y="15.2" width="12" height="2.6" rx="1.3" fill="#fff" opacity="0.75" />
-      <rect x="8" y="20.4" width="7" height="2.6" rx="1.3" fill="#fff" opacity="0.55" />
-    </svg>
+    <img
+      src="/logo.png"
+      alt={APP_NAME}
+      className={cn("h-5 w-5 shrink-0 rounded-lg object-contain", className)}
+    />
   );
 }
 

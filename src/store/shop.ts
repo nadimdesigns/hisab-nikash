@@ -69,6 +69,8 @@ export type Purchase = {
   id: string;
   date: string;
   supplier: string;
+  supplierCompany?: string;
+  supplierPhone?: string;
   items: PurchaseItem[];
   total: number;
 };

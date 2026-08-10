@@ -23,6 +23,8 @@ export default function Purchases() {
   const { products, purchases, recordPurchase } = useShop();
   const hydrated = useShopHydrated();
   const [supplier, setSupplier] = useState("");
+  const [supplierCompany, setSupplierCompany] = useState("");
+  const [supplierPhone, setSupplierPhone] = useState("");
   const [items, setItems] = useState<PurchaseItem[]>([]);
   const [pickId, setPickId] = useState("");
   // Drives the quantity stepper's increment: কেজি moves in quarters, পিস in ones.
@@ -58,8 +60,13 @@ export default function Purchases() {
   const submit = () => {
     if (!supplier.trim()) return toast({ title: "Supplier name required", variant: "destructive" });
     if (items.length === 0) return toast({ title: "Add at least one item", variant: "destructive" });
-    recordPurchase({ supplier, items });
-    setItems([]); setSupplier("");
+    recordPurchase({
+      supplier,
+      supplierCompany: supplierCompany.trim() || undefined,
+      supplierPhone: supplierPhone.trim() || undefined,
+      items,
+    });
+    setItems([]); setSupplier(""); setSupplierCompany(""); setSupplierPhone("");
     toast({ title: "Purchase recorded — stock updated" });
   };
 
@@ -83,6 +90,22 @@ export default function Purchases() {
                 placeholder="Supplier's Name"
                 value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}
+                className="bg-[#f7f7f7] dark:bg-white/5"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Input
+                placeholder="Supplier Company Name"
+                value={supplierCompany}
+                onChange={(e) => setSupplierCompany(e.target.value)}
+                className="bg-[#f7f7f7] dark:bg-white/5"
+              />
+              <Input
+                type="tel"
+                placeholder="Supplier Phone Number"
+                value={supplierPhone}
+                onChange={(e) => setSupplierPhone(e.target.value)}
                 className="bg-[#f7f7f7] dark:bg-white/5"
               />
             </div>
@@ -178,9 +201,15 @@ export default function Purchases() {
                 {purchases.slice(0, 12).map((p) => (
                   <li key={p.id} className="flex items-center justify-between gap-3 border-b pb-2 last:border-0">
                     <div className="min-w-0">
-                      <p className={typography("body-strong", "truncate")}>{p.supplier}</p>
+                      <p className={typography("body-strong", "truncate")}>
+                        {p.supplier}
+                        {p.supplierCompany && (
+                          <span className={typography("body-muted", "font-normal")}> · {p.supplierCompany}</span>
+                        )}
+                      </p>
                       <p className={typography("body-muted")}>
                         {formatDate(p.date, "MMM d, HH:mm")} · {p.items.length} item{p.items.length > 1 ? "s" : ""}
+                        {p.supplierPhone && <> · {p.supplierPhone}</>}
                       </p>
                     </div>
                     <span className={typography("body", "font-semibold")}>{currency(p.total)}</span>
