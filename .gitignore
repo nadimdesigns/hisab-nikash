@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# Secrets. `.env` itself stays tracked: it holds only VITE_SUPABASE_URL and the
+# Supabase anon key, which are public by design (RLS is what protects the data)
+# and are compiled into the client bundle anyway. Anything genuinely secret —
+# the service-role key, the SMS gateway key — must go in a Vercel environment
+# variable or a Supabase Edge Function secret, never in a committed file.
+.env.local
+.env.*.local
+.env.production
+.env.development.local
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
