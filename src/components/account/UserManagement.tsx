@@ -56,7 +56,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
   const load = async () => {
     setLoading(true);
     setError(null);
-    const { data, error } = await supabase.rpc("admin_list_users");
+    const { data, error } = await supabase.rpc("hisab_nikash_admin_list_users");
     if (error) {
       setError(error.message);
     } else {
@@ -74,7 +74,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
     try {
       if (u.role === "admin") {
         const { error } = await supabase
-          .from("user_roles")
+          .from("hisab_nikash_user_roles")
           .delete()
           .eq("user_id", u.id)
           .eq("role", "admin");
@@ -82,7 +82,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
         toast({ title: "Admin removed", description: `${u.email ?? "User"} is no longer an admin.` });
       } else {
         const { error } = await supabase
-          .from("user_roles")
+          .from("hisab_nikash_user_roles")
           .insert({ user_id: u.id, role: "admin" });
         if (error) throw error;
         toast({ title: "Admin added", description: `${u.email ?? "User"} is now an admin.` });

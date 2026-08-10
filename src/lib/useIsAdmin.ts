@@ -6,7 +6,7 @@ import { isDemoMode, setCachedRole, type CachedRole } from "@/lib/demoMode";
 type Role = CachedRole;
 
 /**
- * Fetches and caches the signed-in user's role from `user_roles`.
+ * Fetches and caches the signed-in user's role from `hisab_nikash_user_roles`.
  * Side effect: mirrors the role into localStorage so the synchronous
  * `isReadOnly()` guard inside zustand stores can react to "demo" users
  * without awaiting an async lookup.
@@ -26,19 +26,15 @@ export function useUserRole(): { role: Role | null; loading: boolean } {
       return;
     }
     setLoading(true);
+    // Lazily creates this user's hisab_nikash_profiles/hisab_nikash_user_roles
+    // row on first call (idempotent) and returns their resolved role. There is
+    // no auth.users trigger for this, since this Supabase project is shared
+    // with other apps and a global trigger would fire on every signup there.
     supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
+      .rpc("hisab_nikash_ensure_self")
       .then(({ data }) => {
         if (cancelled) return;
-        const roles = (data ?? []).map((r) => r.role as Role);
-        // Admin trumps demo trumps user.
-        const resolved: Role = roles.includes("admin")
-          ? "admin"
-          : roles.includes("demo")
-            ? "demo"
-            : "user";
+        const resolved: Role = (data as Role | null) ?? "user";
         setRole(resolved);
         setCachedRole(resolved);
         setLoading(false);
