@@ -13,9 +13,8 @@ import {
 import { Trash2, Truck } from "lucide-react";
 import { useShop, useShopHydrated, PurchaseItem } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { currency } from "@/lib/format";
+import { currency, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
-import { format } from "date-fns";
 import { typography } from "@/lib/typography";
 import { MedicinePickerSheet } from "@/components/MedicinePickerSheet";
 import { QtyStepper } from "@/components/QtyStepper";
@@ -69,10 +68,10 @@ export default function Purchases() {
           <CardHeader className="px-4 sm:px-6">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className={typography("h4", "m-0 leading-tight")}>
-                {format(now, "MMM d, yyyy")}
+                {formatDate(now, "MMM d, yyyy")}
               </CardTitle>
               <span className={typography("body", "text-muted-foreground tabular-nums")}>
-                {format(now, "h:mm:ss a")}
+                {formatDate(now, "h:mm:ss a")}
               </span>
             </div>
           </CardHeader>
@@ -179,7 +178,7 @@ export default function Purchases() {
                     <div className="min-w-0">
                       <p className={typography("body-strong", "truncate")}>{p.supplier}</p>
                       <p className={typography("body-muted")}>
-                        {format(new Date(p.date), "MMM d, HH:mm")} · {p.items.length} item{p.items.length > 1 ? "s" : ""}
+                        {formatDate(p.date, "MMM d, HH:mm")} · {p.items.length} item{p.items.length > 1 ? "s" : ""}
                       </p>
                     </div>
                     <span className={typography("body", "font-semibold")}>{currency(p.total)}</span>

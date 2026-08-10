@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
-import { currency } from "@/lib/format";
+import { currency, formatDate } from "@/lib/format";
 import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
-import { format, subDays, startOfDay } from "date-fns";
+import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
 
 const Index = () => {
@@ -50,7 +50,7 @@ const Index = () => {
     const buckets: { date: string; revenue: number }[] = [];
     for (let i = days - 1; i >= 0; i--) {
       const d = startOfDay(subDays(new Date(), i));
-      buckets.push({ date: format(d, "MMM d"), revenue: 0 });
+      buckets.push({ date: formatDate(d, "MMM d"), revenue: 0 });
     }
     sales.forEach((s) => {
       const d = startOfDay(new Date(s.date));

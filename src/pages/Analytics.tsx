@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useShop, useShopHydrated } from "@/store/shop";
-import { currency } from "@/lib/format";
+import { currency, formatDate } from "@/lib/format";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { format, startOfDay, subDays } from "date-fns";
 import { ArrowDown, ArrowUp, ArrowUpDown, CalendarIcon, Download, X } from "lucide-react";
@@ -237,14 +237,14 @@ export default function Analytics() {
     const buckets: Record<string, { date: string; revenue: number; cost: number; profit: number }> = {};
     for (let i = days - 1; i >= 0; i--) {
       const d = startOfDay(subDays(new Date(), i));
-      const k = format(d, "MMM d");
+      const k = formatDate(d, "MMM d");
       buckets[k] = { date: k, revenue: 0, cost: 0, profit: 0 };
     }
     sales.forEach((s) => {
       const d = startOfDay(new Date(s.date));
       const diff = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
       if (diff < days) {
-        const k = format(d, "MMM d");
+        const k = formatDate(d, "MMM d");
         if (buckets[k]) {
           buckets[k].revenue += s.total;
           buckets[k].cost += s.cost;

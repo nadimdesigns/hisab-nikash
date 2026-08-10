@@ -35,7 +35,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Pencil, Trash2, CalendarIcon, ImagePlus, Upload, X, Pill } from "lucide-react";
 import { Medicine, useShop, useShopHydrated } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { currency, daysUntil } from "@/lib/format";
+import { currency, daysUntil, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { format, parseISO } from "date-fns";
@@ -362,7 +362,7 @@ export default function InventoryPanel({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />
-                    {form.expiry ? format(parseISO(form.expiry), "PPP") : "Pick a date"}
+                    {form.expiry ? formatDate(parseISO(form.expiry), "PPP") : "Pick a date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

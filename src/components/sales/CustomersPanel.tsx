@@ -45,7 +45,7 @@ import {
 
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { currency, useResponsiveCurrency } from "@/lib/format";
+import { currency, formatDate, useResponsiveCurrency } from "@/lib/format";
 import { typography } from "@/lib/typography";
 import { useShop, type SaleItem } from "@/store/shop";
 import { loadProfiles } from "@/lib/customerProfiles";
@@ -598,12 +598,12 @@ export default function CustomersPanel() {
                         {draftCustDateRange?.from ? (
                           draftCustDateRange.to ? (
                             <span className="truncate">
-                              {format(draftCustDateRange.from, "LLL d, y")} –{" "}
-                              {format(draftCustDateRange.to, "LLL d, y")}
+                              {formatDate(draftCustDateRange.from, "LLL d, y")} –{" "}
+                              {formatDate(draftCustDateRange.to, "LLL d, y")}
                             </span>
                           ) : (
                             <span className="truncate">
-                              {format(draftCustDateRange.from, "LLL d, y")}
+                              {formatDate(draftCustDateRange.from, "LLL d, y")}
                             </span>
                           )
                         ) : (
@@ -681,7 +681,7 @@ export default function CustomersPanel() {
                           <span className={typography("body-muted", "truncate")}>
                             {c.purchases + c.dueEntries} txn ·{" "}
                             {c.lastPurchase
-                              ? format(new Date(c.lastPurchase), "MMM d, yyyy")
+                              ? formatDate(c.lastPurchase, "MMM d, yyyy")
                               : "No activity"}
                           </span>
                           <span className="shrink-0 tabular-nums">
@@ -719,7 +719,7 @@ export default function CustomersPanel() {
                         selectedRow.purchases + selectedRow.dueEntries === 1 ? "" : "s"
                       } · Last purchase ${
                         selectedRow.lastPurchase
-                          ? format(new Date(selectedRow.lastPurchase), "MMM d, yyyy")
+                          ? formatDate(selectedRow.lastPurchase, "MMM d, yyyy")
                           : "—"
                       }`
                     : ""}
@@ -861,7 +861,7 @@ export default function CustomersPanel() {
                                 {h.kind === "due" ? "Due" : "Cash"}
                               </Badge>
                               <span className={typography("body-muted")}>
-                                {format(new Date(h.date), "MMM d, yyyy · HH:mm")}
+                                {formatDate(h.date, "MMM d, yyyy · HH:mm")}
                               </span>
                             </div>
                             <span className={typography("body", "font-semibold")}>

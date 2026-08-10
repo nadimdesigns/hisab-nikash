@@ -19,9 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Trash2, Receipt, Save } from "lucide-react";
-import { format } from "date-fns";
 import { useShop, SaleItem } from "@/store/shop";
-import { currency } from "@/lib/format";
+import { currency, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
 import { clearDraft, loadDrafts, saveDraft } from "@/lib/drafts";
 import { useDraftsListener } from "@/hooks/use-drafts-listener";
@@ -194,7 +193,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${tone.label}`}>
             Transaction Date
           </p>
-          <h2 className={typography("h4", "m-0 leading-tight")}>{format(now, "MMM d, yyyy")}</h2>
+          <h2 className={typography("h4", "m-0 leading-tight")}>{formatDate(now, "MMM d, yyyy")}</h2>
         </div>
         <div className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 ${tone.pillBg}`}>
           <span className={`h-2 w-2 rounded-full ${tone.pillDot} animate-pulse`} />
@@ -214,7 +213,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <span className="text-xs font-medium tabular-nums">{format(now, "h:mm:ss a")}</span>
+        <span className="text-xs font-medium tabular-nums">{formatDate(now, "h:mm:ss a")}</span>
       </div>
 
       {/* Inputs */}

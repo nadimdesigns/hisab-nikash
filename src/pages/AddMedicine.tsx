@@ -8,6 +8,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Medicine, useShop } from "@/store/shop";
 import { toast } from "@/hooks/use-toast";
@@ -117,7 +118,7 @@ export default function AddMedicine() {
                   >
                     <CalendarIcon className="mr-[3px] h-4 w-4 shrink-0 opacity-70" />
                     <span className="truncate">
-                      {form.expiry ? format(parseISO(form.expiry), "MMM do, yyyy") : "Pick a date"}
+                      {form.expiry ? formatDate(parseISO(form.expiry), "MMM do, yyyy") : "Pick a date"}
                     </span>
                   </Button>
                 </PopoverTrigger>

@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/format";
 import { z } from "zod";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -111,10 +111,10 @@ export default function NewCustomer() {
         <CardHeader className="px-4 sm:px-6">
           <div className="flex items-center justify-between gap-3">
             <CardTitle className={typography("h4", "m-0 leading-tight")}>
-              {format(now, "MMM d, yyyy")}
+              {formatDate(now, "MMM d, yyyy")}
             </CardTitle>
             <span className={typography("body", "text-muted-foreground tabular-nums")}>
-              {format(now, "h:mm:ss a")}
+              {formatDate(now, "h:mm:ss a")}
             </span>
           </div>
         </CardHeader>
