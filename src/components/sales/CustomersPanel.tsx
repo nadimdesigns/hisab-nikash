@@ -383,7 +383,7 @@ export default function CustomersPanel() {
       "Type",
       "Transaction ID",
       "Item",
-      "Medicine ID",
+      "Product ID",
       "Quantity",
       "Unit Price",
       "Line Total",
@@ -399,7 +399,7 @@ export default function CustomersPanel() {
           typeLabel,
           h.id,
           it.name,
-          it.medicineId,
+          it.productId,
           String(it.qty),
           it.unitPrice.toFixed(2),
           (it.qty * it.unitPrice).toFixed(2),
@@ -422,7 +422,7 @@ export default function CustomersPanel() {
     const safeName = selectedRow.name.replace(/[^a-z0-9-_]+/gi, "_");
     const a = document.createElement("a");
     a.href = url;
-    a.download = `PharmaSee_${safeName}_transactions_${format(new Date(), "yyyyMMdd")}.csv`;
+    a.download = `HisabNikash_${safeName}_transactions_${format(new Date(), "yyyyMMdd")}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -871,7 +871,7 @@ export default function CustomersPanel() {
                           <ul className="space-y-0.5 pl-1">
                             {h.items.map((it) => (
                               <li
-                                key={it.medicineId}
+                                key={it.productId}
                                 className={typography(
                                   "body-muted",
                                   "flex items-center justify-between gap-2",

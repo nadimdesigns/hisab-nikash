@@ -2,11 +2,17 @@ import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type Medicine = {
+import { DEFAULT_UNIT, type UnitCode } from "@/lib/copy";
+import { dataKey, isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
+
+export type Product = {
   id: string;
   name: string;
   sku: string;
   category: string;
+  /** Unit this item is sold in — কেজি, লিটার, পিস, হালি … */
+  unit: UnitCode;
+  /** Lot number. Optional for a grocery: rice from a sack has none. */
   batch: string;
   expiry: string; // ISO date
   stock: number;
@@ -16,13 +22,14 @@ export type Medicine = {
   imageUrl?: string;
   /** Optional product barcode / UPN — supports paste or barcode-scanner input. */
   barcode?: string;
-  /** Optional alternate names, brand variants, or active ingredients used for fuzzy search. */
+  /** Optional alternate names or brand variants used for fuzzy search. */
   aliases?: string[];
 };
 
 export type SaleItem = {
-  medicineId: string;
+  productId: string;
   name: string;
+  /** May be fractional for weight/volume units (2.5 কেজি of rice). */
   qty: number;
   unitPrice: number;
   unitCost: number;
@@ -52,7 +59,7 @@ export const getPaymentStatus = (sale: Pick<Sale, "total" | "amountPaid" | "sale
 };
 
 export type PurchaseItem = {
-  medicineId: string;
+  productId: string;
   name: string;
   qty: number;
   unitCost: number;
@@ -67,14 +74,14 @@ export type Purchase = {
 };
 
 type ShopState = {
-  medicines: Medicine[];
+  products: Product[];
   sales: Sale[];
   purchases: Purchase[];
 
-  addMedicine: (m: Omit<Medicine, "id">) => void;
-  updateMedicine: (id: string, m: Partial<Medicine>) => void;
-  deleteMedicine: (id: string) => void;
-  restoreMedicine: (m: Medicine, index?: number) => void;
+  addProduct: (m: Omit<Product, "id">) => void;
+  updateProduct: (id: string, m: Partial<Product>) => void;
+  deleteProduct: (id: string) => void;
+  restoreProduct: (m: Product, index?: number) => void;
 
   recordSale: (sale: Omit<Sale, "id" | "date" | "total" | "cost">) => Sale | null;
   updateSale: (id: string, patch: Partial<Pick<Sale, "customer" | "items" | "saleType" | "amountPaid">>) => void;
@@ -88,43 +95,71 @@ type ShopState = {
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
-const seedMedicines = (): Medicine[] => {
+/**
+ * Quantities are fractional now (2.5 কেজি), so stock arithmetic accumulates
+ * binary-float error: subtract 0.1 ten times from 1 and you land on
+ * 0.09999999999999998 rather than 0. Round every derived quantity to three
+ * decimals — finer than any unit this app sells in — so stock stays exact.
+ */
+export const roundQty = (n: number): number => Math.round(n * 1000) / 1000;
+
+const seedProducts = (): Product[] => {
   const today = new Date();
-  const future = (months: number) => {
+  const inDays = (days: number) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() + days);
+    return d.toISOString().slice(0, 10);
+  };
+  const inMonths = (months: number) => {
     const d = new Date(today);
     d.setMonth(d.getMonth() + months);
     return d.toISOString().slice(0, 10);
   };
   return [
-    { id: uid(), name: "Napa 500mg (Beximco)", sku: "NAPA-500", category: "Pain Relief", batch: "B2401", expiry: future(14), stock: 240, reorderLevel: 50, costPrice: 0.95, sellPrice: 1.4 },
-    { id: uid(), name: "Ace 500mg (Square)", sku: "ACE-500", category: "Pain Relief", batch: "B2402", expiry: future(18), stock: 180, reorderLevel: 60, costPrice: 0.9, sellPrice: 1.35 },
-    { id: uid(), name: "Seclo 20mg (Square)", sku: "SECLO-20", category: "Gastric", batch: "B2403", expiry: future(12), stock: 160, reorderLevel: 50, costPrice: 3.8, sellPrice: 5.6 },
-    { id: uid(), name: "Maxpro 20mg (Renata)", sku: "MAXPRO-20", category: "Gastric", batch: "B2404", expiry: future(10), stock: 140, reorderLevel: 40, costPrice: 6.2, sellPrice: 8.5 },
-    { id: uid(), name: "Monas 10mg (Acme)", sku: "MONAS-10", category: "Respiratory", batch: "B2405", expiry: future(16), stock: 90, reorderLevel: 30, costPrice: 7, sellPrice: 9.8 },
-    { id: uid(), name: "Fexo 120mg (Square)", sku: "FEXO-120", category: "Allergy", batch: "B2406", expiry: future(20), stock: 110, reorderLevel: 35, costPrice: 5.4, sellPrice: 7.6 },
-    { id: uid(), name: "Alatrol 10mg (Square)", sku: "ALAT-10", category: "Allergy", batch: "B2407", expiry: future(8), stock: 95, reorderLevel: 30, costPrice: 1.8, sellPrice: 2.6 },
-    { id: uid(), name: "Amodis 400mg (Square)", sku: "AMOD-400", category: "Antibiotic", batch: "B2408", expiry: future(9), stock: 70, reorderLevel: 30, costPrice: 3.2, sellPrice: 4.8 },
-    { id: uid(), name: "Azithrocin 500mg (Square)", sku: "AZI-500", category: "Antibiotic", batch: "B2409", expiry: future(7), stock: 35, reorderLevel: 40, costPrice: 8.5, sellPrice: 12 },
-    { id: uid(), name: "Cef-3 200mg (Square)", sku: "CEF3-200", category: "Antibiotic", batch: "B2410", expiry: future(11), stock: 45, reorderLevel: 25, costPrice: 9.2, sellPrice: 13.5 },
-    { id: uid(), name: "Tufnil 200mg (Square)", sku: "TUFN-200", category: "Pain Relief", batch: "B2411", expiry: future(15), stock: 130, reorderLevel: 40, costPrice: 4.1, sellPrice: 6 },
-    { id: uid(), name: "Adovas Syrup 100ml (Square)", sku: "ADO-100", category: "Respiratory", batch: "B2412", expiry: future(10), stock: 60, reorderLevel: 25, costPrice: 110, sellPrice: 165 },
-    { id: uid(), name: "Tussca Syrup 100ml (Beximco)", sku: "TUSS-100", category: "Respiratory", batch: "B2413", expiry: future(9), stock: 22, reorderLevel: 25, costPrice: 95, sellPrice: 150 },
-    { id: uid(), name: "E-Cap 400 IU (Drug Intl.)", sku: "ECAP-400", category: "Supplement", batch: "B2414", expiry: future(22), stock: 200, reorderLevel: 60, costPrice: 6, sellPrice: 10 },
-    { id: uid(), name: "Ceevit 250mg (Square)", sku: "CEEV-250", category: "Supplement", batch: "B2415", expiry: future(18), stock: 150, reorderLevel: 50, costPrice: 4, sellPrice: 7 },
-    { id: uid(), name: "Calbo-D (Square)", sku: "CALD-500", category: "Supplement", batch: "B2416", expiry: future(20), stock: 120, reorderLevel: 40, costPrice: 9, sellPrice: 15 },
-    { id: uid(), name: "Saline ORS Sachet (SMC)", sku: "ORS-SMC", category: "Hydration", batch: "B2417", expiry: future(24), stock: 320, reorderLevel: 100, costPrice: 4, sellPrice: 7 },
-    { id: uid(), name: "Glycomet 500mg (Square)", sku: "GLY-500", category: "Diabetes", batch: "B2418", expiry: future(13), stock: 80, reorderLevel: 30, costPrice: 2.8, sellPrice: 4.2 },
-    { id: uid(), name: "Comilit 50/500 (Incepta)", sku: "COMI-500", category: "Diabetes", batch: "B2419", expiry: future(11), stock: 18, reorderLevel: 20, costPrice: 7.2, sellPrice: 9.8 },
-    { id: uid(), name: "Maxsulin 30/70 Vial (Incepta)", sku: "MAX-INS", category: "Diabetes", batch: "B2420", expiry: future(6), stock: 14, reorderLevel: 15, costPrice: 480, sellPrice: 680 },
-    { id: uid(), name: "Sergel 20mg (Eskayef)", sku: "SERG-20", category: "Gastric", batch: "B2421", expiry: future(12), stock: 200, reorderLevel: 60, costPrice: 4.8, sellPrice: 7 },
-    { id: uid(), name: "Pantonix 20mg (Opsonin)", sku: "PANT-20", category: "Gastric", batch: "B2422", expiry: future(10), stock: 75, reorderLevel: 30, costPrice: 5.2, sellPrice: 7.4 },
-    { id: uid(), name: "Savlon Antiseptic 250ml (ACI)", sku: "SAV-250", category: "Antiseptic", batch: "B2423", expiry: future(28), stock: 55, reorderLevel: 20, costPrice: 180, sellPrice: 260 },
-    { id: uid(), name: "Hexisol Hand Rub 250ml (ACI)", sku: "HEX-250", category: "Antiseptic", batch: "B2424", expiry: future(20), stock: 40, reorderLevel: 15, costPrice: 150, sellPrice: 220 },
-    { id: uid(), name: "Hand Sanitizer 100ml (Square)", sku: "HSAN-100", category: "Antiseptic", batch: "B2425", expiry: future(24), stock: 90, reorderLevel: 30, costPrice: 60, sellPrice: 95 },
+    // চাল
+    { id: uid(), name: "মিনিকেট চাল", sku: "CHAL-MINI", category: "চাল", unit: "kg", batch: "", expiry: inMonths(8), stock: 250, reorderLevel: 50, costPrice: 68, sellPrice: 76 },
+    { id: uid(), name: "আতপ চাল", sku: "CHAL-ATOP", category: "চাল", unit: "kg", batch: "", expiry: inMonths(8), stock: 180, reorderLevel: 40, costPrice: 55, sellPrice: 63 },
+    { id: uid(), name: "নাজিরশাইল চাল", sku: "CHAL-NAZIR", category: "চাল", unit: "kg", batch: "", expiry: inMonths(7), stock: 120, reorderLevel: 30, costPrice: 78, sellPrice: 88 },
+    // ডাল
+    { id: uid(), name: "মসুর ডাল", sku: "DAL-MOSUR", category: "ডাল", unit: "kg", batch: "", expiry: inMonths(10), stock: 90, reorderLevel: 20, costPrice: 105, sellPrice: 120 },
+    { id: uid(), name: "মুগ ডাল", sku: "DAL-MUG", category: "ডাল", unit: "kg", batch: "", expiry: inMonths(10), stock: 45, reorderLevel: 15, costPrice: 132, sellPrice: 150 },
+    { id: uid(), name: "ছোলা", sku: "DAL-CHOLA", category: "ডাল", unit: "kg", batch: "", expiry: inMonths(9), stock: 60, reorderLevel: 20, costPrice: 85, sellPrice: 98 },
+    // তেল
+    { id: uid(), name: "সয়াবিন তেল ১ লিটার", sku: "TEL-SOYA-1L", category: "তেল", unit: "litre", batch: "", expiry: inMonths(12), stock: 72, reorderLevel: 24, costPrice: 165, sellPrice: 178 },
+    { id: uid(), name: "সরিষার তেল ৫০০ মিলি", sku: "TEL-SHOR-500", category: "তেল", unit: "packet", batch: "", expiry: inMonths(10), stock: 30, reorderLevel: 12, costPrice: 145, sellPrice: 165 },
+    { id: uid(), name: "পাম তেল", sku: "TEL-PALM", category: "তেল", unit: "litre", batch: "", expiry: inMonths(8), stock: 40, reorderLevel: 15, costPrice: 138, sellPrice: 152 },
+    // চিনি ও লবণ
+    { id: uid(), name: "চিনি", sku: "CHINI", category: "চিনি ও লবণ", unit: "kg", batch: "", expiry: inMonths(14), stock: 110, reorderLevel: 25, costPrice: 115, sellPrice: 128 },
+    { id: uid(), name: "লবণ ১ কেজি", sku: "LOBON-1KG", category: "চিনি ও লবণ", unit: "packet", batch: "", expiry: inMonths(18), stock: 95, reorderLevel: 30, costPrice: 36, sellPrice: 42 },
+    { id: uid(), name: "গুড়", sku: "GUR", category: "চিনি ও লবণ", unit: "kg", batch: "", expiry: inMonths(6), stock: 22, reorderLevel: 10, costPrice: 150, sellPrice: 175 },
+    // আটা ও ময়দা
+    { id: uid(), name: "আটা", sku: "ATA", category: "আটা ও ময়দা", unit: "kg", batch: "", expiry: inMonths(4), stock: 140, reorderLevel: 30, costPrice: 45, sellPrice: 53 },
+    { id: uid(), name: "ময়দা", sku: "MOYDA", category: "আটা ও ময়দা", unit: "kg", batch: "", expiry: inMonths(4), stock: 70, reorderLevel: 20, costPrice: 55, sellPrice: 64 },
+    { id: uid(), name: "সুজি", sku: "SUJI", category: "আটা ও ময়দা", unit: "kg", batch: "", expiry: inMonths(5), stock: 25, reorderLevel: 10, costPrice: 70, sellPrice: 82 },
+    // মসলা
+    { id: uid(), name: "হলুদ গুঁড়া ২০০ গ্রাম", sku: "MOS-HOLUD", category: "মসলা", unit: "packet", batch: "", expiry: inMonths(12), stock: 48, reorderLevel: 15, costPrice: 62, sellPrice: 75 },
+    { id: uid(), name: "মরিচ গুঁড়া ২০০ গ্রাম", sku: "MOS-MORICH", category: "মসলা", unit: "packet", batch: "", expiry: inMonths(12), stock: 44, reorderLevel: 15, costPrice: 88, sellPrice: 105 },
+    { id: uid(), name: "জিরা গুঁড়া ১০০ গ্রাম", sku: "MOS-JIRA", category: "মসলা", unit: "packet", batch: "", expiry: inMonths(12), stock: 26, reorderLevel: 10, costPrice: 95, sellPrice: 115 },
+    { id: uid(), name: "ধনিয়া গুঁড়া ২০০ গ্রাম", sku: "MOS-DHONIA", category: "মসলা", unit: "packet", batch: "", expiry: inMonths(12), stock: 18, reorderLevel: 10, costPrice: 58, sellPrice: 70 },
+    // সবজি
+    { id: uid(), name: "পেঁয়াজ", sku: "SOB-PEAJ", category: "সবজি", unit: "kg", batch: "", expiry: inDays(21), stock: 85, reorderLevel: 20, costPrice: 55, sellPrice: 68 },
+    { id: uid(), name: "রসুন", sku: "SOB-ROSUN", category: "সবজি", unit: "kg", batch: "", expiry: inDays(30), stock: 24, reorderLevel: 10, costPrice: 180, sellPrice: 210 },
+    { id: uid(), name: "আদা", sku: "SOB-ADA", category: "সবজি", unit: "kg", batch: "", expiry: inDays(18), stock: 16, reorderLevel: 8, costPrice: 190, sellPrice: 225 },
+    // দুগ্ধ ও ডিম — the short-dated items that make expiry tracking matter
+    { id: uid(), name: "ডিম", sku: "DIM-HALI", category: "দুগ্ধ ও ডিম", unit: "hali", batch: "", expiry: inDays(12), stock: 40, reorderLevel: 15, costPrice: 42, sellPrice: 50 },
+    { id: uid(), name: "তরল দুধ ১ লিটার", sku: "DUDH-1L", category: "দুগ্ধ ও ডিম", unit: "packet", batch: "", expiry: inDays(4), stock: 18, reorderLevel: 12, costPrice: 90, sellPrice: 105 },
+    { id: uid(), name: "গুঁড়া দুধ ৫০০ গ্রাম", sku: "DUDH-GURA", category: "দুগ্ধ ও ডিম", unit: "packet", batch: "", expiry: inMonths(9), stock: 20, reorderLevel: 8, costPrice: 420, sellPrice: 480 },
+    // পানীয় ও স্ন্যাকস
+    { id: uid(), name: "চা পাতা ৪০০ গ্রাম", sku: "CHA-400", category: "পানীয়", unit: "packet", batch: "", expiry: inMonths(11), stock: 32, reorderLevel: 12, costPrice: 195, sellPrice: 225 },
+    { id: uid(), name: "বিস্কুট প্যাকেট", sku: "BIS-PKT", category: "বিস্কুট ও স্ন্যাকস", unit: "packet", batch: "", expiry: inDays(45), stock: 60, reorderLevel: 20, costPrice: 25, sellPrice: 32 },
+    { id: uid(), name: "সেমাই ২০০ গ্রাম", sku: "SEMAI-200", category: "বিস্কুট ও স্ন্যাকস", unit: "packet", batch: "", expiry: inMonths(6), stock: 28, reorderLevel: 10, costPrice: 45, sellPrice: 55 },
+    // প্রসাধন
+    { id: uid(), name: "সাবান", sku: "SABAN", category: "প্রসাধন", unit: "piece", batch: "", expiry: inMonths(20), stock: 70, reorderLevel: 20, costPrice: 42, sellPrice: 52 },
+    { id: uid(), name: "ডিটারজেন্ট ৫০০ গ্রাম", sku: "DET-500", category: "প্রসাধন", unit: "packet", batch: "", expiry: inMonths(16), stock: 36, reorderLevel: 12, costPrice: 78, sellPrice: 92 },
   ];
 };
 
-const seedSales = (medicines: Medicine[]): Sale[] => {
+const seedSales = (products: Product[]): Sale[] => {
   const sales: Sale[] = [];
   const now = new Date();
   for (let i = 29; i >= 0; i--) {
@@ -132,24 +167,86 @@ const seedSales = (medicines: Medicine[]): Sale[] => {
     d.setDate(d.getDate() - i);
     const count = 1 + Math.floor(Math.random() * 3);
     for (let j = 0; j < count; j++) {
-      const m = medicines[Math.floor(Math.random() * medicines.length)];
-      const qty = 1 + Math.floor(Math.random() * 5);
+      const m = products[Math.floor(Math.random() * products.length)];
+      // Weight and volume items sell in fractions; countable ones do not.
+      const fractional = m.unit === "kg" || m.unit === "litre";
+      const qty = fractional
+        ? roundQty(0.5 + Math.floor(Math.random() * 8) * 0.5)
+        : 1 + Math.floor(Math.random() * 5);
       sales.push({
         id: uid(),
         date: d.toISOString(),
-        customer: ["Walk-in", "Rahim Uddin", "Ayesha Siddika", "Karim Hossain", "Sumaiya Akter", "Tanvir Ahmed"][Math.floor(Math.random() * 6)],
-        items: [{ medicineId: m.id, name: m.name, qty, unitPrice: m.sellPrice, unitCost: m.costPrice }],
-        total: qty * m.sellPrice,
-        cost: qty * m.costPrice,
+        customer: ["নগদ খদ্দের", "রহিম উদ্দিন", "আয়েশা সিদ্দিকা", "করিম হোসেন", "সুমাইয়া আক্তার", "তানভীর আহমেদ"][Math.floor(Math.random() * 6)],
+        items: [{ productId: m.id, name: m.name, qty, unitPrice: m.sellPrice, unitCost: m.costPrice }],
+        total: roundQty(qty * m.sellPrice),
+        cost: roundQty(qty * m.costPrice),
       });
     }
   }
   return sales;
 };
 
-import { dataKey, isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
+const LEGACY_STORE_KEY = dataKey("medishop-store-v2-bd");
+const STORE_KEY = dataKey("dokan-store-v1");
 
-const STORE_KEY = dataKey("medishop-store-v2-bd");
+/**
+ * Carry a pre-rename install forward.
+ *
+ * The persisted key changed along with the field names, so without this a
+ * shopkeeper who already had stock and sales would open the app to an empty
+ * store and the seeder would drop pharmacy data on top. Runs once, before
+ * the store below reads localStorage, and is a no-op if the new key already
+ * exists or the old one never did.
+ */
+/**
+ * Field names as they exist in a pre-rename blob. These deliberately keep
+ * the old `medicine*` spelling — that is what is sitting in the shopkeeper's
+ * localStorage, and reading it is the whole point of this migration.
+ */
+type LegacyItem = { medicineId?: string; productId?: string };
+type LegacyState = {
+  medicines?: Array<Record<string, unknown>>;
+  sales?: Array<{ items?: LegacyItem[] }>;
+  purchases?: Array<{ items?: LegacyItem[] }>;
+};
+
+const migrateLegacyStore = (): void => {
+  if (typeof window === "undefined") return;
+  try {
+    if (window.localStorage.getItem(STORE_KEY) !== null) return;
+    const raw = window.localStorage.getItem(LEGACY_STORE_KEY);
+    if (!raw) return;
+
+    const parsed = JSON.parse(raw) as { state?: LegacyState; version?: number } | null;
+    const legacy = parsed?.state;
+    if (!legacy) return;
+
+    const relabel = <T extends { items?: LegacyItem[] }>(rows: T[] | undefined) =>
+      (rows ?? []).map((row) => ({
+        ...row,
+        items: (row.items ?? []).map((it) => {
+          const { medicineId, ...rest } = it;
+          return { ...rest, productId: it.productId ?? medicineId ?? "" };
+        }),
+      }));
+
+    const migrated = {
+      ...parsed,
+      state: {
+        // Spread last so a row that somehow already carries `unit` keeps it.
+        products: (legacy.medicines ?? []).map((m) => ({ unit: DEFAULT_UNIT, ...m })),
+        sales: relabel(legacy.sales),
+        purchases: relabel(legacy.purchases),
+      },
+    };
+    window.localStorage.setItem(STORE_KEY, JSON.stringify(migrated));
+  } catch {
+    // A malformed legacy blob must not stop the app from starting; the
+    // seeder below will populate a fresh store instead.
+  }
+};
+
+migrateLegacyStore();
 
 /**
  * Demo accounts are strictly read-only. Wrap any mutating action with this
@@ -165,51 +262,51 @@ const blockedByDemo = (): boolean => {
 export const useShop = create<ShopState>()(
   persist(
     (set, get) => ({
-      medicines: [],
+      products: [],
       sales: [],
       purchases: [],
 
-      addMedicine: (m) => {
+      addProduct: (m) => {
         if (blockedByDemo()) return;
-        set((s) => ({ medicines: [...s.medicines, { ...m, id: uid() }] }));
+        set((s) => ({ products: [...s.products, { ...m, id: uid() }] }));
       },
 
-      updateMedicine: (id, patch) => {
+      updateProduct: (id, patch) => {
         if (blockedByDemo()) return;
         set((s) => ({
-          medicines: s.medicines.map((m) => (m.id === id ? { ...m, ...patch } : m)),
+          products: s.products.map((m) => (m.id === id ? { ...m, ...patch } : m)),
         }));
       },
 
-      deleteMedicine: (id) => {
+      deleteProduct: (id) => {
         if (blockedByDemo()) return;
-        set((s) => ({ medicines: s.medicines.filter((m) => m.id !== id) }));
+        set((s) => ({ products: s.products.filter((m) => m.id !== id) }));
       },
 
-      restoreMedicine: (m, index) => {
+      restoreProduct: (m, index) => {
         if (blockedByDemo()) return;
         set((s) => {
-          if (s.medicines.some((x) => x.id === m.id)) return s;
-          const next = [...s.medicines];
+          if (s.products.some((x) => x.id === m.id)) return s;
+          const next = [...s.products];
           const i =
             typeof index === "number" && index >= 0 && index <= next.length
               ? index
               : next.length;
           next.splice(i, 0, m);
-          return { medicines: next };
+          return { products: next };
         });
       },
 
       recordSale: (sale) => {
         if (blockedByDemo()) return null;
-        const meds = get().medicines;
+        const items = get().products;
         // Validate stock
         for (const it of sale.items) {
-          const m = meds.find((x) => x.id === it.medicineId);
+          const m = items.find((x) => x.id === it.productId);
           if (!m || m.stock < it.qty) return null;
         }
-        const total = sale.items.reduce((s, it) => s + it.qty * it.unitPrice, 0);
-        const cost = sale.items.reduce((s, it) => s + it.qty * it.unitCost, 0);
+        const total = roundQty(sale.items.reduce((s, it) => s + it.qty * it.unitPrice, 0));
+        const cost = roundQty(sale.items.reduce((s, it) => s + it.qty * it.unitCost, 0));
         const newSale: Sale = {
           ...sale,
           id: uid(),
@@ -221,9 +318,9 @@ export const useShop = create<ShopState>()(
         };
         set((s) => ({
           sales: [newSale, ...s.sales],
-          medicines: s.medicines.map((m) => {
-            const it = sale.items.find((i) => i.medicineId === m.id);
-            return it ? { ...m, stock: m.stock - it.qty } : m;
+          products: s.products.map((m) => {
+            const it = sale.items.find((i) => i.productId === m.id);
+            return it ? { ...m, stock: roundQty(m.stock - it.qty) } : m;
           }),
         }));
         return newSale;
@@ -236,8 +333,8 @@ export const useShop = create<ShopState>()(
             if (sale.id !== id) return sale;
             const next: Sale = { ...sale, ...patch };
             if (patch.items) {
-              next.total = patch.items.reduce((sum, it) => sum + it.qty * it.unitPrice, 0);
-              next.cost = patch.items.reduce((sum, it) => sum + it.qty * it.unitCost, 0);
+              next.total = roundQty(patch.items.reduce((sum, it) => sum + it.qty * it.unitPrice, 0));
+              next.cost = roundQty(patch.items.reduce((sum, it) => sum + it.qty * it.unitCost, 0));
             }
             // Clamp amountPaid to [0, total]
             const paid = next.amountPaid ?? (next.saleType === "credit" ? 0 : next.total);
@@ -260,10 +357,10 @@ export const useShop = create<ShopState>()(
             ...p,
             id: uid(),
             date: new Date().toISOString(),
-            total: p.items.reduce((s, it) => s + it.qty * it.unitCost, 0),
+            total: roundQty(p.items.reduce((s, it) => s + it.qty * it.unitCost, 0)),
           };
         }
-        const total = p.items.reduce((s, it) => s + it.qty * it.unitCost, 0);
+        const total = roundQty(p.items.reduce((s, it) => s + it.qty * it.unitCost, 0));
         const newP: Purchase = {
           ...p,
           id: uid(),
@@ -272,9 +369,9 @@ export const useShop = create<ShopState>()(
         };
         set((s) => ({
           purchases: [newP, ...s.purchases],
-          medicines: s.medicines.map((m) => {
-            const it = p.items.find((i) => i.medicineId === m.id);
-            return it ? { ...m, stock: m.stock + it.qty } : m;
+          products: s.products.map((m) => {
+            const it = p.items.find((i) => i.productId === m.id);
+            return it ? { ...m, stock: roundQty(m.stock + it.qty) } : m;
           }),
         }));
         return newP;
@@ -282,17 +379,17 @@ export const useShop = create<ShopState>()(
 
       resetAll: () => {
         if (blockedByDemo()) return;
-        const meds = seedMedicines();
-        set({ medicines: meds, sales: seedSales(meds), purchases: [] });
+        const items = seedProducts();
+        set({ products: items, sales: seedSales(items), purchases: [] });
       },
     }),
     {
       name: STORE_KEY,
       onRehydrateStorage: () => (state) => {
-        if (state && state.medicines.length === 0) {
-          const meds = seedMedicines();
-          state.medicines = meds;
-          state.sales = seedSales(meds);
+        if (state && state.products.length === 0) {
+          const items = seedProducts();
+          state.products = items;
+          state.sales = seedSales(items);
         }
       },
     }
@@ -324,7 +421,7 @@ export function useShopHydrated(): boolean {
  * for `storage` events, so by default an inventory edit in one tab is
  * invisible to other open tabs until a manual reload. We bridge that here:
  * when another tab updates `STORE_KEY`, parse its new value and rehydrate
- * the data slices (`medicines`, `sales`, `purchases`) in this tab.
+ * the data slices (`products`, `sales`, `purchases`) in this tab.
  *
  * Conflict policy is "last write wins" — the storage event always carries
  * the most recent value, so we simply trust it. A short debounce collapses
@@ -343,8 +440,8 @@ if (typeof window !== "undefined") {
       // Reference-equality short-circuit: if every slice is the same object
       // identity (e.g. our own write echoed back via some edge case), skip.
       const patch: Partial<ShopState> = {};
-      if (next.medicines && next.medicines !== current.medicines) {
-        patch.medicines = next.medicines;
+      if (next.products && next.products !== current.products) {
+        patch.products = next.products;
       }
       if (next.sales && next.sales !== current.sales) {
         patch.sales = next.sales;
@@ -374,4 +471,3 @@ if (typeof window !== "undefined") {
     }, 120);
   });
 }
-

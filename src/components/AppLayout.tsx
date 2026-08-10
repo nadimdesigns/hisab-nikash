@@ -11,7 +11,7 @@ import { useHeaderSlot } from "./HeaderSlot";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { openMedicineQuickSearch } from "./MedicineQuickSearch";
+import { openProductQuickSearch } from "./ProductQuickSearch";
 import { typography } from "@/lib/typography";
 import { useAuth } from "@/lib/auth";
 
@@ -50,9 +50,9 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={openMedicineQuickSearch}
-                aria-label="Search medicines"
-                title="Search medicines (⌘K)"
+                onClick={openProductQuickSearch}
+                aria-label="Search products"
+                title="Search products (⌘K)"
               >
                 <Search className="h-4 w-4" />
               </Button>

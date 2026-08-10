@@ -12,12 +12,12 @@ import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
 
 const Index = () => {
-  const { medicines, sales } = useShop();
+  const { products, sales } = useShop();
   const hydrated = useShopHydrated();
 
   const stats = useMemo(() => {
-    const inventoryValue = medicines.reduce((s, m) => s + m.stock * m.costPrice, 0);
-    const lowStock = medicines.filter((m) => m.stock <= m.reorderLevel);
+    const inventoryValue = products.reduce((s, m) => s + m.stock * m.costPrice, 0);
+    const lowStock = products.filter((m) => m.stock <= m.reorderLevel);
     const today = startOfDay(new Date()).getTime();
     const todaySales = sales.filter((s) => new Date(s.date).getTime() >= today);
     const todayRevenue = todaySales.reduce((s, x) => s + x.total, 0);
@@ -31,10 +31,10 @@ const Index = () => {
     const tally = new Map<string, { name: string; qty: number; revenue: number }>();
     monthSales.forEach((s) => {
       s.items.forEach((it) => {
-        const cur = tally.get(it.medicineId) ?? { name: it.name, qty: 0, revenue: 0 };
+        const cur = tally.get(it.productId) ?? { name: it.name, qty: 0, revenue: 0 };
         cur.qty += it.qty;
         cur.revenue += it.qty * it.unitPrice;
-        tally.set(it.medicineId, cur);
+        tally.set(it.productId, cur);
       });
     });
     const bestSelling = Array.from(tally.entries())
@@ -43,7 +43,7 @@ const Index = () => {
       .slice(0, 5);
 
     return { inventoryValue, lowStock, bestSelling, todayRevenue, monthRevenue, monthProfit };
-  }, [medicines, sales]);
+  }, [products, sales]);
 
   const chartData = useMemo(() => {
     const days = 14;
@@ -166,7 +166,7 @@ const Index = () => {
               {stats.lowStock.map((m) => (
                 <Link
                   key={m.id}
-                  to={`/edit-medicine/${m.id}`}
+                  to={`/edit-product/${m.id}`}
                   className="flex items-center justify-between rounded-lg border bg-card p-3 transition-colors hover:bg-accent hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label={`Manage stock for ${m.name}`}
                 >

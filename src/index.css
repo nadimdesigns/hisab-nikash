@@ -136,7 +136,7 @@
 }
 
 @layer utilities {
-  /* Reusable item/medicine name cell style — clamp to 2 lines, wrap long words. */
+  /* Reusable item/product name cell style — clamp to 2 lines, wrap long words. */
   .item-name-cell {
     display: -webkit-box;
     -webkit-line-clamp: 2;

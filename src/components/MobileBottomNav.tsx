@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, BarChart3, LineChart, Plus, Menu, Truck, Calculator, Banknote, Clock, Wallet, PackagePlus, UserPlus, BookUser, Users } from "lucide-react";
+import { LayoutDashboard, Package, BarChart3, LineChart, Plus, Menu, Truck, Calculator, Banknote, Clock, Wallet, PackagePlus, UserPlus, BookUser, Users, type LucideIcon } from "lucide-react";
+import { ACTION, NAV } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -18,7 +19,7 @@ type QuickAction = {
 
 const quickActions: QuickAction[] = [
   {
-    title: "Cash Received",
+    title: ACTION.receivePayment,
     icon: Wallet,
     url: "/sales?action=receive-payment",
     surface: "bg-emerald-50 dark:bg-emerald-950/40",
@@ -27,7 +28,7 @@ const quickActions: QuickAction[] = [
     ring: "ring-emerald-200/60 dark:ring-emerald-500/20",
   },
   {
-    title: "Cash Sale",
+    title: ACTION.cashSale,
     icon: Banknote,
     url: "/new-sale?mode=cash",
     surface: "bg-emerald-50 dark:bg-emerald-950/40",
@@ -36,7 +37,7 @@ const quickActions: QuickAction[] = [
     ring: "ring-emerald-200/60 dark:ring-emerald-500/20",
   },
   {
-    title: "New Purchase",
+    title: ACTION.newPurchase,
     icon: PackagePlus,
     url: "/purchases?action=new",
     surface: "bg-rose-50 dark:bg-rose-950/40",
@@ -45,7 +46,7 @@ const quickActions: QuickAction[] = [
     ring: "ring-rose-200/60 dark:ring-rose-500/20",
   },
   {
-    title: "Due Sale",
+    title: ACTION.dueSale,
     icon: Clock,
     url: "/due-sale",
     surface: "bg-rose-50 dark:bg-rose-950/40",
@@ -54,7 +55,7 @@ const quickActions: QuickAction[] = [
     ring: "ring-rose-200/60 dark:ring-rose-500/20",
   },
   {
-    title: "New Customer",
+    title: ACTION.newCustomer,
     icon: UserPlus,
     url: "/new-customer",
     surface: "bg-sky-50 dark:bg-sky-950/40",
@@ -63,9 +64,9 @@ const quickActions: QuickAction[] = [
     ring: "ring-sky-200/60 dark:ring-sky-500/20",
   },
   {
-    title: "Add Medicine",
+    title: `${NAV.stocks} ${ACTION.add}`,
     icon: Package,
-    url: "/add-medicine",
+    url: "/add-product",
     surface: "bg-violet-50 dark:bg-violet-950/40",
     gradient: "from-violet-400 to-purple-600",
     iconColor: "text-white",
@@ -73,18 +74,20 @@ const quickActions: QuickAction[] = [
   },
 ];
 
-const leftItems = [
-  { title: "Home", url: "/", icon: LayoutDashboard, end: true },
-  { title: "Stocks", url: "/stocks", icon: Package },
+type NavItem = { title: string; url: string; icon: LucideIcon; end?: boolean };
+
+const leftItems: NavItem[] = [
+  { title: NAV.dashboard, url: "/", icon: LayoutDashboard, end: true },
+  { title: NAV.stocks, url: "/stocks", icon: Package },
 ];
 
-const rightItems = [
-  { title: "Accounting", url: "/accounting", icon: BarChart3 },
+const rightItems: NavItem[] = [
+  { title: NAV.accounting, url: "/accounting", icon: BarChart3 },
 ];
 
 const reportItems: QuickAction[] = [
   {
-    title: "Expenses",
+    title: NAV.expenses,
     icon: Truck,
     url: "/expenses",
     surface: "bg-rose-50 dark:bg-rose-950/40",
@@ -93,7 +96,7 @@ const reportItems: QuickAction[] = [
     ring: "ring-rose-200/60 dark:ring-rose-500/20",
   },
   {
-    title: "Accounting",
+    title: NAV.accounting,
     icon: Calculator,
     url: "/accounting",
     surface: "bg-sky-50 dark:bg-sky-950/40",
@@ -102,7 +105,7 @@ const reportItems: QuickAction[] = [
     ring: "ring-sky-200/60 dark:ring-sky-500/20",
   },
   {
-    title: "Analytics",
+    title: NAV.analytics,
     icon: LineChart,
     url: "/analytics",
     surface: "bg-violet-50 dark:bg-violet-950/40",
@@ -111,7 +114,7 @@ const reportItems: QuickAction[] = [
     ring: "ring-violet-200/60 dark:ring-violet-500/20",
   },
   {
-    title: "Tally Khata",
+    title: NAV.khata,
     icon: BookUser,
     url: "/tally-khata",
     surface: "bg-teal-50 dark:bg-teal-950/40",
@@ -120,7 +123,7 @@ const reportItems: QuickAction[] = [
     ring: "ring-teal-200/60 dark:ring-teal-500/20",
   },
   {
-    title: "Customers",
+    title: NAV.customers,
     icon: Users,
     url: "/customers",
     surface: "bg-fuchsia-50 dark:bg-fuchsia-950/40",

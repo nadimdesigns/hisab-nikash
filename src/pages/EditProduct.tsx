@@ -10,15 +10,17 @@ import { ArrowLeft, CalendarIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Medicine, useShop, useShopHydrated } from "@/store/shop";
+import { DEFAULT_UNIT } from "@/lib/copy";
+import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { toast } from "@/hooks/use-toast";
 import { Field, ImageUploadField } from "@/components/inventory/InventoryPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const blank: Omit<Medicine, "id"> = {
+const blank: Omit<Product, "id"> = {
   name: "",
   sku: "",
   category: "",
+  unit: DEFAULT_UNIT,
   batch: "",
   expiry: new Date().toISOString().slice(0, 10),
   stock: 0,
@@ -30,13 +32,13 @@ const blank: Omit<Medicine, "id"> = {
   aliases: [],
 };
 
-export default function EditMedicine() {
+export default function EditProduct() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const hydrated = useShopHydrated();
-  const { medicines, updateMedicine } = useShop();
-  const target = medicines.find((m) => m.id === id);
-  const [form, setForm] = useState<Omit<Medicine, "id">>(blank);
+  const { products, updateProduct } = useShop();
+  const target = products.find((m) => m.id === id);
+  const [form, setForm] = useState<Omit<Product, "id">>(blank);
 
   // Seed the form once the store is hydrated and we found the target.
   useEffect(() => {
@@ -56,13 +58,13 @@ export default function EditMedicine() {
     if (form.sellPrice < form.costPrice) {
       toast({ title: "Sell price is below cost price", description: "Double-check pricing before saving." });
     }
-    updateMedicine(id, form);
-    toast({ title: "Medicine updated" });
+    updateProduct(id, form);
+    toast({ title: "Product updated" });
     navigate("/stocks");
   };
 
   return (
-    <AppLayout title="Edit medicine">
+    <AppLayout title="Edit product">
       <div className="mb-4">
         <Button variant="ghost" asChild className="gap-2 px-2">
           <Link to="/stocks">
@@ -81,7 +83,7 @@ export default function EditMedicine() {
             </div>
           ) : !target ? (
             <div className="space-y-3 text-center">
-              <p>Medicine not found.</p>
+              <p>Product not found.</p>
               <Button asChild>
                 <Link to="/stocks">Back to Stocks</Link>
               </Button>
@@ -130,7 +132,7 @@ export default function EditMedicine() {
                           .filter(Boolean),
                       })
                     }
-                    placeholder="e.g. Paracetamol, Acetaminophen, Tylenol"
+                    placeholder="যেমন: মিনিকেট, চাল, rice"
                     autoComplete="off"
                   />
                 </Field>

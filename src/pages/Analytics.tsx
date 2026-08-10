@@ -38,7 +38,7 @@ type Txn = {
   date: string;
   reference: string;
   item: string;
-  medicineId: string;
+  productId: string;
   qty: number;
   unit: number;
   total: number;
@@ -48,7 +48,7 @@ type Txn = {
 };
 
 export default function Analytics() {
-  const { sales, purchases, medicines } = useShop();
+  const { sales, purchases, products } = useShop();
   const hydrated = useShopHydrated();
 
   // ---------- Stats period filter ----------
@@ -115,7 +115,7 @@ export default function Analytics() {
             date: s.date,
             reference: s.customer,
             item: i.name,
-            medicineId: i.medicineId,
+            productId: i.productId,
             qty: i.qty,
             unit: i.unitPrice,
             total,
@@ -133,7 +133,7 @@ export default function Analytics() {
             date: p.date,
             reference: p.supplier,
             item: i.name,
-            medicineId: i.medicineId,
+            productId: i.productId,
             qty: i.qty,
             unit: i.unitCost,
             total,
@@ -155,7 +155,7 @@ export default function Analytics() {
       const ts = new Date(t.date).getTime();
       if (ts < fromTs || ts > toTs) return false;
       if (typeFilter !== "all" && t.type !== typeFilter) return false;
-      if (itemFilter !== "all" && t.medicineId !== itemFilter) return false;
+      if (itemFilter !== "all" && t.productId !== itemFilter) return false;
       if (q && !t.reference.toLowerCase().includes(q) && !t.item.toLowerCase().includes(q)) return false;
       return true;
     });
@@ -271,9 +271,9 @@ export default function Analytics() {
     const map: Record<string, { name: string; qty: number; revenue: number }> = {};
     sales.forEach((s) =>
       s.items.forEach((i) => {
-        if (!map[i.medicineId]) map[i.medicineId] = { name: i.name, qty: 0, revenue: 0 };
-        map[i.medicineId].qty += i.qty;
-        map[i.medicineId].revenue += i.qty * i.unitPrice;
+        if (!map[i.productId]) map[i.productId] = { name: i.name, qty: 0, revenue: 0 };
+        map[i.productId].qty += i.qty;
+        map[i.productId].revenue += i.qty * i.unitPrice;
       }),
     );
     return Object.values(map).sort((a, b) => b.revenue - a.revenue).slice(0, 6);
@@ -286,7 +286,7 @@ export default function Analytics() {
     if (toDate) filterParts.push(`To ${toDate}`);
     if (typeFilter !== "all") filterParts.push(`Type: ${typeFilter}`);
     if (itemFilter !== "all") {
-      const m = medicines.find((x) => x.id === itemFilter);
+      const m = products.find((x) => x.id === itemFilter);
       filterParts.push(`Item: ${m?.name ?? itemFilter}`);
     }
     if (search.trim()) filterParts.push(`Search: ${search.trim()}`);
@@ -308,7 +308,7 @@ export default function Analytics() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `PharmaSee-analytics-${format(new Date(), "yyyyMMdd")}.csv`;
+    a.download = `HisabNikash-report-${format(new Date(), "yyyyMMdd")}.csv`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -325,7 +325,7 @@ export default function Analytics() {
     doc.setFontSize(10);
     doc.text(`Generated: ${new Date().toLocaleString()}`, 40, 58);
     doc.text(
-      `${medicines.length} SKUs · ${sales.length} sales · ${purchases.length} purchases`,
+      `${products.length} SKUs · ${sales.length} sales · ${purchases.length} purchases`,
       pageWidth - 40,
       58,
       { align: "right" },
@@ -344,7 +344,7 @@ export default function Analytics() {
       columnStyles: { 0: { cellWidth: 240 }, 1: { halign: "right" } },
     });
 
-    doc.save(`PharmaSee-analytics-${format(new Date(), "yyyyMMdd")}.pdf`);
+    doc.save(`HisabNikash-report-${format(new Date(), "yyyyMMdd")}.pdf`);
   };
 
   return (
@@ -358,7 +358,7 @@ export default function Analytics() {
               iconColor="text-violet-500"
               iconBg="bg-violet-500/10"
               label="SKUs"
-              value={String(medicines.length)}
+              value={String(products.length)}
             />
             <AnalyticsStatCard
               to="/sales"
@@ -470,7 +470,7 @@ export default function Analytics() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">All items</SelectItem>
-                  {medicines.map((m) => (
+                  {products.map((m) => (
                     <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
                   ))}
                 </SelectContent>
@@ -548,7 +548,7 @@ export default function Analytics() {
                   </TableRow>
                 ) : (
                   pagedTxns.map((t, idx) => (
-                    <TableRow key={`${t.type}-${t.date}-${t.medicineId}-${pageStart + idx}`}>
+                    <TableRow key={`${t.type}-${t.date}-${t.productId}-${pageStart + idx}`}>
                       <TableCell>{t.type}</TableCell>
                       <TableCell>{t.date}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{t.reference}</TableCell>
@@ -600,7 +600,7 @@ export default function Analytics() {
       </Card>
 
       <Card className="mt-6 shadow-soft">
-        <CardHeader><CardTitle>Top selling medicines</CardTitle></CardHeader>
+        <CardHeader><CardTitle>Top selling products</CardTitle></CardHeader>
         <CardContent>
           {topProducts.length === 0 ? (
             <p className={typography("body-muted")}>No sales data yet.</p>

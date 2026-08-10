@@ -19,16 +19,16 @@ import {
 } from "@/lib/drafts";
 import { useDraftsListener } from "@/hooks/use-drafts-listener";
 
-const MED_ID = "med-1";
+const PRODUCT_ID = "prod-1";
 
 // Mirrors the InventoryPanel logic: keep `draftRefs` in sync with the drafts
-// key and render a warning whenever any open cart references the medicine.
-function DeleteWarningProbe({ medicineId }: { medicineId: string }) {
+// key and render a warning whenever any open cart references the product.
+function DeleteWarningProbe({ productId }: { productId: string }) {
   const [refs, setRefs] = useState<DraftReference[]>(() =>
-    findDraftReferences(medicineId),
+    findDraftReferences(productId),
   );
   useDraftsListener(() => {
-    setRefs(findDraftReferences(medicineId));
+    setRefs(findDraftReferences(productId));
   });
   if (refs.length === 0) {
     return <p data-testid="status">safe-to-delete</p>;
@@ -80,34 +80,34 @@ describe("Inventory delete warning ⇄ cross-tab drafts sync", () => {
     window.localStorage.clear();
   });
 
-  it("starts in safe-to-delete when no draft references the medicine", () => {
-    render(<DeleteWarningProbe medicineId={MED_ID} />);
+  it("starts in safe-to-delete when no draft references the product", () => {
+    render(<DeleteWarningProbe productId={PRODUCT_ID} />);
     expect(screen.getByTestId("status")).toHaveTextContent("safe-to-delete");
   });
 
   it("reflects an existing draft on initial mount", () => {
     saveDraft("cash", {
-      customer: "Alice",
+      customer: "রহিম উদ্দিন",
       items: [
-        { medicineId: MED_ID, name: "Paracetamol", qty: 2, unitPrice: 10, unitCost: 5 },
+        { productId: PRODUCT_ID, name: "মসুর ডাল", qty: 2, unitPrice: 10, unitCost: 5 },
       ],
     });
-    render(<DeleteWarningProbe medicineId={MED_ID} />);
+    render(<DeleteWarningProbe productId={PRODUCT_ID} />);
     expect(screen.getByTestId("status")).toHaveTextContent("blocked");
-    expect(screen.getByTestId("ref")).toHaveTextContent("cash:Alice:2");
+    expect(screen.getByTestId("ref")).toHaveTextContent("cash:রহিম উদ্দিন:2");
   });
 
-  it("transitions to blocked when another tab adds the medicine to a cart", () => {
-    render(<DeleteWarningProbe medicineId={MED_ID} />);
+  it("transitions to blocked when another tab adds the product to a cart", () => {
+    render(<DeleteWarningProbe productId={PRODUCT_ID} />);
     expect(screen.getByTestId("status")).toHaveTextContent("safe-to-delete");
 
     act(() => {
       simulateOtherTabWrite({
         cash: {
           kind: "cash",
-          customer: "Bob",
+          customer: "করিম হোসেন",
           items: [
-            { medicineId: MED_ID, name: "Paracetamol", qty: 3, unitPrice: 10, unitCost: 5 },
+            { productId: PRODUCT_ID, name: "মসুর ডাল", qty: 3, unitPrice: 10, unitCost: 5 },
           ],
           updatedAt: new Date().toISOString(),
         },
@@ -117,17 +117,17 @@ describe("Inventory delete warning ⇄ cross-tab drafts sync", () => {
     });
 
     expect(screen.getByTestId("status")).toHaveTextContent("blocked");
-    expect(screen.getByTestId("ref")).toHaveTextContent("cash:Bob:3");
+    expect(screen.getByTestId("ref")).toHaveTextContent("cash:করিম হোসেন:3");
   });
 
   it("transitions back to safe-to-delete when the other tab removes the item", () => {
     saveDraft("due", {
-      customer: "Carol",
+      customer: "আয়েশা সিদ্দিকা",
       items: [
-        { medicineId: MED_ID, name: "Paracetamol", qty: 1, unitPrice: 10, unitCost: 5 },
+        { productId: PRODUCT_ID, name: "মসুর ডাল", qty: 1, unitPrice: 10, unitCost: 5 },
       ],
     });
-    render(<DeleteWarningProbe medicineId={MED_ID} />);
+    render(<DeleteWarningProbe productId={PRODUCT_ID} />);
     expect(screen.getByTestId("status")).toHaveTextContent("blocked");
 
     act(() => {
@@ -143,10 +143,10 @@ describe("Inventory delete warning ⇄ cross-tab drafts sync", () => {
     const renderSpy = vi.fn();
     function SpyProbe() {
       const [refs, setRefs] = useState<DraftReference[]>(() =>
-        findDraftReferences(MED_ID),
+        findDraftReferences(PRODUCT_ID),
       );
       useDraftsListener(() => {
-        setRefs(findDraftReferences(MED_ID));
+        setRefs(findDraftReferences(PRODUCT_ID));
       });
       renderSpy(refs.length);
       return <p data-testid="status">{refs.length === 0 ? "safe" : "blocked"}</p>;
@@ -162,7 +162,7 @@ describe("Inventory delete warning ⇄ cross-tab drafts sync", () => {
             kind: "cash",
             customer: "Dave",
             items: [
-              { medicineId: MED_ID, name: "Paracetamol", qty, unitPrice: 10, unitCost: 5 },
+              { productId: PRODUCT_ID, name: "মসুর ডাল", qty, unitPrice: 10, unitCost: 5 },
             ],
             updatedAt: new Date().toISOString(),
           },
@@ -177,15 +177,15 @@ describe("Inventory delete warning ⇄ cross-tab drafts sync", () => {
     expect(renderSpy.mock.calls.length - initialRenders).toBe(1);
   });
 
-  it("ignores draft mutations for unrelated medicines", () => {
-    render(<DeleteWarningProbe medicineId={MED_ID} />);
+  it("ignores draft mutations for unrelated products", () => {
+    render(<DeleteWarningProbe productId={PRODUCT_ID} />);
     act(() => {
       simulateOtherTabWrite({
         cash: {
           kind: "cash",
           customer: "Eve",
           items: [
-            { medicineId: "other-med", name: "Aspirin", qty: 4, unitPrice: 10, unitCost: 5 },
+            { productId: "other-med", name: "চিনি", qty: 4, unitPrice: 10, unitCost: 5 },
           ],
           updatedAt: new Date().toISOString(),
         },

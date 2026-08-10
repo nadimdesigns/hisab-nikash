@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { Medicine } from "@/store/shop";
+import { Product } from "@/store/shop";
 import { daysUntil } from "@/lib/format";
 
 const today = () => new Date().toISOString().slice(0, 10);
@@ -31,7 +31,7 @@ const triggerDownload = (blob: Blob, filename: string) => {
   URL.revokeObjectURL(url);
 };
 
-export function exportInventoryCSV(medicines: Medicine[]) {
+export function exportInventoryCSV(products: Product[]) {
   const headers = [
     "Name",
     "SKU",
@@ -47,7 +47,7 @@ export function exportInventoryCSV(medicines: Medicine[]) {
     "Estimated Value (Cost)",
     "Estimated Value (Sell)",
   ];
-  const rows = medicines.map((m) => [
+  const rows = products.map((m) => [
     m.name,
     m.sku,
     m.category,
@@ -63,9 +63,9 @@ export function exportInventoryCSV(medicines: Medicine[]) {
     (m.stock * m.sellPrice).toFixed(2),
   ]);
 
-  const totalCost = medicines.reduce((s, m) => s + m.stock * m.costPrice, 0);
-  const totalSell = medicines.reduce((s, m) => s + m.stock * m.sellPrice, 0);
-  const totalUnits = medicines.reduce((s, m) => s + m.stock, 0);
+  const totalCost = products.reduce((s, m) => s + m.stock * m.costPrice, 0);
+  const totalSell = products.reduce((s, m) => s + m.stock * m.sellPrice, 0);
+  const totalUnits = products.reduce((s, m) => s + m.stock, 0);
 
   const lines: string[] = [];
   lines.push(headers.map(escapeCsv).join(","));
@@ -73,13 +73,13 @@ export function exportInventoryCSV(medicines: Medicine[]) {
   lines.push("");
   lines.push(["", "", "", "", "", "", "Totals", String(totalUnits), "", "", "", totalCost.toFixed(2), totalSell.toFixed(2)].map(escapeCsv).join(","));
   lines.push(`# Generated,${today()}`);
-  lines.push(`# Items,${medicines.length}`);
+  lines.push(`# Items,${products.length}`);
 
   const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
-  triggerDownload(blob, `PharmaSee-inventory-report-${today()}.csv`);
+  triggerDownload(blob, `HisabNikash-stock-report-${today()}.csv`);
 }
 
-export function exportInventoryPDF(medicines: Medicine[]) {
+export function exportInventoryPDF(products: Product[]) {
   const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
 
@@ -90,13 +90,13 @@ export function exportInventoryPDF(medicines: Medicine[]) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(10);
   doc.text(`Generated: ${new Date().toLocaleString()}`, 40, 58);
-  doc.text(`Items: ${medicines.length}`, pageWidth - 40, 58, { align: "right" });
+  doc.text(`Items: ${products.length}`, pageWidth - 40, 58, { align: "right" });
 
-  const totalCost = medicines.reduce((s, m) => s + m.stock * m.costPrice, 0);
-  const totalSell = medicines.reduce((s, m) => s + m.stock * m.sellPrice, 0);
-  const totalUnits = medicines.reduce((s, m) => s + m.stock, 0);
-  const lowStock = medicines.filter((m) => m.stock <= m.reorderLevel).length;
-  const expiringSoon = medicines.filter((m) => {
+  const totalCost = products.reduce((s, m) => s + m.stock * m.costPrice, 0);
+  const totalSell = products.reduce((s, m) => s + m.stock * m.sellPrice, 0);
+  const totalUnits = products.reduce((s, m) => s + m.stock, 0);
+  const lowStock = products.filter((m) => m.stock <= m.reorderLevel).length;
+  const expiringSoon = products.filter((m) => {
     const d = daysUntil(m.expiry);
     return d >= 0 && d <= 60;
   }).length;
@@ -126,7 +126,7 @@ export function exportInventoryPDF(medicines: Medicine[]) {
         "Value (Sell)",
       ],
     ],
-    body: medicines.map((m) => [
+    body: products.map((m) => [
       m.name,
       m.sku,
       m.category,
@@ -184,5 +184,5 @@ export function exportInventoryPDF(medicines: Medicine[]) {
     },
   });
 
-  doc.save(`PharmaSee-inventory-report-${today()}.pdf`);
+  doc.save(`HisabNikash-stock-report-${today()}.pdf`);
 }

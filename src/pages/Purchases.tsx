@@ -16,11 +16,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { currency, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
-import { MedicinePickerSheet } from "@/components/MedicinePickerSheet";
+import { ProductPickerSheet } from "@/components/ProductPickerSheet";
 import { QtyStepper } from "@/components/QtyStepper";
 
 export default function Purchases() {
-  const { medicines, purchases, recordPurchase } = useShop();
+  const { products, purchases, recordPurchase } = useShop();
   const hydrated = useShopHydrated();
   const [supplier, setSupplier] = useState("");
   const [items, setItems] = useState<PurchaseItem[]>([]);
@@ -37,16 +37,16 @@ export default function Purchases() {
   const total = useMemo(() => items.reduce((s, i) => s + i.qty * i.unitCost, 0), [items]);
 
   const handlePick = (v: string) => {
-    const m = medicines.find((x) => x.id === v);
+    const m = products.find((x) => x.id === v);
     if (!m) return;
     setPickId(v);
     setCost(m.costPrice);
     if (qty < 1) return;
-    const existing = items.find((i) => i.medicineId === m.id);
+    const existing = items.find((i) => i.productId === m.id);
     if (existing) {
-      setItems(items.map((i) => i.medicineId === m.id ? { ...i, qty: i.qty + qty } : i));
+      setItems(items.map((i) => i.productId === m.id ? { ...i, qty: i.qty + qty } : i));
     } else {
-      setItems([...items, { medicineId: m.id, name: m.name, qty, unitCost: m.costPrice }]);
+      setItems([...items, { productId: m.id, name: m.name, qty, unitCost: m.costPrice }]);
     }
     setPickId("");
     setQty(10);
@@ -87,11 +87,11 @@ export default function Purchases() {
 
             <div className="flex w-full items-start gap-2">
               <div className="min-w-0 flex-1">
-                <MedicinePickerSheet
-                  medicines={medicines}
+                <ProductPickerSheet
+                  products={products}
                   value={pickId}
                   onChange={handlePick}
-                  placeholder="Select Medicine..."
+                  placeholder="Select Product..."
                   className="bg-[#f7f7f7] hover:bg-[#f7f7f7] dark:bg-white/5 dark:hover:bg-white/5"
                 />
               </div>

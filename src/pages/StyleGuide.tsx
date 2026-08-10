@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info, Pill, Heart, AlertTriangle, CheckCircle2, Smartphone, Tablet, Monitor, RotateCcw } from "lucide-react";
+import { Info, ShoppingBasket, Heart, AlertTriangle, CheckCircle2, Smartphone, Tablet, Monitor, RotateCcw } from "lucide-react";
 import { useState } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BODY_TEXT } from "@/lib/typography";
@@ -387,7 +387,7 @@ const StyleGuide = () => {
         {/* TYPOGRAPHY */}
         <Section
           title="Typography"
-          description="Outfit, system-ui sans-serif. Edit size, line-height, weight, or tracking per device — values are integer pixels and update the live app immediately."
+          description="Outfit (Latin) + Hind Siliguri (Bangla), system-ui sans-serif. Edit size, line-height, weight, or tracking per device — values are integer pixels and update the live app immediately."
         >
           <TypographyEditorSection />
         </Section>
@@ -410,7 +410,7 @@ const StyleGuide = () => {
                 <Button>Default</Button>
                 <Button size="lg">Large</Button>
                 <Button size="icon" aria-label="icon">
-                  <Pill />
+                  <ShoppingBasket />
                 </Button>
               </div>
               <Separator />
@@ -459,9 +459,9 @@ const StyleGuide = () => {
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="tablet">Tablet</SelectItem>
-                    <SelectItem value="syrup">Syrup</SelectItem>
-                    <SelectItem value="injection">Injection</SelectItem>
+                    <SelectItem value="chal">চাল</SelectItem>
+                    <SelectItem value="dal">ডাল</SelectItem>
+                    <SelectItem value="tel">তেল</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -473,7 +473,7 @@ const StyleGuide = () => {
 
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="sg-notes">Notes</Label>
-                <Textarea id="sg-notes" placeholder="Add any prescription notes here…" />
+                <Textarea id="sg-notes" placeholder="কোনো নোট থাকলে লিখুন…" />
               </div>
 
               <div className="space-y-3">
