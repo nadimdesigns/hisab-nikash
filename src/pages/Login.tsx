@@ -226,10 +226,10 @@ const Login = () => {
                 aria-invalid={!!(errors.pin || errors.form)}
               >
                 <InputOTPGroup>
-                  <InputOTPSlot index={0} className={cn(errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={1} className={cn(errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={2} className={cn(errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={3} className={cn(errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={0} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={1} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={2} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={3} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
                 </InputOTPGroup>
               </InputOTP>
               {errors.pin && (
@@ -297,11 +297,6 @@ const Login = () => {
                   <PlayCircle className="h-4 w-4" />
                   ডেমো অ্যাকাউন্ট দিয়ে দেখুন
                 </Button>
-
-                <p className={typography("muted", "text-center text-[11px]")}>
-                  নমুনা তথ্য দিয়ে অ্যাপটি ঘুরে দেখুন — বিক্রি, বাকি ও স্টক সবই যোগ করা যাবে।
-                  আপনার আসল তথ্য আলাদা থাকবে।
-                </p>
               </div>
             )}
           </form>
