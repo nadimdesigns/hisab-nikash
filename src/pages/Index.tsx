@@ -1,11 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
-import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, type LucideIcon } from "lucide-react";
+import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, ShoppingCart, UserPlus, Receipt, Share, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { subDays, startOfDay } from "date-fns";
@@ -13,7 +13,7 @@ import { typography } from "@/lib/typography";
 import { unitLabel } from "@/lib/copy";
 
 const Index = () => {
-  const { products, sales } = useShop();
+  const { products, sales, purchases } = useShop();
   const hydrated = useShopHydrated();
 
   const stats = useMemo(() => {
@@ -27,6 +27,15 @@ const Index = () => {
     );
     const monthRevenue = monthSales.reduce((s, x) => s + x.total, 0);
     const monthProfit = monthSales.reduce((s, x) => s + (x.total - x.cost), 0);
+
+    // Cash in hand: everything paid in (cash sales + any partial/credit
+    // payments received) minus money spent on stock (purchases).
+    const cashReceived = sales.reduce(
+      (s, x) => s + (x.saleType === "credit" ? (x.amountPaid ?? 0) : x.total),
+      0
+    );
+    const cashSpent = purchases.reduce((s, p) => s + p.total, 0);
+    const cashBalance = cashReceived - cashSpent;
 
     // Best selling products (last 30 days) by qty sold
     const tally = new Map<string, { name: string; qty: number; revenue: number }>();
@@ -43,8 +52,8 @@ const Index = () => {
       .sort((a, b) => b.qty - a.qty)
       .slice(0, 5);
 
-    return { inventoryValue, lowStock, bestSelling, todayRevenue, monthRevenue, monthProfit };
-  }, [products, sales]);
+    return { inventoryValue, lowStock, bestSelling, todayRevenue, monthRevenue, monthProfit, cashBalance };
+  }, [products, sales, purchases]);
 
   const chartData = useMemo(() => {
     const days = 14;
@@ -64,17 +73,27 @@ const Index = () => {
 
   return (
     <AppLayout title="হোম">
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
-        {hydrated ? (
-          <>
-            <StatCard icon={Wallet} gradient="sky" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} />
-            <StatCard icon={LineChart} gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} />
-            <StatCard icon={Package} gradient="violet" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} />
-            <StatCard icon={AlertTriangle} gradient="amber" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
-          </>
-        ) : (
-          Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
-        )}
+      <div className="space-y-4">
+        {hydrated ? <BalanceCard balance={stats.cashBalance} /> : <BalanceCardSkeleton />}
+
+        <div className="grid grid-cols-3 gap-3">
+          <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" />
+          <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/new-customer" tint="sky" />
+          <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/new-transaction" tint="amber" />
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
+          {hydrated ? (
+            <>
+              <StatCard icon={Wallet} gradient="sky" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} />
+              <StatCard icon={LineChart} gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} />
+              <StatCard icon={Package} gradient="violet" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} />
+              <StatCard icon={AlertTriangle} gradient="amber" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
+            </>
+          ) : (
+            Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
+          )}
+        </div>
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
@@ -185,6 +204,91 @@ const Index = () => {
     </AppLayout>
   );
 };
+
+/**
+ * Credit-card style cash balance card (Bank Asia app inspiration): dark→bright
+ * teal/emerald gradient, glowing wave lines, "Tap for Balance" reveal.
+ */
+function BalanceCard({ balance }: { balance: number }) {
+  const [revealed, setRevealed] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => setRevealed((v) => !v)}
+      aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
+      className="relative w-full overflow-hidden rounded-[24px] bg-gradient-to-br from-teal-800 via-teal-600 to-emerald-500 p-5 text-left text-white shadow-elevated transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      {/* Glowing wave lines */}
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden>
+        <path d="M0 150 Q 50 115, 100 150 T 200 150 T 300 150 T 400 150" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" fill="none" />
+        <path d="M0 185 Q 50 150, 100 185 T 200 185 T 300 185 T 400 185" stroke="rgba(255,255,255,0.12)" strokeWidth="2" fill="none" />
+        <path d="M0 215 Q 50 185, 100 215 T 200 215 T 300 215 T 400 215" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
+      </svg>
+
+      <div className="relative flex items-start justify-between">
+        <div className="flex items-center gap-2">
+          <img src="/logo.png" alt="" className="h-8 w-8 rounded-lg object-contain shadow-md" />
+          <span className="text-sm font-semibold">হিসাব নিকাশ</span>
+        </div>
+        <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide">Active</span>
+      </div>
+
+      <div className="relative mt-8">
+        <p className="text-[11px] uppercase tracking-wider text-white/70">Tap for Balance</p>
+        <p className="mt-1.5 text-[34px] font-bold leading-none tracking-tight tabular-nums">
+          {revealed ? currency(balance) : "৳ ••••"}
+        </p>
+      </div>
+
+      <div className="relative mt-7 flex items-end justify-between">
+        <div>
+          <p className="text-[11px] text-white/70">নগদ ব্যালেন্স</p>
+          <p className="mt-0.5 text-xs font-medium text-white/90">মুদি দোকান · ********</p>
+        </div>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
+          <Share className="h-4 w-4 text-white/90" />
+        </span>
+      </div>
+    </button>
+  );
+}
+
+function BalanceCardSkeleton() {
+  return (
+    <Skeleton aria-busy="true" aria-label="Loading" className="h-[210px] w-full rounded-[24px]" />
+  );
+}
+
+const QUICK_TINTS = {
+  emerald: { icon: "text-emerald-600 dark:text-emerald-300", bg: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5" },
+  sky: { icon: "text-sky-600 dark:text-sky-300", bg: "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5" },
+  amber: { icon: "text-amber-600 dark:text-amber-300", bg: "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-500/15 dark:to-amber-500/5" },
+} as const;
+
+function QuickAction({
+  icon: Icon,
+  label,
+  to,
+  tint,
+}: {
+  icon: LucideIcon;
+  label: string;
+  to: string;
+  tint: keyof typeof QUICK_TINTS;
+}) {
+  const t = QUICK_TINTS[tint];
+  return (
+    <Link
+      to={to}
+      className={`flex flex-col items-center gap-2 rounded-2xl border-0 p-4 text-center shadow-soft transition-transform active:scale-[0.97] ${t.bg}`}
+    >
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 shadow-sm dark:bg-white/10">
+        <Icon className={`h-5 w-5 ${t.icon}`} strokeWidth={2.2} />
+      </span>
+      <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
+    </Link>
+  );
+}
 
 function StatCardSkeleton() {
   return (
