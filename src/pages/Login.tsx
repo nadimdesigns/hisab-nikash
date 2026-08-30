@@ -178,7 +178,7 @@ const Login = () => {
           <img
             src="/logo.png"
             alt={APP_NAME}
-            className="relative h-[74px] w-[74px] rounded-[22px] object-contain shadow-lg shadow-teal-900/30"
+            className="relative h-[96px] w-[96px] rounded-[22px] object-contain shadow-lg shadow-teal-900/30"
           />
           <span className="relative text-xl font-bold text-white leading-tight">{APP_NAME}</span>
           <span className="relative -mt-1 text-sm text-white/85">{APP_TAGLINE}</span>
