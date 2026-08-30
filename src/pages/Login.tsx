@@ -235,11 +235,11 @@ const Login = () => {
                 autoComplete="one-time-code"
                 aria-invalid={!!(errors.pin || errors.form)}
               >
-                <InputOTPGroup className="overflow-hidden rounded-xl">
-                  <InputOTPSlot index={0} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={1} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={2} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={3} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                <InputOTPGroup className="w-full grid grid-cols-4 gap-3">
+                  <InputOTPSlot index={0} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-[#f7f7f7] text-lg font-semibold dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={1} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-[#f7f7f7] text-lg font-semibold dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={2} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-[#f7f7f7] text-lg font-semibold dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={3} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-[#f7f7f7] text-lg font-semibold dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
                 </InputOTPGroup>
               </InputOTP>
               {errors.pin && (
@@ -250,7 +250,7 @@ const Login = () => {
             </div>
 
             {mode === "login" && (
-              <div className="flex items-center justify-end">
+              <div className="flex items-center justify-center">
                 <button
                   type="button"
                   onClick={() => setForgotOpen(true)}
