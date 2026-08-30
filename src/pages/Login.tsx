@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
+import { APP_NAME, APP_TAGLINE } from "@/lib/copy";
 import { PlayCircle } from "lucide-react";
-import { BrandLockup } from "@/components/BrandLogo";
 import { enableDemoMode, setCachedRole } from "@/lib/demoMode";
 
 // Supabase auth is email+password under the hood (phone auth is not enabled
@@ -169,21 +169,31 @@ const Login = () => {
 
   return (
     <main className="fixed inset-0 h-[100svh] w-full bg-background flex items-center justify-center p-4 overflow-y-auto [padding-top:max(1rem,env(safe-area-inset-top))] [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
-      <Card className="w-full max-w-sm shadow-soft">
-        <CardHeader className="items-center text-center space-y-px">
-          <BrandLockup className="mb-3" iconClassName="h-11 w-11" withTagline />
-          <CardDescription>
+      <Card className="w-full max-w-sm rounded-[28px] border-0 shadow-elevated overflow-hidden">
+        {/* Playful gradient header: logo centered (1.7x), name + tagline
+            stacked vertically below it, per explicit owner instruction. */}
+        <div className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-emerald-500 px-6 pt-10 pb-8 flex flex-col items-center gap-2.5 overflow-hidden">
+          <div className="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-white/10" aria-hidden />
+          <div className="absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-white/10" aria-hidden />
+          <img
+            src="/logo.png"
+            alt={APP_NAME}
+            className="relative h-[74px] w-[74px] rounded-[22px] object-contain shadow-lg shadow-teal-900/30"
+          />
+          <span className="relative text-xl font-bold text-white leading-tight">{APP_NAME}</span>
+          <span className="relative -mt-1 text-sm text-white/85">{APP_TAGLINE}</span>
+          <span className="relative mt-1 text-[13px] text-white/80 text-center">
             {mode === "login"
               ? "দোকানের হিসাব দেখতে লগইন করুন।"
               : "শুরু করতে একটি অ্যাকাউন্ট খুলুন।"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+          </span>
+        </div>
+        <CardContent className="px-6 pt-6 pb-7">
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
               <Label htmlFor="phone" className={typography("body-strong")}>মোবাইল নম্বর</Label>
               <div className="flex">
-                <span className="inline-flex h-10 shrink-0 select-none items-center rounded-l-md border border-r-0 border-input bg-muted/50 px-3 text-sm font-semibold text-muted-foreground">
+                <span className="inline-flex h-12 shrink-0 select-none items-center rounded-l-2xl border border-r-0 border-input bg-muted/50 px-3.5 text-sm font-semibold text-muted-foreground">
                   +88
                 </span>
                 <Input
@@ -201,7 +211,7 @@ const Login = () => {
                   }}
                   aria-invalid={!!(errors.phone || errors.form)}
                   aria-describedby={errors.phone ? "phone-error" : undefined}
-                  className={cn("rounded-l-none", (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive")}
+                  className={cn("h-12 rounded-l-none rounded-r-2xl text-[15px]", (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive")}
                 />
               </div>
               {errors.phone && (
@@ -225,7 +235,7 @@ const Login = () => {
                 autoComplete="one-time-code"
                 aria-invalid={!!(errors.pin || errors.form)}
               >
-                <InputOTPGroup>
+                <InputOTPGroup className="overflow-hidden rounded-xl">
                   <InputOTPSlot index={0} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
                   <InputOTPSlot index={1} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
                   <InputOTPSlot index={2} className={cn("h-12 w-12 bg-[#f7f7f7] dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
@@ -257,7 +267,7 @@ const Login = () => {
               </p>
             )}
 
-            <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+            <Button type="submit" size="lg" className="w-full rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-500 font-semibold shadow-lg shadow-emerald-500/25 transition-transform hover:from-teal-500 hover:to-emerald-400 active:scale-[0.98]" disabled={submitting}>
               {submitting
                 ? mode === "login" ? "Logging in…" : "Creating account…"
                 : mode === "login" ? "লগইন" : "অ্যাকাউন্ট খুলুন"}
