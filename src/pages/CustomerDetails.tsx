@@ -602,7 +602,7 @@ function StatTile({
           ? "text-muted-foreground"
           : "text-foreground";
   return (
-    <div className="min-w-0 rounded-xl border bg-card p-4 shadow-soft">
+    <div className="min-w-0 rounded-xl bg-card p-4 shadow-soft">
       <p className={typography("body-muted", "truncate")}>{label}</p>
       <p className={cn(typography("h3", "mt-1 truncate"), valueClass)}>{value}</p>
     </div>

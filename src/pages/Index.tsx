@@ -115,7 +115,7 @@ const Index = () => {
               className={cn(
                 "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 period === k
-                  ? "bg-gradient-to-r from-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25"
+                  ? "bg-[linear-gradient(140deg,#022c22_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#022c22_100%)] text-white shadow-md shadow-emerald-900/30"
                   : "border border-border bg-card text-muted-foreground hover:text-foreground"
               )}
             >
@@ -153,7 +153,7 @@ const Index = () => {
               {stats.dues.map((d) => {
                 const paid = d.amountPaid ?? (d.saleType === "credit" ? 0 : d.total);
                 return (
-                  <li key={d.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-soft">
+                  <li key={d.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
                       <Clock className="h-5 w-5" />
                     </span>
@@ -183,7 +183,7 @@ const Index = () => {
           ) : (
             <ul className="space-y-2">
               {stats.recent.map((s) => (
-                <li key={s.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-soft">
+                <li key={s.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
                     <ArrowDownLeft className="h-5 w-5" />
                   </span>

@@ -50,7 +50,7 @@ export default function CrossTabSyncBanner({
       role="status"
       aria-live="polite"
       className={
-        "flex items-center gap-2 rounded-md border border-primary/30 bg-accent px-3 py-2 text-accent-foreground shadow-soft animate-in fade-in slide-in-from-top-1" +
+        "flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-accent-foreground shadow-soft animate-in fade-in slide-in-from-top-1" +
         (className ? " " + className : "")
       }
     >
