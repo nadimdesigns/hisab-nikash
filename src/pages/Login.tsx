@@ -172,7 +172,7 @@ const Login = () => {
       <Card className="w-full max-w-sm rounded-[28px] border-0 shadow-elevated overflow-hidden">
         {/* Playful gradient header: logo centered (1.7x), name + tagline
             stacked vertically below it, per explicit owner instruction. */}
-        <div className="relative bg-gradient-to-br from-teal-600 via-teal-500 to-emerald-500 px-6 pt-10 pb-8 flex flex-col items-center gap-2.5 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-teal-600 to-emerald-500 px-6 pt-10 pb-8 flex flex-col items-center gap-2.5 overflow-hidden">
           <div className="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-white/10" aria-hidden />
           <div className="absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-white/10" aria-hidden />
           <img
@@ -188,12 +188,12 @@ const Login = () => {
               : "শুরু করতে একটি অ্যাকাউন্ট খুলুন।"}
           </span>
         </div>
-        <CardContent className="px-6 pt-6 pb-7">
+        <CardContent className="bg-emerald-50 px-6 pt-6 pb-7 dark:bg-emerald-950/30">
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
               <Label htmlFor="phone" className={typography("body-strong")}>মোবাইল নম্বর</Label>
               <div className="flex">
-                <span className="inline-flex h-12 shrink-0 select-none items-center rounded-l-2xl border border-r-0 border-input bg-muted/50 px-3.5 text-sm font-semibold text-muted-foreground">
+                <span className="inline-flex h-12 shrink-0 select-none items-center rounded-l-2xl border border-r-0 border-input bg-white px-3.5 text-sm font-semibold text-muted-foreground dark:bg-white/10">
                   +88
                 </span>
                 <Input
@@ -211,7 +211,7 @@ const Login = () => {
                   }}
                   aria-invalid={!!(errors.phone || errors.form)}
                   aria-describedby={errors.phone ? "phone-error" : undefined}
-                  className={cn("h-12 rounded-l-none rounded-r-2xl text-[15px]", (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive")}
+                  className={cn("h-12 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10", (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive")}
                 />
               </div>
               {errors.phone && (
@@ -236,10 +236,10 @@ const Login = () => {
                 aria-invalid={!!(errors.pin || errors.form)}
               >
                 <InputOTPGroup className="w-full grid grid-cols-4 gap-3">
-                  <InputOTPSlot index={0} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-[#f7f7f7] text-lg font-semibold dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={1} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-[#f7f7f7] text-lg font-semibold dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={2} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-[#f7f7f7] text-lg font-semibold dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
-                  <InputOTPSlot index={3} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-[#f7f7f7] text-lg font-semibold dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={0} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-white text-lg font-semibold shadow-sm dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={1} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-white text-lg font-semibold shadow-sm dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={2} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-white text-lg font-semibold shadow-sm dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={3} className={cn("h-auto aspect-square w-full rounded-2xl border border-input bg-white text-lg font-semibold shadow-sm dark:bg-white/10", errors.pin && "border-destructive text-destructive")} />
                 </InputOTPGroup>
               </InputOTP>
               {errors.pin && (
