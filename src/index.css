@@ -106,7 +106,7 @@
      - Tablet  (640–1023): primary 17px · body 16px
      - Desktop (≥1024px): primary 18px · body 17px                    */
   html {
-    font-family: 'Outfit', 'Hind Siliguri', system-ui, sans-serif;
+    font-family: 'Anek Bangla', 'Outfit', system-ui, sans-serif;
     font-size: 16px;
   }
   @media (min-width: 640px) {
@@ -117,7 +117,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Outfit', 'Hind Siliguri', system-ui, sans-serif;
+    font-family: 'Anek Bangla', 'Outfit', system-ui, sans-serif;
     font-size: 15px;
   }
   @media (min-width: 640px) {

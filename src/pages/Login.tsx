@@ -59,7 +59,7 @@ const Login = () => {
   const { session, loading } = useAuth();
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname || "/";
 
-  const [mode, setMode] = useState<Mode>("login");
+  const [mode, setMode] = useState<Mode>("signup");
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
   const [submitting, setSubmitting] = useState(false);

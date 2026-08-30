@@ -81,9 +81,9 @@ export default {
         elevated: "var(--shadow-elevated)",
       },
       fontFamily: {
-        sans: ["Outfit", "Hind Siliguri", "system-ui", "sans-serif"],
-        mono: ["Outfit", "Hind Siliguri", "system-ui", "sans-serif"],
-        serif: ["Outfit", "Hind Siliguri", "system-ui", "sans-serif"],
+        sans: ["Anek Bangla", "Outfit", "system-ui", "sans-serif"],
+        mono: ["Anek Bangla", "Outfit", "system-ui", "sans-serif"],
+        serif: ["Anek Bangla", "Outfit", "system-ui", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
