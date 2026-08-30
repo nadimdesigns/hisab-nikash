@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import {
   Dialog,
   DialogContent,
@@ -19,25 +20,34 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
-import { Eye, EyeOff, PlayCircle } from "lucide-react";
+import { PlayCircle } from "lucide-react";
 import { BrandLockup } from "@/components/BrandLogo";
-import { DEMO_USERNAME, DEMO_PASSWORD, enableDemoMode, setCachedRole } from "@/lib/demoMode";
+import { enableDemoMode, setCachedRole } from "@/lib/demoMode";
+
+// Supabase auth is email+password under the hood (phone auth is not enabled
+// on the project), but the app's login/signup is a BD mobile number + a
+// 4-digit PIN per explicit owner instruction. Map the phone to a synthetic
+// email so the existing Supabase email/password flow keeps working.
+const PHONE_DOMAIN = "hisabnikash.app";
+const authEmailFor = (phone: string) => `${phone.replace(/\D/g, "")}@${PHONE_DOMAIN}`;
+// Supabase's default minimum password length is 6, so a bare 4-digit PIN
+// would be rejected at signup. Derive a stable 6-char secret ("H1" + PIN)
+// identically on signup and login -- the user only ever types the 4 digits.
+const authPasswordFor = (pin: string) => `H1${pin}`;
 
 const credentialsSchema = z.object({
-  email: z
+  phone: z
     .string()
     .trim()
-    .email({ message: "সঠিক ইমেইল দিন" })
-    .max(255, { message: "Email must be less than 255 characters" }),
-  password: z
+    .regex(/^01[3-9]\d{8}$/, { message: "সঠিক মোবাইল নম্বর দিন (যেমন: 01712345678)" }),
+  pin: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters" })
-    .max(128, { message: "Password must be less than 128 characters" }),
+    .regex(/^\d{4}$/, { message: "পিন ৪ সংখ্যার হতে হবে" }),
 });
 
 type FieldErrors = {
-  email?: string;
-  password?: string;
+  phone?: string;
+  pin?: string;
   form?: string;
 };
 
@@ -50,15 +60,14 @@ const Login = () => {
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname || "/";
 
   const [mode, setMode] = useState<Mode>("login");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [pin, setPin] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  
+
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [showPassword, setShowPassword] = useState(false);
 
   const [forgotOpen, setForgotOpen] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotPhone, setForgotPhone] = useState("");
   const [forgotError, setForgotError] = useState<string | undefined>(undefined);
   const [forgotSent, setForgotSent] = useState(false);
 
@@ -71,13 +80,13 @@ const Login = () => {
 
   const handleForgotSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = z.string().trim().email({ message: "সঠিক ইমেইল দিন" }).safeParse(forgotEmail);
+    const result = z.string().trim().regex(/^01[3-9]\d{8}$/, { message: "সঠিক মোবাইল নম্বর দিন" }).safeParse(forgotPhone);
     if (!result.success) {
-      setForgotError(result.error.issues[0]?.message ?? "সঠিক ইমেইল দিন");
+      setForgotError(result.error.issues[0]?.message ?? "সঠিক মোবাইল নম্বর দিন");
       return;
     }
     setForgotError(undefined);
-    const { error } = await supabase.auth.resetPasswordForEmail(result.data, {
+    const { error } = await supabase.auth.resetPasswordForEmail(authEmailFor(result.data), {
       redirectTo: `${window.location.origin}/reset-password`,
     });
     if (error) {
@@ -90,7 +99,7 @@ const Login = () => {
   const closeForgot = () => {
     setForgotOpen(false);
     setTimeout(() => {
-      setForgotEmail("");
+      setForgotPhone("");
       setForgotError(undefined);
       setForgotSent(false);
     }, 150);
@@ -116,12 +125,7 @@ const Login = () => {
     e.preventDefault();
     setErrors({});
 
-    if (mode === "login" && email.trim().toLowerCase() === DEMO_USERNAME && password === DEMO_PASSWORD) {
-      loginAsDemo();
-      return;
-    }
-
-    const parsed = credentialsSchema.safeParse({ email, password });
+    const parsed = credentialsSchema.safeParse({ phone, pin });
     if (!parsed.success) {
       const fieldErrors: FieldErrors = {};
       for (const issue of parsed.error.issues) {
@@ -136,8 +140,8 @@ const Login = () => {
     try {
       if (mode === "login") {
         const { error } = await supabase.auth.signInWithPassword({
-          email: parsed.data.email,
-          password: parsed.data.password,
+          email: authEmailFor(parsed.data.phone),
+          password: authPasswordFor(parsed.data.pin),
         });
         if (error) {
           setErrors({ form: error.message });
@@ -147,8 +151,8 @@ const Login = () => {
         }
       } else {
         const { error } = await supabase.auth.signUp({
-          email: parsed.data.email,
-          password: parsed.data.password,
+          email: authEmailFor(parsed.data.phone),
+          password: authPasswordFor(parsed.data.pin),
           options: { emailRedirectTo: `${window.location.origin}/` },
         });
         if (error) {
@@ -162,7 +166,6 @@ const Login = () => {
       setSubmitting(false);
     }
   };
-
 
   return (
     <main className="fixed inset-0 h-[100svh] w-full bg-background flex items-center justify-center p-4 overflow-y-auto [padding-top:max(1rem,env(safe-area-inset-top))] [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
@@ -178,56 +181,60 @@ const Login = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-2">
-              <Label htmlFor="email" className={typography("body-strong")}>ইমেইল</Label>
-              <Input
-                id="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (errors.email || errors.form) setErrors((prev) => ({ ...prev, email: undefined, form: undefined }));
-                }}
-                aria-invalid={!!(errors.email || errors.form)}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                className={cn((errors.email || errors.form) && "border-destructive focus-visible:ring-destructive")}
-              />
-              {errors.email && (
-                <p id="email-error" className={typography("muted", "text-destructive")}>
-                  {errors.email}
+              <Label htmlFor="phone" className={typography("body-strong")}>মোবাইল নম্বর</Label>
+              <div className="flex">
+                <span className="inline-flex h-10 shrink-0 select-none items-center rounded-l-md border border-r-0 border-input bg-muted/50 px-3 text-sm font-semibold text-muted-foreground">
+                  +88
+                </span>
+                <Input
+                  id="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel-national"
+                  maxLength={11}
+                  placeholder="01XXXXXXXXX"
+                  value={phone}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                    setPhone(v);
+                    if (errors.phone || errors.form) setErrors((prev) => ({ ...prev, phone: undefined, form: undefined }));
+                  }}
+                  aria-invalid={!!(errors.phone || errors.form)}
+                  aria-describedby={errors.phone ? "phone-error" : undefined}
+                  className={cn("rounded-l-none", (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive")}
+                />
+              </div>
+              {errors.phone && (
+                <p id="phone-error" className={typography("muted", "text-destructive")}>
+                  {errors.phone}
                 </p>
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password" className={typography("body-strong")}>পাসওয়ার্ড</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  autoComplete={mode === "login" ? "current-password" : "new-password"}
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (errors.password || errors.form) setErrors((prev) => ({ ...prev, password: undefined, form: undefined }));
-                  }}
-                  aria-invalid={!!(errors.password || errors.form)}
-                  aria-describedby={errors.password ? "password-error" : undefined}
-                  className={cn("pr-10", (errors.password || errors.form) && "border-destructive focus-visible:ring-destructive")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  aria-pressed={showPassword}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-r-md"
-                  tabIndex={-1}
-                >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
-              </div>
-              {errors.password && (
-                <p id="password-error" className={typography("muted", "text-destructive")}>
-                  {errors.password}
+              <Label htmlFor="pin" className={typography("body-strong")}>পিন (৪ সংখ্যা)</Label>
+              <InputOTP
+                id="pin"
+                maxLength={4}
+                value={pin}
+                onChange={(v) => {
+                  setPin(v);
+                  if (errors.pin || errors.form) setErrors((prev) => ({ ...prev, pin: undefined, form: undefined }));
+                }}
+                pattern="^[0-9]+$"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                aria-invalid={!!(errors.pin || errors.form)}
+              >
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} className={cn(errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={1} className={cn(errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={2} className={cn(errors.pin && "border-destructive text-destructive")} />
+                  <InputOTPSlot index={3} className={cn(errors.pin && "border-destructive text-destructive")} />
+                </InputOTPGroup>
+              </InputOTP>
+              {errors.pin && (
+                <p id="pin-error" className={typography("muted", "text-destructive")}>
+                  {errors.pin}
                 </p>
               )}
             </div>
@@ -239,7 +246,7 @@ const Login = () => {
                   onClick={() => setForgotOpen(true)}
                   className="text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                 >
-                  পাসওয়ার্ড ভুলে গেছেন?
+                  পিন ভুলে গেছেন?
                 </button>
               </div>
             )}
@@ -255,7 +262,6 @@ const Login = () => {
                 ? mode === "login" ? "Logging in…" : "Creating account…"
                 : mode === "login" ? "লগইন" : "অ্যাকাউন্ট খুলুন"}
             </Button>
-
 
             <p className={typography("muted", "text-center")}>
               {mode === "login" ? "অ্যাকাউন্ট নেই?" : "অ্যাকাউন্ট আছে?"}{" "}
@@ -295,9 +301,6 @@ const Login = () => {
                 <p className={typography("muted", "text-center text-[11px]")}>
                   নমুনা তথ্য দিয়ে অ্যাপটি ঘুরে দেখুন — বিক্রি, বাকি ও স্টক সবই যোগ করা যাবে।
                   আপনার আসল তথ্য আলাদা থাকবে।
-                  <br />
-                  ইউজারনেম <span className="font-medium text-foreground">{DEMO_USERNAME}</span>
-                  {" · "}পাসওয়ার্ড <span className="font-medium text-foreground">{DEMO_PASSWORD}</span>
                 </p>
               </div>
             )}
@@ -308,11 +311,11 @@ const Login = () => {
       <Dialog open={forgotOpen} onOpenChange={(open) => (open ? setForgotOpen(true) : closeForgot())}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>পাসওয়ার্ড রিসেট</DialogTitle>
+            <DialogTitle>পিন রিসেট</DialogTitle>
             <DialogDescription>
               {forgotSent
-                ? "If an account exists for that email, password reset instructions are on their way."
-                : "Enter the email associated with your account and we'll send reset instructions."}
+                ? "If an account exists for that phone number, PIN reset instructions are on their way."
+                : "Enter the phone number associated with your account and we'll send reset instructions."}
             </DialogDescription>
           </DialogHeader>
           {forgotSent ? (
@@ -324,23 +327,25 @@ const Login = () => {
           ) : (
             <form onSubmit={handleForgotSubmit} className="space-y-4" noValidate>
               <div className="space-y-2">
-                <Label htmlFor="forgot-email">ইমেইল</Label>
+                <Label htmlFor="forgot-phone">মোবাইল নম্বর</Label>
                 <Input
-                  id="forgot-email"
-                  type="email"
-                  autoComplete="email"
-                  value={forgotEmail}
+                  id="forgot-phone"
+                  type="tel"
+                  inputMode="numeric"
+                  autoComplete="tel-national"
+                  maxLength={11}
+                  value={forgotPhone}
                   onChange={(e) => {
-                    setForgotEmail(e.target.value);
+                    setForgotPhone(e.target.value.replace(/\D/g, "").slice(0, 11));
                     if (forgotError) setForgotError(undefined);
                   }}
-                  placeholder="you@example.com"
+                  placeholder="01XXXXXXXXX"
                   aria-invalid={!!forgotError}
-                  aria-describedby={forgotError ? "forgot-email-error" : undefined}
+                  aria-describedby={forgotError ? "forgot-phone-error" : undefined}
                   className={cn(forgotError && "border-destructive focus-visible:ring-destructive")}
                 />
                 {forgotError && (
-                  <p id="forgot-email-error" className={typography("muted", "text-destructive")}>
+                  <p id="forgot-phone-error" className={typography("muted", "text-destructive")}>
                     {forgotError}
                   </p>
                 )}
@@ -358,6 +363,5 @@ const Login = () => {
     </main>
   );
 };
-
 
 export default Login;
