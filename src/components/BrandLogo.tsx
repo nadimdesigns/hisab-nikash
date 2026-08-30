@@ -17,7 +17,7 @@ export function BrandLogo({ className }: BrandLogoProps) {
     <img
       src="/logo.png"
       alt={APP_NAME}
-      className={cn("h-5 w-5 shrink-0 rounded-lg object-contain", className)}
+      className={cn("h-5 w-5 shrink-0 object-contain", className)}
     />
   );
 }
