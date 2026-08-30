@@ -189,6 +189,25 @@
     mix-blend-mode: screen;
   }
 
+  /* Green shimmer streak — dark green premium card highlight. */
+  .shimmer-overlay > .shimmer-streak-green {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 100%;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 10%,
+      hsl(152 90% 75% / 0.55) 50%,
+      transparent 90%
+    );
+    animation: shimmer-sweep 2.6s ease-in-out infinite;
+    mix-blend-mode: screen;
+  }
+
   /* Hide the scrollbar track/thumb while keeping the element scrollable
      (wheel, touch, keyboard). Use on a container that already sets
      overflow-auto/-scroll. */
