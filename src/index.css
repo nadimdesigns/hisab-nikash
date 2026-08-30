@@ -189,22 +189,24 @@
     mix-blend-mode: screen;
   }
 
-  /* Green shimmer streak — dark green premium card highlight. */
+  /* Green shimmer streak — dark green premium card highlight. Thinner
+     band, slower loop and a late start so the sheen reads as a rare
+     premium glint rather than a constant sweep. */
   .shimmer-overlay > .shimmer-streak-green {
     position: absolute;
     top: 0;
     left: 0;
-    width: 60%;
+    width: 36%;
     height: 100%;
     border-radius: inherit;
     pointer-events: none;
     background: linear-gradient(
       100deg,
-      transparent 10%,
-      hsl(152 90% 75% / 0.55) 50%,
-      transparent 90%
+      transparent 15%,
+      hsl(152 90% 78% / 0.5) 50%,
+      transparent 85%
     );
-    animation: shimmer-sweep 2.6s ease-in-out infinite;
+    animation: shimmer-sweep 4.5s ease-in-out 1.2s infinite;
     mix-blend-mode: screen;
   }
 

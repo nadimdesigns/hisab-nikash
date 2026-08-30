@@ -334,13 +334,13 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
       type="button"
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
-      className="shimmer-overlay relative w-full overflow-hidden rounded-[24px] bg-gradient-to-br from-emerald-950 via-emerald-500 to-emerald-950 p-5 text-left text-white shadow-[0_18px_40px_-12px_rgba(6,95,70,0.6)] transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="shimmer-overlay relative w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#022c22_0%,#0b5a3d_30%,#10b981_52%,#0a5c3c_74%,#022c22_100%)] p-5 text-left text-white shadow-[0_18px_40px_-12px_rgba(6,95,70,0.6)] transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      {/* Glowing wave lines */}
+      {/* Glowing wave lines (50% reduced opacity) */}
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
-        <path d="M0 150 Q 50 115, 100 150 T 200 150 T 300 150 T 400 150" stroke="rgba(255,255,255,0.28)" strokeWidth="2.5" fill="none" />
-        <path d="M0 185 Q 50 150, 100 185 T 200 185 T 300 185 T 400 185" stroke="rgba(255,255,255,0.15)" strokeWidth="2" fill="none" />
-        <path d="M0 220 Q 50 190, 100 220 T 200 220 T 300 220 T 400 220" stroke="rgba(255,255,255,0.09)" strokeWidth="2" fill="none" />
+        <path d="M0 150 Q 50 115, 100 150 T 200 150 T 300 150 T 400 150" stroke="rgba(255,255,255,0.14)" strokeWidth="2.5" fill="none" />
+        <path d="M0 185 Q 50 150, 100 185 T 200 185 T 300 185 T 400 185" stroke="rgba(255,255,255,0.075)" strokeWidth="2" fill="none" />
+        <path d="M0 220 Q 50 190, 100 220 T 200 220 T 300 220 T 400 220" stroke="rgba(255,255,255,0.045)" strokeWidth="2" fill="none" />
       </svg>
 
       {/* Green shimmer sweep — premium animated highlight */}
