@@ -50,19 +50,19 @@ const profileSchema = z.object({
   phone: z
     .string()
     .trim()
-    .max(20, "Phone must be under 20 characters")
-    .regex(/^[+\d\s()-]*$/, "Only digits, spaces and + ( ) - allowed")
+    .max(20, "ফোন ২০ অক্ষরের কম হতে হবে")
+    .regex(/^[+\d\s()-]*$/, "শুধু সংখ্যা, স্পেস এবং + ( ) - অনুমোদিত")
     .optional()
     .or(z.literal("")),
   email: z
     .string()
     .trim()
-    .max(255, "Email is too long")
-    .email("Invalid email address")
+    .max(255, "ইমেইল অনেক বড়")
+    .email("অবৈধ ইমেইল ঠিকানা")
     .optional()
     .or(z.literal("")),
-  address: z.string().trim().max(200, "Address must be under 200 characters").optional().or(z.literal("")),
-  notes: z.string().trim().max(500, "Notes must be under 500 characters").optional().or(z.literal("")),
+  address: z.string().trim().max(200, "ঠিকানা ২০০ অক্ষরের কম হতে হবে").optional().or(z.literal("")),
+  notes: z.string().trim().max(500, "নোট ৫০০ অক্ষরের কম হতে হবে").optional().or(z.literal("")),
 });
 
 type DueEntry = {
@@ -232,7 +232,7 @@ export default function CustomerDetails() {
     saveProfiles(next);
     setErrors({});
     setIsEditing(false);
-    toast({ title: "Customer details saved" });
+    toast({ title: "খদ্দেরের তথ্য সংরক্ষিত হয়েছে" });
   };
 
   const updateDraft = <K extends keyof CustomerProfile>(key: K, value: string) => {
@@ -306,22 +306,22 @@ export default function CustomerDetails() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    toast({ title: "CSV exported", description: `${customerName} transactions downloaded.` });
+    toast({ title: "CSV এক্সপোর্ট হয়েছে", description: `${customerName} এর লেনদেন ডাউনলোড হয়েছে।` });
   };
 
   const hasAny = stats.purchases + stats.dueEntries > 0;
   const hasDue = stats.due > 0;
 
   return (
-    <AppLayout title="Customer">
+    <AppLayout title="খদ্দের">
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Top nav */}
         <div className="flex items-center justify-between gap-2">
           <Button variant="ghost" size="sm" className="gap-1 -ml-2" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4" /> Back
+            <ArrowLeft className="h-4 w-4" /> ফিরে যান
           </Button>
           <Button asChild variant="ghost" size="sm">
-            <Link to="/customers">All customers</Link>
+            <Link to="/customers">সব খদ্দের</Link>
           </Button>
         </div>
 
@@ -331,17 +331,15 @@ export default function CustomerDetails() {
             <UserCircle2 className="h-7 w-7" />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className={typography("h2", "truncate")}>{customerName || "Customer"}</h1>
+            <h1 className={typography("h2", "truncate")}>{customerName || "খদ্দের"}</h1>
             <p className={typography("body-muted")}>
               {hasAny
-                ? `${stats.purchases + stats.dueEntries} transaction${
-                    stats.purchases + stats.dueEntries === 1 ? "" : "s"
-                  } · Last ${
+                ? `${stats.purchases + stats.dueEntries}টি লেনদেন · সর্বশেষ ${
                     stats.lastPurchase
                       ? format(new Date(stats.lastPurchase), "MMM d, yyyy")
                       : "—"
                   }`
-                : "No transactions yet."}
+                : "এখনও কোনো লেনদেন নেই।"}
             </p>
           </div>
           <Button
@@ -353,7 +351,7 @@ export default function CustomerDetails() {
             disabled={history.length === 0}
           >
             <Download className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">এক্সপোর্ট</span>
           </Button>
         </div>
 
@@ -361,11 +359,11 @@ export default function CustomerDetails() {
         <Card className="shadow-soft">
           <CardContent className="p-4 sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className={typography("body-strong")}>Customer details</h3>
+              <h3 className={typography("body-strong")}>খদ্দেরের বিস্তারিত</h3>
               {!isEditing && (
                 <Button type="button" variant="ghost" size="sm" className="gap-1" onClick={startEdit}>
                   <Pencil className="h-3.5 w-3.5" />
-                  {hasProfileInfo ? "Edit" : "Add details"}
+                  {hasProfileInfo ? "সম্পাদনা" : "তথ্য যোগ করুন"}
                 </Button>
               )}
             </div>
@@ -373,17 +371,17 @@ export default function CustomerDetails() {
             {!isEditing ? (
               hasProfileInfo ? (
                 <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <InfoRow icon={<Phone className="h-4 w-4" />} label="Phone" value={profile.phone} />
-                  <InfoRow icon={<Mail className="h-4 w-4" />} label="Email" value={profile.email} />
-                  <InfoRow icon={<MapPin className="h-4 w-4" />} label="Address" value={profile.address} />
-                  <InfoRow icon={<StickyNote className="h-4 w-4" />} label="Notes" value={profile.notes} wide />
+                  <InfoRow icon={<Phone className="h-4 w-4" />} label="ফোন" value={profile.phone} />
+                  <InfoRow icon={<Mail className="h-4 w-4" />} label="ইমেইল" value={profile.email} />
+                  <InfoRow icon={<MapPin className="h-4 w-4" />} label="ঠিকানা" value={profile.address} />
+                  <InfoRow icon={<StickyNote className="h-4 w-4" />} label="নোট" value={profile.notes} wide />
                 </dl>
               ) : (
-                <p className={typography("body-muted")}>No contact details yet. Add phone, email, address or notes for this customer.</p>
+                <p className={typography("body-muted")}>এখনও কোনো যোগাযোগের তথ্য নেই। এই খদ্দেরের জন্য ফোন, ইমেইল, ঠিকানা বা নোট যোগ করুন।</p>
               )
             ) : (
               <div className="space-y-3">
-                <FieldRow label="Phone" htmlFor="cust-phone" error={errors.phone}>
+                <FieldRow label="ফোন" htmlFor="cust-phone" error={errors.phone}>
                   <Input
                     id="cust-phone"
                     type="tel"
@@ -395,7 +393,7 @@ export default function CustomerDetails() {
                     aria-invalid={Boolean(errors.phone)}
                   />
                 </FieldRow>
-                <FieldRow label="Email" htmlFor="cust-email" error={errors.email}>
+                <FieldRow label="ইমেইল" htmlFor="cust-email" error={errors.email}>
                   <Input
                     id="cust-email"
                     type="email"
@@ -406,22 +404,22 @@ export default function CustomerDetails() {
                     aria-invalid={Boolean(errors.email)}
                   />
                 </FieldRow>
-                <FieldRow label="Address" htmlFor="cust-address" error={errors.address}>
+                <FieldRow label="ঠিকানা" htmlFor="cust-address" error={errors.address}>
                   <Input
                     id="cust-address"
                     maxLength={200}
-                    placeholder="Street, city"
+                    placeholder="রাস্তা, শহর"
                     value={draft.address ?? ""}
                     onChange={(e) => updateDraft("address", e.target.value)}
                     aria-invalid={Boolean(errors.address)}
                   />
                 </FieldRow>
-                <FieldRow label="Notes" htmlFor="cust-notes" error={errors.notes}>
+                <FieldRow label="নোট" htmlFor="cust-notes" error={errors.notes}>
                   <Textarea
                     id="cust-notes"
                     maxLength={500}
                     rows={3}
-                    placeholder="Preferences, allergies, reminders…"
+                    placeholder="পছন্দ, অ্যালার্জি, রিমাইন্ডার…"
                     value={draft.notes ?? ""}
                     onChange={(e) => updateDraft("notes", e.target.value)}
                     aria-invalid={Boolean(errors.notes)}
@@ -429,10 +427,10 @@ export default function CustomerDetails() {
                 </FieldRow>
                 <div className="flex justify-end gap-2 pt-1">
                   <Button type="button" variant="outline" onClick={cancelEdit}>
-                    Cancel
+                    বাতিল
                   </Button>
                   <Button type="button" onClick={saveEdit}>
-                    Save
+                    সংরক্ষণ
                   </Button>
                 </div>
               </div>
@@ -442,10 +440,10 @@ export default function CustomerDetails() {
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
-          <StatTile label="Total billed" value={currency(stats.totalBilled)} />
-          <StatTile label="Paid" value={currency(stats.paid)} tone="success" />
+          <StatTile label="মোট বিল" value={currency(stats.totalBilled)} />
+          <StatTile label="পরিশোধিত" value={currency(stats.paid)} tone="success" />
           <StatTile
-            label="Outstanding"
+            label="বকেয়া"
             value={currency(stats.due)}
             tone={hasDue ? "destructive" : "muted"}
           />
@@ -456,9 +454,9 @@ export default function CustomerDetails() {
           <Card className="shadow-soft">
             <CardContent className="p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between gap-2">
-                <h3 className={typography("body-strong")}>Record payment</h3>
+                <h3 className={typography("body-strong")}>টাকা গ্রহণ</h3>
                 <span className={typography("body-muted")}>
-                  Due: <span className="font-medium text-destructive">{currency(stats.due)}</span>
+                  বাকি: <span className="font-medium text-destructive">{currency(stats.due)}</span>
                 </span>
               </div>
               <div className="flex flex-col gap-2 sm:flex-row">
@@ -467,7 +465,7 @@ export default function CustomerDetails() {
                   inputMode="decimal"
                   min="0"
                   step="0.01"
-                  placeholder="Amount"
+                  placeholder="টাকার পরিমাণ"
                   value={paymentInput}
                   onChange={(e) => setPaymentInput(e.target.value)}
                   className="sm:flex-1"
@@ -478,7 +476,7 @@ export default function CustomerDetails() {
                     variant="outline"
                     onClick={() => setPaymentInput(String(stats.due))}
                   >
-                    Full
+                    পুরো
                   </Button>
                   <Button
                     type="button"
@@ -486,13 +484,13 @@ export default function CustomerDetails() {
                     onClick={() => {
                       const amount = parseFloat(paymentInput);
                       if (!Number.isFinite(amount) || amount <= 0) {
-                        toast({ title: "Enter a valid amount", variant: "destructive" });
+                        toast({ title: "সঠিক টাকার পরিমাণ দিন", variant: "destructive" });
                         return;
                       }
                       if (amount > stats.due + 0.005) {
                         toast({
-                          title: "Amount exceeds due",
-                          description: `${customerName} owes ${currency(stats.due)}.`,
+                          title: "পরিমাণ বকেয়ার বেশি",
+                          description: `${customerName} এর বকেয়া ${currency(stats.due)}।`,
                           variant: "destructive",
                         });
                         return;
@@ -500,12 +498,12 @@ export default function CustomerDetails() {
                       const applied = recordCustomerPayment(amount);
                       setPaymentInput("");
                       toast({
-                        title: "Payment recorded",
-                        description: `${currency(applied)} applied to ${customerName}.`,
+                        title: "টাকা গ্রহণ হয়েছে",
+                        description: `${currency(applied)} ${customerName} এর হিসাবে যোগ হয়েছে।`,
                       });
                     }}
                   >
-                    <Wallet className="h-4 w-4" /> Pay
+                    <Wallet className="h-4 w-4" /> পরিশোধ
                   </Button>
                 </div>
               </div>
@@ -516,10 +514,10 @@ export default function CustomerDetails() {
         {/* Transaction history */}
         <section className="space-y-3">
           <div className="flex items-baseline justify-between">
-            <h2 className={typography("h4")}>Transactions</h2>
+            <h2 className={typography("h4")}>লেনদেন</h2>
             {hasAny && (
               <span className={typography("body-muted")}>
-                {history.length} total
+                মোট {history.length}টি
               </span>
             )}
           </div>
@@ -527,7 +525,7 @@ export default function CustomerDetails() {
           {history.length === 0 ? (
             <Card className="shadow-soft">
               <CardContent className="p-10 text-center">
-                <p className={typography("body-muted")}>No transactions yet.</p>
+                <p className={typography("body-muted")}>এখনও কোনো লেনদেন নেই।</p>
               </CardContent>
             </Card>
           ) : (
@@ -536,13 +534,13 @@ export default function CustomerDetails() {
                 const isPayment = h.kind === "payment";
                 const itemCount = h.items.reduce((s, it) => s + it.qty, 0);
                 const preview = isPayment
-                  ? "Payment received"
+                  ? "টাকা গ্রহণ করা হয়েছে"
                   : h.items.slice(0, 2).map((it) => it.name).join(", ");
-                const more = !isPayment && h.items.length > 2 ? ` +${h.items.length - 2} more` : "";
+                const more = !isPayment && h.items.length > 2 ? ` +${h.items.length - 2} আরও` : "";
                 const badgeVariant =
                   h.kind === "due" ? "destructive" : h.kind === "payment" ? "default" : "secondary";
                 const badgeLabel =
-                  h.kind === "due" ? "Due" : h.kind === "payment" ? "Payment" : "Cash";
+                  h.kind === "due" ? "বাকি" : h.kind === "payment" ? "পেমেন্ট" : "নগদ";
                 return (
                   <li key={`${h.kind}-${h.id}`}>
                     <Card className="shadow-none border transition-colors hover:bg-muted/40">
@@ -558,8 +556,8 @@ export default function CustomerDetails() {
                           <p className={typography("body-muted", "truncate")}>
                             {format(new Date(h.date), "MMM d, yyyy · HH:mm")}
                             {isPayment
-                              ? " · Receipt"
-                              : ` · ${itemCount} item${itemCount === 1 ? "" : "s"}`}
+                              ? " · রসিদ"
+                              : ` · ${itemCount}টি আইটেম`}
                           </p>
                         </div>
                         <div className="text-right">

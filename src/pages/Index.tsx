@@ -11,6 +11,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianG
 import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
+import { isDemoMode } from "@/lib/demoMode";
 import { unitLabel } from "@/lib/copy";
 
 const Index = () => {
@@ -114,7 +115,7 @@ const Index = () => {
               className={cn(
                 "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 period === k
-                  ? "bg-blue-700 text-white shadow-md shadow-blue-700/25"
+                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/25"
                   : "border border-border bg-card text-muted-foreground hover:text-foreground"
               )}
             >
@@ -139,7 +140,7 @@ const Index = () => {
         <section>
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-base font-bold">বাকি জমা</h2>
-            <Link to="/due-sale" className="text-[13px] font-medium text-blue-700 hover:underline">সব দেখুন</Link>
+            <Link to="/due-sale" className="text-[13px] font-medium text-emerald-600 hover:underline">সব দেখুন</Link>
           </div>
           {!hydrated ? (
             <Skeleton className="h-[76px] w-full rounded-2xl" />
@@ -171,7 +172,7 @@ const Index = () => {
         <section>
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-base font-bold">সাম্প্রতিক লেনদেন</h2>
-            <Link to="/sales" className="text-[13px] font-medium text-blue-700 hover:underline">সব দেখুন</Link>
+            <Link to="/sales" className="text-[13px] font-medium text-emerald-600 hover:underline">সব দেখুন</Link>
           </div>
           {!hydrated ? (
             <Skeleton className="h-[76px] w-full rounded-2xl" />
@@ -326,31 +327,35 @@ const Index = () => {
  * digits), tap to reveal the amount, and a bottom Income / Expense split.
  */
 function BalanceCard({ net, income, expense }: { net: number; income: number; expense: number }) {
-  const [revealed, setRevealed] = useState(false);
+  // Demo account: show the seeded amounts immediately (never blank/masked).
+  const [revealed, setRevealed] = useState(isDemoMode());
   return (
     <button
       type="button"
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
-      className="relative w-full overflow-hidden rounded-[24px] bg-gradient-to-br from-blue-800 via-blue-600 to-blue-500 p-5 text-left text-white shadow-[0_18px_40px_-12px_rgba(29,78,216,0.5)] transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="shimmer-overlay relative w-full overflow-hidden rounded-[24px] bg-gradient-to-br from-amber-500 via-yellow-400 to-amber-600 p-5 text-left text-white shadow-[0_18px_40px_-12px_rgba(217,119,6,0.55)] transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Glowing wave lines */}
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
-        <path d="M0 150 Q 50 115, 100 150 T 200 150 T 300 150 T 400 150" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" fill="none" />
-        <path d="M0 185 Q 50 150, 100 185 T 200 185 T 300 185 T 400 185" stroke="rgba(255,255,255,0.12)" strokeWidth="2" fill="none" />
-        <path d="M0 220 Q 50 190, 100 220 T 200 220 T 300 220 T 400 220" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
+        <path d="M0 150 Q 50 115, 100 150 T 200 150 T 300 150 T 400 150" stroke="rgba(255,255,255,0.30)" strokeWidth="2.5" fill="none" />
+        <path d="M0 185 Q 50 150, 100 185 T 200 185 T 300 185 T 400 185" stroke="rgba(255,255,255,0.16)" strokeWidth="2" fill="none" />
+        <path d="M0 220 Q 50 190, 100 220 T 200 220 T 300 220 T 400 220" stroke="rgba(255,255,255,0.10)" strokeWidth="2" fill="none" />
       </svg>
+
+      {/* Golden shimmer sweep — premium animated highlight */}
+      <span className="shimmer-streak-gold" aria-hidden="true" />
 
       {/* Glossy premium sheen */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(115deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.10) 28%, transparent 45%, transparent 70%, rgba(255,255,255,0.14) 88%, rgba(255,255,255,0.28) 100%)",
+            "linear-gradient(115deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 28%, transparent 45%, transparent 70%, rgba(255,255,255,0.16) 88%, rgba(255,255,255,0.30) 100%)",
         }}
         aria-hidden
       />
-      <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/15 blur-2xl" aria-hidden />
+      <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/20 blur-2xl" aria-hidden />
 
       <div className="relative flex items-start justify-between">
         {/* EMV-style chip */}

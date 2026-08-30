@@ -117,8 +117,9 @@ const Login = () => {
     setCachedRole(null);
     window.dispatchEvent(new Event("pharmasee-demo-changed"));
     toast({ title: "ডেমো মোড", description: "নমুনা তথ্য দিয়ে অ্যাপটি ঘুরে দেখুন।" });
-    // Reload so persisted stores re-init under the demo namespace.
-    window.location.replace(from);
+    // Reload so persisted stores re-init under the demo namespace, landing
+    // on the homepage so the seeded demo balances are immediately visible.
+    window.location.replace("/");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -172,7 +173,7 @@ const Login = () => {
       <Card className="w-full max-w-sm rounded-[28px] border-0 shadow-elevated overflow-hidden">
         {/* Playful gradient header: logo centered (1.7x), name + tagline
             stacked vertically below it, per explicit owner instruction. */}
-        <div className="relative bg-gradient-to-br from-blue-800 via-blue-600 to-blue-500 px-6 pt-10 pb-8 flex flex-col items-center gap-2.5 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-emerald-700 via-emerald-600 to-yellow-500 px-6 pt-10 pb-8 flex flex-col items-center gap-2.5 overflow-hidden">
           <div className="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-white/10" aria-hidden />
           <div className="absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-white/10" aria-hidden />
           <img
@@ -267,9 +268,9 @@ const Login = () => {
               </p>
             )}
 
-            <Button type="submit" size="lg" className="w-full rounded-2xl bg-gradient-to-r from-blue-700 to-blue-500 font-semibold shadow-lg shadow-blue-700/25 transition-transform hover:from-blue-600 hover:to-blue-400 active:scale-[0.98]" disabled={submitting}>
+            <Button type="submit" size="lg" className="w-full rounded-2xl bg-gradient-to-r from-emerald-600 to-yellow-500 font-semibold shadow-lg shadow-emerald-600/25 transition-transform hover:from-emerald-500 hover:to-yellow-400 active:scale-[0.98]" disabled={submitting}>
               {submitting
-                ? mode === "login" ? "Logging in…" : "Creating account…"
+                ? mode === "login" ? "লগইন হচ্ছে…" : "অ্যাকাউন্ট তৈরি হচ্ছে…"
                 : mode === "login" ? "লগইন" : "অ্যাকাউন্ট খুলুন"}
             </Button>
 
@@ -287,28 +288,26 @@ const Login = () => {
               </button>
             </p>
 
-            {mode === "login" && (
-              <div className="space-y-2">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center" aria-hidden>
-                    <span className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center">
-                    <span className={typography("muted", "bg-card px-2")}>অথবা</span>
-                  </div>
+            <div className="space-y-2">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden>
+                  <span className="w-full border-t border-border" />
                 </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full gap-2"
-                  onClick={loginAsDemo}
-                >
-                  <PlayCircle className="h-4 w-4" />
-                  ডেমো অ্যাকাউন্ট দিয়ে দেখুন
-                </Button>
+                <div className="relative flex justify-center">
+                  <span className={typography("muted", "bg-card px-2")}>অথবা</span>
+                </div>
               </div>
-            )}
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2"
+                onClick={loginAsDemo}
+              >
+                <PlayCircle className="h-4 w-4" />
+                ডেমো অ্যাকাউন্ট দিয়ে দেখুন
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
@@ -319,14 +318,14 @@ const Login = () => {
             <DialogTitle>পিন রিসেট</DialogTitle>
             <DialogDescription>
               {forgotSent
-                ? "If an account exists for that phone number, PIN reset instructions are on their way."
-                : "Enter the phone number associated with your account and we'll send reset instructions."}
+                ? "ঐ ফোন নম্বরে অ্যাকাউন্ট থাকলে, পিন রিসেটের নির্দেশনা পাঠানো হয়েছে।"
+                : "আপনার ফোন নম্বরটি দিন — রিসেট নির্দেশনা পাঠানো হবে।"}
             </DialogDescription>
           </DialogHeader>
           {forgotSent ? (
             <DialogFooter>
               <Button type="button" className="w-full" onClick={closeForgot}>
-                Done
+                শেষ
               </Button>
             </DialogFooter>
           ) : (

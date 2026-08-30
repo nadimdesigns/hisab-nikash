@@ -133,12 +133,12 @@ const reportItems: QuickAction[] = [
   },
 ];
 
-// Fixed dark palette — does NOT change with app theme.
-const NAV_BG = "hsl(222 47% 11%)";
-const NAV_BORDER = "hsl(217 33% 18%)";
-const NAV_FG = "hsl(210 40% 90%)";
-const NAV_FG_DIM = "hsl(210 40% 90% / 0.6)";
-const NAV_ACTIVE_FG = "hsl(217 91% 60%)";
+// Fixed very-dark-green glass palette — does NOT change with app theme.
+const NAV_BG = "rgba(3, 28, 18, 0.92)";
+const NAV_BORDER = "rgba(52, 211, 153, 0.18)";
+const NAV_FG = "hsl(150 30% 92%)";
+const NAV_FG_DIM = "hsla(150, 30%, 92%, 0.55)";
+const NAV_ACTIVE_FG = "hsl(48 96% 55%)";
 
 export function MobileBottomNav() {
   const location = useLocation();
@@ -183,6 +183,8 @@ export function MobileBottomNav() {
         background: NAV_BG,
         borderTopColor: NAV_BORDER,
         color: NAV_FG,
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
       }}
     >
       <ul className="grid grid-cols-5 items-end">

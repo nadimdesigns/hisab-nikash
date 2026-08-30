@@ -58,8 +58,8 @@ export default function Purchases() {
   };
 
   const submit = () => {
-    if (!supplier.trim()) return toast({ title: "Supplier name required", variant: "destructive" });
-    if (items.length === 0) return toast({ title: "Add at least one item", variant: "destructive" });
+    if (!supplier.trim()) return toast({ title: "পাইকারের নাম প্রয়োজন", variant: "destructive" });
+    if (items.length === 0) return toast({ title: "অন্তত একটি আইটেম যোগ করুন", variant: "destructive" });
     recordPurchase({
       supplier,
       supplierCompany: supplierCompany.trim() || undefined,
@@ -67,11 +67,11 @@ export default function Purchases() {
       items,
     });
     setItems([]); setSupplier(""); setSupplierCompany(""); setSupplierPhone("");
-    toast({ title: "Purchase recorded — stock updated" });
+    toast({ title: "ক্রয় সংরক্ষিত হয়েছে — স্টক হালনাগাদ হয়েছে" });
   };
 
   return (
-    <AppLayout title="Purchases">
+    <AppLayout title="ক্রয়">
       <div className="grid gap-6 lg:grid-cols-3 w-full min-w-0 max-w-full overflow-x-hidden">
         <Card className="lg:col-span-2 shadow-soft min-w-0 max-w-full overflow-hidden">
           <CardHeader className="px-4 sm:px-6">
@@ -87,7 +87,7 @@ export default function Purchases() {
           <CardContent className="space-y-4 pb-[34px] px-4 sm:px-6">
             <div>
               <Input
-                placeholder="Supplier's Name"
+                placeholder="পাইকারের নাম"
                 value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}
                 className="bg-[#f7f7f7] dark:bg-white/5"
@@ -96,14 +96,14 @@ export default function Purchases() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
-                placeholder="Supplier Company Name"
+                placeholder="পাইকারের কোম্পানির নাম"
                 value={supplierCompany}
                 onChange={(e) => setSupplierCompany(e.target.value)}
                 className="bg-[#f7f7f7] dark:bg-white/5"
               />
               <Input
                 type="tel"
-                placeholder="Supplier Phone Number"
+                placeholder="পাইকারের ফোন নম্বর"
                 value={supplierPhone}
                 onChange={(e) => setSupplierPhone(e.target.value)}
                 className="bg-[#f7f7f7] dark:bg-white/5"
@@ -116,7 +116,7 @@ export default function Purchases() {
                   products={products}
                   value={pickId}
                   onChange={handlePick}
-                  placeholder="Select Product..."
+                  placeholder="পণ্য নির্বাচন করুন..."
                   className="bg-[#f7f7f7] hover:bg-[#f7f7f7] dark:bg-white/5 dark:hover:bg-white/5"
                 />
               </div>
@@ -132,7 +132,7 @@ export default function Purchases() {
                 step="0.01"
                 value={cost}
                 onChange={(e) => setCost(+e.target.value)}
-                placeholder="Unit cost"
+                placeholder="ইউনিট খরচ"
                 className="bg-[#f7f7f7] dark:bg-white/5"
               />
             </div>
@@ -141,16 +141,16 @@ export default function Purchases() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[44%] min-w-[160px]">Item</TableHead>
-                    <TableHead className="text-right">Qty</TableHead>
-                    <TableHead className="text-right">Unit cost</TableHead>
-                    <TableHead className="text-right">Subtotal</TableHead>
+                    <TableHead className="w-[44%] min-w-[160px]">আইটেম</TableHead>
+                    <TableHead className="text-right">পরিমাণ</TableHead>
+                    <TableHead className="text-right">ইউনিট খরচ</TableHead>
+                    <TableHead className="text-right">সাবটোটাল</TableHead>
                     <TableHead className="w-10" />
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {items.length === 0 ? (
-                    <TableRow><TableCell colSpan={5} className={typography("body-muted", "py-6 text-center")}>No items yet.</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={5} className={typography("body-muted", "py-6 text-center")}>এখনো কোনো আইটেম নেই।</TableCell></TableRow>
                   ) : items.map((i, idx) => (
                     <TableRow key={idx}>
                       <TableCell className="w-[44%] min-w-[160px] font-medium">
@@ -171,18 +171,18 @@ export default function Purchases() {
             </div>
 
             <div className="flex items-center justify-end gap-[15px]">
-              <p className={typography("body-muted")}>Total</p>
+              <p className={typography("body-muted")}>মোট</p>
               <p className={typography("h3")}>{currency(total)}</p>
             </div>
 
             <Button onClick={submit} className="w-full" size="lg" disabled={items.length === 0}>
-              Record purchase
+              ক্রয় সংরক্ষণ
             </Button>
           </CardContent>
         </Card>
 
         <Card className="shadow-soft min-w-0 max-w-full overflow-hidden">
-          <CardHeader><CardTitle>Recent purchases</CardTitle></CardHeader>
+          <CardHeader><CardTitle>সাম্প্রতিক ক্রয়</CardTitle></CardHeader>
           <CardContent>
             {!hydrated ? (
               <ul className="space-y-3" aria-busy="true">
@@ -208,14 +208,14 @@ export default function Purchases() {
                         )}
                       </p>
                       <p className={typography("body-muted")}>
-                        {formatDate(p.date, "MMM d, HH:mm")} · {p.items.length} item{p.items.length > 1 ? "s" : ""}
+                        {formatDate(p.date, "MMM d, HH:mm")} · {p.items.length}টি আইটেম
                         {p.supplierPhone && <> · {p.supplierPhone}</>}
                       </p>
                     </div>
                     <span className={typography("body", "font-semibold")}>{currency(p.total)}</span>
                   </li>
                 ))}
-                {purchases.length === 0 && <p className={typography("body-muted")}>No purchases yet.</p>}
+                {purchases.length === 0 && <p className={typography("body-muted")}>এখনো কোনো ক্রয় নেই।</p>}
               </ul>
             )}
           </CardContent>

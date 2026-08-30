@@ -16,7 +16,7 @@ const Account = () => {
 
   const handleLogout = async () => {
     await signOut();
-    toast({ title: "Signed out", description: "You have been signed out." });
+    toast({ title: "সাইন আউট হয়েছে", description: "আপনি সাইন আউট হয়েছেন।" });
     navigate("/login", { replace: true });
   };
 
@@ -24,12 +24,12 @@ const Account = () => {
     (user?.user_metadata?.full_name as string | undefined) ||
     (user?.user_metadata?.name as string | undefined) ||
     user?.email ||
-    "User";
+    "ব্যবহারকারী";
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
   const initials = displayName.slice(0, 2).toUpperCase();
 
   return (
-    <AppLayout title="Account">
+    <AppLayout title="অ্যাকাউন্ট">
       <div className="space-y-6">
         <Card className="max-w-xl shadow-soft">
           <CardHeader className="flex flex-row items-center gap-4 space-y-0">
@@ -41,17 +41,17 @@ const Account = () => {
             </Avatar>
             <div>
               <CardTitle>{displayName}</CardTitle>
-              <CardDescription>PharmaSee account</CardDescription>
+              <CardDescription>PharmaSee অ্যাকাউন্ট</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1">
-              <p className={typography("body-muted")}>Email</p>
+              <p className={typography("body-muted")}>ইমেইল</p>
               <p className={typography("body-strong")}>{user?.email ?? "—"}</p>
             </div>
             <div className="pt-2">
               <Button variant="destructive" onClick={handleLogout}>
-                Log out
+                লগ আউট
               </Button>
             </div>
           </CardContent>

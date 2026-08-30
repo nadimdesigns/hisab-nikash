@@ -74,31 +74,31 @@ export default function AddProduct() {
 
   const submit = () => {
     if (!form.name.trim() || !form.sku.trim()) {
-      toast({ title: "Name and SKU are required", variant: "destructive" });
+      toast({ title: "নাম এবং SKU প্রয়োজন", variant: "destructive" });
       return;
     }
     if (addingCategory && categoryConflict) {
       toast({
-        title: "Category already exists",
-        description: "Pick it from the list instead of adding it again.",
+        title: "ক্যাটাগরি আগে থেকেই আছে",
+        description: "আবার যোগ না করে তালিকা থেকে বেছে নিন।",
         variant: "destructive",
       });
       return;
     }
     if (form.sellPrice < form.costPrice) {
-      toast({ title: "Sell price is below cost price", description: "Double-check pricing before saving." });
+      toast({ title: "বিক্রয় মূল্য মূল্যের চেয়ে কম", description: "সংরক্ষণের আগে দাম আবার যাচাই করুন।" });
     }
     addProduct(form);
-    toast({ title: "Product added" });
+    toast({ title: "পণ্য যোগ করা হয়েছে" });
     navigate("/stocks");
   };
 
   return (
-    <AppLayout title="Add product">
+    <AppLayout title="নতুন পণ্য">
       <div className="mb-4">
         <Button variant="ghost" asChild className="gap-2 px-2">
           <Link to="/stocks">
-            <ArrowLeft className="h-4 w-4" /> Back to Stocks
+            <ArrowLeft className="h-4 w-4" /> স্টকে ফিরে যান
           </Link>
         </Button>
       </div>
@@ -106,26 +106,26 @@ export default function AddProduct() {
       <Card className="shadow-soft">
         <CardContent className="p-4 sm:p-6">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Field label="Product image" className="sm:col-span-2">
+            <Field label="পণ্যের ছবি" className="sm:col-span-2">
               <ImageUploadField
                 value={form.imageUrl}
                 onChange={(url) => setForm({ ...form, imageUrl: url })}
                 productName={form.name}
               />
             </Field>
-            <Field label="Name" className="sm:col-span-2">
+            <Field label="নাম" className="sm:col-span-2">
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </Field>
             <Field label="SKU">
               <Input
-                value={hydrated ? form.sku : "Generating…"}
+                value={hydrated ? form.sku : "তৈরি হচ্ছে…"}
                 disabled
                 readOnly
                 className="disabled:opacity-100"
               />
-              <p className="text-xs text-muted-foreground">Auto-generated and always unique — can't be edited.</p>
+              <p className="text-xs text-muted-foreground">স্বয়ংক্রিয়ভাবে তৈরি এবং সবসময় অনন্য — সম্পাদনা করা যাবে না।</p>
             </Field>
-            <Field label="Category">
+            <Field label="ক্যাটাগরি">
               {addingCategory ? (
                 <div className="space-y-1.5">
                   <Input
@@ -135,11 +135,11 @@ export default function AddProduct() {
                       setNewCategory(e.target.value);
                       setForm({ ...form, category: e.target.value });
                     }}
-                    placeholder="New category name"
+                    placeholder="নতুন ক্যাটাগরির নাম"
                   />
                   <div className="flex items-center justify-between gap-2">
                     {categoryConflict ? (
-                      <p className="text-xs text-destructive">Already exists — pick it from the list.</p>
+                      <p className="text-xs text-destructive">আগে থেকেই আছে — তালিকা থেকে বেছে নিন।</p>
                     ) : <span />}
                     <button
                       type="button"
@@ -150,7 +150,7 @@ export default function AddProduct() {
                         setForm({ ...form, category: "" });
                       }}
                     >
-                      Choose from existing
+                      আগের তালিকা থেকে বেছে নিন
                     </button>
                   </div>
                 </div>
@@ -167,13 +167,13 @@ export default function AddProduct() {
                     }
                   }}
                 >
-                  <SelectTrigger aria-label="Category">
-                    <SelectValue placeholder="Select category" />
+                  <SelectTrigger aria-label="ক্যাটাগরি">
+                    <SelectValue placeholder="ক্যাটাগরি নির্বাচন করুন" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={NEW_CATEGORY_VALUE} className="font-medium text-primary">
                       <span className="inline-flex items-center gap-1.5">
-                        <Plus className="h-3.5 w-3.5" /> Add category
+                        <Plus className="h-3.5 w-3.5" /> ক্যাটাগরি যোগ করুন
                       </span>
                     </SelectItem>
                     {existingCategories.length > 0 && <SelectSeparator />}
@@ -201,17 +201,17 @@ export default function AddProduct() {
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Barcode / UPN" className="sm:col-span-2">
+            <Field label="বারকোড / UPN" className="sm:col-span-2">
               <Input
                 value={form.barcode ?? ""}
                 onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                placeholder="Scan or paste a barcode (optional)"
+                placeholder="বারকোড স্ক্যান করুন বা পেস্ট করুন (ঐচ্ছিক)"
                 autoComplete="off"
                 inputMode="numeric"
                 pattern="[0-9]*"
               />
             </Field>
-            <Field label="Expiry">
+            <Field label="মেয়াদ">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -224,7 +224,7 @@ export default function AddProduct() {
                   >
                     <CalendarIcon className="mr-[3px] h-4 w-4 shrink-0 opacity-70" />
                     <span className="truncate">
-                      {form.expiry ? formatDate(parseISO(form.expiry), "MMM do, yyyy") : "Pick a date"}
+                      {form.expiry ? formatDate(parseISO(form.expiry), "MMM do, yyyy") : "তারিখ নির্বাচন করুন"}
                     </span>
                   </Button>
                 </PopoverTrigger>
@@ -241,21 +241,21 @@ export default function AddProduct() {
                 </PopoverContent>
               </Popover>
             </Field>
-            <Field label="Stock">
+            <Field label="স্টক">
               <Input type="number" min={0} value={form.stock} onChange={(e) => setForm({ ...form, stock: +e.target.value })} />
             </Field>
-            <Field label="Cost price">
+            <Field label="মূল্য">
               <Input type="number" min={0} step="0.01" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: +e.target.value })} />
             </Field>
-            <Field label="Sell price">
+            <Field label="বিক্রয় মূল্য">
               <Input type="number" min={0} step="0.01" value={form.sellPrice} onChange={(e) => setForm({ ...form, sellPrice: +e.target.value })} />
             </Field>
           </div>
           <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <Button variant="ghost" asChild className="sm:w-auto">
-              <Link to="/stocks">Cancel</Link>
+              <Link to="/stocks">বাতিল</Link>
             </Button>
-            <Button onClick={submit} className="sm:w-auto">Add</Button>
+            <Button onClick={submit} className="sm:w-auto">যোগ করুন</Button>
           </div>
         </CardContent>
       </Card>

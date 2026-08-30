@@ -3,8 +3,8 @@ import NewInvoiceCard from "@/components/NewInvoiceCard";
 
 export default function DueSale() {
   return (
-    <AppLayout title="Due Sale">
-      <NewInvoiceCard title="Due Sale" />
+    <AppLayout title="বাকি বিক্রি">
+      <NewInvoiceCard title="বাকি বিক্রি" />
     </AppLayout>
   );
 }

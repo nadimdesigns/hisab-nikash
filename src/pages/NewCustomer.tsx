@@ -19,32 +19,32 @@ const customerSchema = z.object({
   name: z
     .string()
     .trim()
-    .nonempty({ message: "Customer's name is required" })
-    .max(100, { message: "Name must be less than 100 characters" }),
+    .nonempty({ message: "খদ্দেরের নাম আবশ্যক" })
+    .max(100, { message: "নাম ১০০ অক্ষরের কম হতে হবে" }),
   phone: z
     .string()
     .trim()
-    .max(20, { message: "Phone must be under 20 characters" })
-    .regex(/^[+\d\s()-]*$/, { message: "Only digits, spaces and + ( ) - allowed" })
+    .max(20, { message: "ফোন ২০ অক্ষরের কম হতে হবে" })
+    .regex(/^[+\d\s()-]*$/, { message: "শুধু সংখ্যা, স্পেস এবং + ( ) - অনুমোদিত" })
     .optional()
     .or(z.literal("")),
   email: z
     .string()
     .trim()
-    .max(255, { message: "Email is too long" })
-    .email({ message: "Invalid email address" })
+    .max(255, { message: "ইমেইল অনেক বড়" })
+    .email({ message: "অবৈধ ইমেইল ঠিকানা" })
     .optional()
     .or(z.literal("")),
   address: z
     .string()
     .trim()
-    .max(200, { message: "Address must be under 200 characters" })
+    .max(200, { message: "ঠিকানা ২০০ অক্ষরের কম হতে হবে" })
     .optional()
     .or(z.literal("")),
   notes: z
     .string()
     .trim()
-    .max(500, { message: "Notes must be under 500 characters" })
+    .max(500, { message: "নোট ৫০০ অক্ষরের কম হতে হবে" })
     .optional()
     .or(z.literal("")),
 });
@@ -86,7 +86,7 @@ export default function NewCustomer() {
     const cleanName = result.data.name;
     const existing = loadProfiles();
     if (Object.keys(existing).some((k) => k.toLowerCase() === cleanName.toLowerCase())) {
-      setErrors({ name: "A customer with this name already exists" });
+      setErrors({ name: "এই নামে একজন খদ্দের আগে থেকেই আছে" });
       return;
     }
     setErrors({});
@@ -96,7 +96,7 @@ export default function NewCustomer() {
       address: result.data.address || undefined,
       notes: result.data.notes || undefined,
     });
-    toast({ title: "Customer saved", description: `${cleanName} has been added.` });
+    toast({ title: "খদ্দের সংরক্ষিত হয়েছে", description: `${cleanName} যোগ করা হয়েছে।` });
     setName("");
     setPhone("");
     setEmail("");
@@ -106,7 +106,7 @@ export default function NewCustomer() {
   };
 
   return (
-    <AppLayout title="New Customer">
+    <AppLayout title="নতুন খদ্দের">
       <Card className="shadow-soft mx-auto max-w-2xl min-w-0">
         <CardHeader className="px-4 sm:px-6">
           <div className="flex items-center justify-between gap-3">
@@ -120,18 +120,18 @@ export default function NewCustomer() {
         </CardHeader>
         <CardContent className="space-y-4 pb-[34px] px-4 sm:px-6">
           <form onSubmit={handleSubmit} className="space-y-3">
-            <FieldRow label="Name" htmlFor="new-cust-name" required error={errors.name}>
+            <FieldRow label="নাম" htmlFor="new-cust-name" required error={errors.name}>
               <Input
                 id="new-cust-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Customer's name"
+                placeholder="খদ্দেরের নাম"
                 maxLength={100}
                 aria-invalid={Boolean(errors.name)}
               />
             </FieldRow>
 
-            <FieldRow label="Phone" htmlFor="new-cust-phone" error={errors.phone}>
+            <FieldRow label="ফোন" htmlFor="new-cust-phone" error={errors.phone}>
               <Input
                 id="new-cust-phone"
                 type="tel"
@@ -144,7 +144,7 @@ export default function NewCustomer() {
               />
             </FieldRow>
 
-            <FieldRow label="Email" htmlFor="new-cust-email" error={errors.email}>
+            <FieldRow label="ইমেইল" htmlFor="new-cust-email" error={errors.email}>
               <Input
                 id="new-cust-email"
                 type="email"
@@ -156,23 +156,23 @@ export default function NewCustomer() {
               />
             </FieldRow>
 
-            <FieldRow label="Address" htmlFor="new-cust-address" error={errors.address}>
+            <FieldRow label="ঠিকানা" htmlFor="new-cust-address" error={errors.address}>
               <Input
                 id="new-cust-address"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Street, city"
+                placeholder="রাস্তা, শহর"
                 maxLength={200}
                 aria-invalid={Boolean(errors.address)}
               />
             </FieldRow>
 
-            <FieldRow label="Notes" htmlFor="new-cust-notes" error={errors.notes}>
+            <FieldRow label="নোট" htmlFor="new-cust-notes" error={errors.notes}>
               <Textarea
                 id="new-cust-notes"
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Preferences, allergies, reminders…"
+                placeholder="পছন্দ, অ্যালার্জি, রিমাইন্ডার…"
                 maxLength={500}
                 rows={3}
                 aria-invalid={Boolean(errors.notes)}
@@ -180,7 +180,7 @@ export default function NewCustomer() {
             </FieldRow>
 
             <Button type="submit" className="w-full" size="lg">
-              Save Customer
+              খদ্দের সংরক্ষণ করুন
             </Button>
           </form>
         </CardContent>

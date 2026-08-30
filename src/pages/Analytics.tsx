@@ -46,6 +46,12 @@ type Txn = {
   net: number;
 };
 
+/** Bangla labels for transaction types (English values kept for filtering). */
+const TXN_TYPE_LABEL: Record<TxnType, string> = {
+  Sale: "বিক্রি",
+  Purchase: "ক্রয়",
+};
+
 export default function Analytics() {
   const { sales, purchases, products } = useShop();
   const hydrated = useShopHydrated();
@@ -216,9 +222,9 @@ export default function Analytics() {
 
   const rangeLabel = useMemo(() => {
     if (fromDate && toDate) return `${fromDate} → ${toDate}`;
-    if (fromDate) return `From ${fromDate}`;
-    if (toDate) return `Until ${toDate}`;
-    return "All time";
+    if (fromDate) return `${fromDate} থেকে`;
+    if (toDate) return `${toDate} পর্যন্ত`;
+    return "সব সময়";
   }, [fromDate, toDate]);
 
   const filtersActive = !!fromDate || !!toDate || typeFilter !== "all" || itemFilter !== "all" || !!search.trim();
@@ -333,7 +339,7 @@ export default function Analytics() {
         { header: "লাভ", align: "right" },
       ],
       rows: filteredTxns.map((t) => [
-        t.type,
+        TXN_TYPE_LABEL[t.type],
         t.date,
         t.reference,
         t.item,
@@ -347,7 +353,7 @@ export default function Analytics() {
 
 
   return (
-    <AppLayout title="Analytics">
+    <AppLayout title="রিপোর্ট">
       <div className="mb-4 grid grid-cols-3 gap-3 md:gap-4">
         {hydrated ? (
           <>
@@ -364,7 +370,7 @@ export default function Analytics() {
               icon={ShoppingCart}
               iconColor="text-emerald-500"
               iconBg="bg-emerald-500/10"
-              label="Sales"
+              label="বিক্রি"
               value={String(sales.length)}
             />
             <AnalyticsStatCard
@@ -372,7 +378,7 @@ export default function Analytics() {
               icon={Truck}
               iconColor="text-sky-500"
               iconBg="bg-sky-500/10"
-              label="Purchases"
+              label="ক্রয়"
               value={String(purchases.length)}
             />
           </>
@@ -386,22 +392,22 @@ export default function Analytics() {
           <SelectTrigger className="w-full sm:w-[180px]">
             <div className="flex items-center gap-2">
               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-              <SelectValue placeholder="All Time" />
+              <SelectValue placeholder="সব সময়" />
             </div>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Time</SelectItem>
-            <SelectItem value="year">Last Year</SelectItem>
-            <SelectItem value="month">Last Month</SelectItem>
-            <SelectItem value="week">Last Week</SelectItem>
-            <SelectItem value="today">Today</SelectItem>
+            <SelectItem value="all">সব সময়</SelectItem>
+            <SelectItem value="year">গত বছর</SelectItem>
+            <SelectItem value="month">গত মাস</SelectItem>
+            <SelectItem value="week">গত সপ্তাহ</SelectItem>
+            <SelectItem value="today">আজ</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
       <Card className="mt-6 shadow-soft">
         <CardHeader>
-          <CardTitle>Revenue vs Profit — last 30 days</CardTitle>
+          <CardTitle>আয় বনাম লাভ — গত ৩০ দিন</CardTitle>
         </CardHeader>
         <CardContent className="h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -427,7 +433,7 @@ export default function Analytics() {
 
       <Card className="mt-6 shadow-soft">
         <CardHeader>
-          <CardTitle>Transactions</CardTitle>
+          <CardTitle>লেনদেন</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-3 relative">
@@ -435,40 +441,40 @@ export default function Analytics() {
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by reference or item name..."
+              placeholder="রেফারেন্স বা পণ্যের নাম দিয়ে খুঁজুন..."
               className="pl-9"
             />
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <div className="space-y-1.5">
-              <Label className={typography("body-muted")}>From date</Label>
+              <Label className={typography("body-muted")}>শুরুর তারিখ</Label>
               <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label className={typography("body-muted")}>To date</Label>
+              <Label className={typography("body-muted")}>শেষ তারিখ</Label>
               <Input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
             </div>
             <div className="space-y-1.5">
-              <Label className={typography("body-muted")}>Type</Label>
+              <Label className={typography("body-muted")}>ধরন</Label>
               <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as "all" | TxnType)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All types" />
+                  <SelectValue placeholder="সব ধরনের" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All types</SelectItem>
-                  <SelectItem value="Sale">Sale</SelectItem>
-                  <SelectItem value="Purchase">Purchase</SelectItem>
+                  <SelectItem value="all">সব ধরনের</SelectItem>
+                  <SelectItem value="Sale">বিক্রি</SelectItem>
+                  <SelectItem value="Purchase">ক্রয়</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label className={typography("body-muted")}>Item</Label>
+              <Label className={typography("body-muted")}>পণ্য</Label>
               <Select value={itemFilter} onValueChange={setItemFilter}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All items" />
+                  <SelectValue placeholder="সব পণ্য" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All items</SelectItem>
+                  <SelectItem value="all">সব পণ্য</SelectItem>
                   {products.map((m) => (
                     <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
                   ))}
@@ -482,18 +488,18 @@ export default function Analytics() {
                 disabled={!filtersActive}
                 className="gap-2 w-full"
               >
-                <X className="h-4 w-4" /> Clear filters
+                <X className="h-4 w-4" /> ফিল্টার মুছুন
               </Button>
             </div>
           </div>
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
             <p className={typography("body-muted")}>
-              {filteredTxns.length} of {allTxns.length} transactions
+              {allTxns.length}টি লেনদেনের মধ্যে {filteredTxns.length}টি
             </p>
             <div className="flex items-center gap-3">
               <p className={typography("body-muted")}>
-                Revenue {currency(filteredTotals.revenue)} · Cost {currency(filteredTotals.cost)}
+                আয় {currency(filteredTotals.revenue)} · খরচ {currency(filteredTotals.cost)}
               </p>
               <Button
                 size="sm"
@@ -503,7 +509,7 @@ export default function Analytics() {
                 className="gap-2"
               >
                 <Download className="h-4 w-4" />
-                Download
+                ডাউনলোড
               </Button>
             </div>
           </div>
@@ -513,15 +519,15 @@ export default function Analytics() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead><SortHeader label="Type" k="type" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} /></TableHead>
-                  <TableHead><SortHeader label="Date" k="date" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} /></TableHead>
-                  <TableHead><SortHeader label="Reference" k="reference" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} /></TableHead>
-                  <TableHead>Item</TableHead>
-                  <TableHead className="text-right">Qty</TableHead>
-                  <TableHead className="text-right">Unit</TableHead>
-                  <TableHead className="text-right"><SortHeader label="Total" k="total" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} align="right" /></TableHead>
-                  <TableHead className="text-right">Profit</TableHead>
-                  <TableHead className="text-right">Net</TableHead>
+                  <TableHead><SortHeader label="ধরন" k="type" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} /></TableHead>
+                  <TableHead><SortHeader label="তারিখ" k="date" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} /></TableHead>
+                  <TableHead><SortHeader label="রেফারেন্স" k="reference" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} /></TableHead>
+                  <TableHead>পণ্য</TableHead>
+                  <TableHead className="text-right">পরিমাণ</TableHead>
+                  <TableHead className="text-right">একক</TableHead>
+                  <TableHead className="text-right"><SortHeader label="মোট" k="total" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} align="right" /></TableHead>
+                  <TableHead className="text-right">লাভ</TableHead>
+                  <TableHead className="text-right">নেট</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -542,13 +548,13 @@ export default function Analytics() {
                 ) : filteredTxns.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={9} className={typography("body-muted", "py-6 text-center")}>
-                      No transactions match the active filters.
+                      সক্রিয় ফিল্টারের সাথে মিলে এমন কোনো লেনদেন নেই।
                     </TableCell>
                   </TableRow>
                 ) : (
                   pagedTxns.map((t, idx) => (
                     <TableRow key={`${t.type}-${t.date}-${t.productId}-${pageStart + idx}`}>
-                      <TableCell>{t.type}</TableCell>
+                      <TableCell>{TXN_TYPE_LABEL[t.type]}</TableCell>
                       <TableCell>{t.date}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{t.reference}</TableCell>
                       <TableCell className="max-w-[200px] truncate">{t.item}</TableCell>
@@ -571,7 +577,7 @@ export default function Analytics() {
           {filteredTxns.length > 0 && (
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className={typography("body-muted")}>Rows per page</span>
+                <span className={typography("body-muted")}>প্রতি পৃষ্ঠায় সারি</span>
                 <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
                   <SelectTrigger className="w-[90px]">
                     <SelectValue />
@@ -584,14 +590,14 @@ export default function Analytics() {
                 </Select>
               </div>
               <p className={typography("body-muted")}>
-                {pageStart + 1}–{Math.min(pageEnd, filteredTxns.length)} of {filteredTxns.length}
+                মোট {filteredTxns.length}টির মধ্যে {pageStart + 1}–{Math.min(pageEnd, filteredTxns.length)}
               </p>
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setPage(1)} disabled={safePage === 1}>First</Button>
-                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={safePage === 1}>Prev</Button>
-                <span className={typography("body-muted", "min-w-[80px] text-center")}>Page {safePage} / {totalPages}</span>
-                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={safePage === totalPages}>Next</Button>
-                <Button variant="outline" size="sm" onClick={() => setPage(totalPages)} disabled={safePage === totalPages}>Last</Button>
+                <Button variant="outline" size="sm" onClick={() => setPage(1)} disabled={safePage === 1}>প্রথম</Button>
+                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={safePage === 1}>আগে</Button>
+                <span className={typography("body-muted", "min-w-[80px] text-center")}>পৃষ্ঠা {safePage} / {totalPages}</span>
+                <Button variant="outline" size="sm" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={safePage === totalPages}>পরবর্তী</Button>
+                <Button variant="outline" size="sm" onClick={() => setPage(totalPages)} disabled={safePage === totalPages}>শেষ</Button>
               </div>
             </div>
           )}
@@ -599,17 +605,17 @@ export default function Analytics() {
       </Card>
 
       <Card className="mt-6 shadow-soft">
-        <CardHeader><CardTitle>Top selling products</CardTitle></CardHeader>
+        <CardHeader><CardTitle>সর্বাধিক বিক্রিত পণ্য</CardTitle></CardHeader>
         <CardContent>
           {topProducts.length === 0 ? (
-            <p className={typography("body-muted")}>No sales data yet.</p>
+            <p className={typography("body-muted")}>এখনও কোনো বিক্রির তথ্য নেই।</p>
           ) : (
             <ul className="space-y-3">
               {topProducts.map((p) => (
                 <li key={p.name} className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className={typography("body-strong", "truncate")}>{p.name}</p>
-                    <p className={typography("body-muted")}>{p.qty} units sold</p>
+                    <p className={typography("body-muted")}>{p.qty} ইউনিট বিক্রি হয়েছে</p>
                   </div>
                   <span className={typography("body", "font-semibold")}>{currency(p.revenue)}</span>
                 </li>
@@ -625,14 +631,14 @@ export default function Analytics() {
           onClick={exportCSV}
           className="flex-1 gap-2 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
         >
-          <Download className="h-4 w-4" /> Export CSV
+          <Download className="h-4 w-4" /> CSV এক্সপোর্ট
         </Button>
         <Button
           variant="outline"
           onClick={exportPDF}
           className="flex-1 gap-2 dark:text-white dark:hover:text-white"
         >
-          <Download className="h-4 w-4" /> Export PDF
+          <Download className="h-4 w-4" /> PDF এক্সপোর্ট
         </Button>
       </div>
     </AppLayout>
@@ -641,7 +647,7 @@ export default function Analytics() {
 
 function AnalyticsStatCardSkeleton() {
   return (
-    <Card className="shadow-soft" aria-busy="true" aria-label="Loading">
+    <Card className="shadow-soft" aria-busy="true" aria-label="লোড হচ্ছে">
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
           <Skeleton className="h-12 w-12 shrink-0 rounded-xl md:h-14 md:w-14" />
@@ -671,7 +677,7 @@ function AnalyticsStatCard({
   value: string;
 }) {
   return (
-    <Link to={to} aria-label={`Open ${label} (${value})`} className="block">
+    <Link to={to} aria-label={`${label} খুলুন (${value})`} className="block">
       <Card className="shadow-soft transition-colors active:bg-muted">
         <CardContent className="p-3 md:p-5 md:pt-3">
           <div className="flex flex-col items-center gap-2 md:flex-row md:gap-3">

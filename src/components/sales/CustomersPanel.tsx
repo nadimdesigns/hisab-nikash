@@ -458,10 +458,10 @@ export default function CustomersPanel() {
                     variant="outline"
                     size="sm"
                     className="relative shrink-0 gap-2 border-2"
-                    aria-label="Open customer filters"
+                    aria-label="খদ্দের ফিল্টার খুলুন"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
-                    Filter
+                    ফিল্টার
                     {custAdvancedFilterCount > 0 && (
                       <Badge
                         variant="default"
@@ -484,9 +484,9 @@ export default function CustomersPanel() {
               <Input
                 value={custQuery}
                 onChange={(e) => setCustQuery(e.target.value)}
-                placeholder="Search by customer name, number or ID"
+                placeholder="নাম, নম্বর বা আইডি দিয়ে খুঁজুন"
                 className="pl-9 pr-9"
-                aria-label="Search customers"
+                aria-label="খদ্দের খুঁজুন"
               />
               {custQuery && (
                 <button
@@ -540,7 +540,7 @@ export default function CustomersPanel() {
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
               <SheetHeader className="px-6 pt-6">
-                <SheetTitle>Filter Customers</SheetTitle>
+                <SheetTitle>খদ্দের ফিল্টার</SheetTitle>
               </SheetHeader>
 
               <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
@@ -607,7 +607,7 @@ export default function CustomersPanel() {
                             </span>
                           )
                         ) : (
-                          <span>Pick a date range</span>
+                          <span>তারিখের পরিসর বাছাই করুন</span>
                         )}
                       </Button>
                     </PopoverTrigger>
@@ -792,7 +792,7 @@ export default function CustomersPanel() {
                     inputMode="decimal"
                     min="0"
                     step="0.01"
-                    placeholder="Amount"
+                    placeholder="টাকার পরিমাণ"
                     value={paymentInput}
                     onChange={(e) => setPaymentInput(e.target.value)}
                     disabled={selectedRow.due <= 0}

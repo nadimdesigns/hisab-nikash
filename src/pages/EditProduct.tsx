@@ -53,23 +53,23 @@ export default function EditProduct() {
   const submit = () => {
     if (!id || !target) return;
     if (!form.name.trim() || !form.sku.trim()) {
-      toast({ title: "Name and SKU are required", variant: "destructive" });
+      toast({ title: "নাম এবং SKU প্রয়োজন", variant: "destructive" });
       return;
     }
     if (form.sellPrice < form.costPrice) {
-      toast({ title: "Sell price is below cost price", description: "Double-check pricing before saving." });
+      toast({ title: "বিক্রয় মূল্য মূল্যের চেয়ে কম", description: "সংরক্ষণের আগে দাম আবার যাচাই করুন।" });
     }
     updateProduct(id, form);
-    toast({ title: "Product updated" });
+    toast({ title: "পণ্য আপডেট করা হয়েছে" });
     navigate("/stocks");
   };
 
   return (
-    <AppLayout title="Edit product">
+    <AppLayout title="পণ্য সম্পাদনা">
       <div className="mb-4">
         <Button variant="ghost" asChild className="gap-2 px-2">
           <Link to="/stocks">
-            <ArrowLeft className="h-4 w-4" /> Back to Stocks
+            <ArrowLeft className="h-4 w-4" /> স্টকে ফিরে যান
           </Link>
         </Button>
       </div>
@@ -84,28 +84,28 @@ export default function EditProduct() {
             </div>
           ) : !target ? (
             <div className="space-y-3 text-center">
-              <p>Product not found.</p>
+              <p>পণ্য পাওয়া যায়নি।</p>
               <Button asChild>
-                <Link to="/stocks">Back to Stocks</Link>
+                <Link to="/stocks">স্টকে ফিরে যান</Link>
               </Button>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Product image" className="col-span-2">
+                <Field label="পণ্যের ছবি" className="col-span-2">
                   <ImageUploadField
                     value={form.imageUrl}
                     onChange={(url) => setForm({ ...form, imageUrl: url })}
                     productName={form.name}
                   />
                 </Field>
-                <Field label="Name" className="col-span-2">
+                <Field label="নাম" className="col-span-2">
                   <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                 </Field>
                 <Field label="SKU">
                   <Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
                 </Field>
-                <Field label="Category">
+                <Field label="ক্যাটাগরি">
                   <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
                 </Field>
                 <Field label="একক">
@@ -125,20 +125,20 @@ export default function EditProduct() {
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Batch">
+                <Field label="ব্যাচ">
                   <Input value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />
                 </Field>
-                <Field label="Barcode / UPN" className="col-span-2">
+                <Field label="বারকোড / UPN" className="col-span-2">
                   <Input
                     value={form.barcode ?? ""}
                     onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                    placeholder="Scan or paste a barcode (optional)"
+                    placeholder="বারকোড স্ক্যান করুন বা পেস্ট করুন (ঐচ্ছিক)"
                     autoComplete="off"
                     inputMode="numeric"
                     pattern="[0-9]*"
                   />
                 </Field>
-                <Field label="Aliases / ingredients" className="col-span-2">
+                <Field label="বিকল্প নাম / উপাদান" className="col-span-2">
                   <Input
                     value={(form.aliases ?? []).join(", ")}
                     onChange={(e) =>
@@ -154,7 +154,7 @@ export default function EditProduct() {
                     autoComplete="off"
                   />
                 </Field>
-                <Field label="Expiry">
+                <Field label="মেয়াদ">
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -167,7 +167,7 @@ export default function EditProduct() {
                       >
                         <CalendarIcon className="mr-[3px] h-4 w-4 shrink-0 opacity-70" />
                         <span className="truncate">
-                          {form.expiry ? formatDate(parseISO(form.expiry), "MMM do, yyyy") : "Pick a date"}
+                          {form.expiry ? formatDate(parseISO(form.expiry), "MMM do, yyyy") : "তারিখ নির্বাচন করুন"}
                         </span>
                       </Button>
                     </PopoverTrigger>
@@ -184,24 +184,24 @@ export default function EditProduct() {
                     </PopoverContent>
                   </Popover>
                 </Field>
-                <Field label="Stock">
+                <Field label="স্টক">
                   <Input type="number" min={0} value={form.stock} onChange={(e) => setForm({ ...form, stock: +e.target.value })} />
                 </Field>
-                <Field label="Reorder level">
+                <Field label="রিঅর্ডার লেভেল">
                   <Input type="number" min={0} value={form.reorderLevel} onChange={(e) => setForm({ ...form, reorderLevel: +e.target.value })} />
                 </Field>
-                <Field label="Cost price">
+                <Field label="মূল্য">
                   <Input type="number" min={0} step="0.01" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: +e.target.value })} />
                 </Field>
-                <Field label="Sell price">
+                <Field label="বিক্রয় মূল্য">
                   <Input type="number" min={0} step="0.01" value={form.sellPrice} onChange={(e) => setForm({ ...form, sellPrice: +e.target.value })} />
                 </Field>
               </div>
               <div className="mt-6 flex justify-end gap-2">
                 <Button variant="ghost" asChild>
-                  <Link to="/stocks">Cancel</Link>
+                  <Link to="/stocks">বাতিল</Link>
                 </Button>
-                <Button onClick={submit}>Save</Button>
+                <Button onClick={submit}>সংরক্ষণ</Button>
               </div>
             </>
           )}

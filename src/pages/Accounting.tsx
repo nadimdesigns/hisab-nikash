@@ -37,6 +37,14 @@ type AllTxn = {
   amount: number;
 };
 
+/** Bangla labels for transaction types (English values kept for filtering). */
+const TXN_TYPE_LABEL: Record<AllTxnType, string> = {
+  "Cash Sale": "নগদ বিক্রি",
+  "Due Sale": "বাকি বিক্রি",
+  "New Payment": "নতুন পেমেন্ট",
+  "Purchase": "ক্রয়",
+};
+
 export default function Accounting() {
   const { sales, purchases } = useShop();
   const hydrated = useShopHydrated();
@@ -53,7 +61,7 @@ export default function Accounting() {
         type: isCredit ? "Due Sale" : "Cash Sale",
         date: s.date,
         reference: s.customer || "—",
-        summary: `${s.items.length} item${s.items.length === 1 ? "" : "s"}`,
+        summary: `${s.items.length}টি আইটেম`,
         amount: s.total,
       });
     });
@@ -63,7 +71,7 @@ export default function Accounting() {
         type: "Purchase",
         date: p.date,
         reference: p.supplier || "—",
-        summary: `${p.items.length} item${p.items.length === 1 ? "" : "s"}`,
+        summary: `${p.items.length}টি আইটেম`,
         amount: p.total,
       });
     });
@@ -84,21 +92,21 @@ export default function Accounting() {
   }, [allTransactionsList, allTypeFilter, allSearch]);
 
   return (
-    <AppLayout title="Accounting">
+    <AppLayout title="হিসাব">
       <div className="mb-[10px] flex w-full flex-nowrap items-center gap-2">
         <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={allSearch}
             onChange={(e) => setAllSearch(e.target.value)}
-            placeholder="Search..."
+            placeholder="খুঁজুন..."
             className="pl-9 pr-9"
           />
           {allSearch && (
             <button
               type="button"
               onClick={() => setAllSearch("")}
-              aria-label="Clear search"
+              aria-label="খুঁজুন মুছুন"
               className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
@@ -107,19 +115,19 @@ export default function Accounting() {
         </div>
         <Select value={allTypeFilter} onValueChange={(v) => setAllTypeFilter(v as "all" | AllTxnType)}>
           <SelectTrigger className="h-10 w-auto shrink-0 gap-2 rounded-md border border-input bg-white px-3 py-2 hover:bg-accent hover:text-accent-foreground dark:bg-white/5 dark:text-foreground dark:border-input dark:hover:bg-white/10 dark:hover:text-foreground">
-            <SelectValue placeholder="All types" />
+            <SelectValue placeholder="সব ধরনের" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
-            <SelectItem value="Cash Sale">Cash Sale</SelectItem>
-            <SelectItem value="Due Sale">Due Sale</SelectItem>
-            <SelectItem value="New Payment">New Payment</SelectItem>
-            <SelectItem value="Purchase">Purchase</SelectItem>
+            <SelectItem value="all">সব ধরনের</SelectItem>
+            <SelectItem value="Cash Sale">নগদ বিক্রি</SelectItem>
+            <SelectItem value="Due Sale">বাকি বিক্রি</SelectItem>
+            <SelectItem value="New Payment">নতুন পেমেন্ট</SelectItem>
+            <SelectItem value="Purchase">ক্রয়</SelectItem>
           </SelectContent>
         </Select>
         <Button asChild className="shrink-0">
           <Link to="/new-transaction">
-            <Plus className="h-4 w-4" /> New Transaction
+            <Plus className="h-4 w-4" /> নতুন লেনদেন
           </Link>
         </Button>
       </div>
@@ -131,11 +139,11 @@ export default function Accounting() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Reference</TableHead>
-                  <TableHead>Details</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>তারিখ</TableHead>
+                  <TableHead>ধরন</TableHead>
+                  <TableHead>রেফারেন্স</TableHead>
+                  <TableHead>বিস্তারিত</TableHead>
+                  <TableHead className="text-right">পরিমাণ</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -153,8 +161,8 @@ export default function Accounting() {
                   <TableRow>
                     <TableCell colSpan={5} className={typography("body-muted", "py-8 text-center")}>
                       {allTypeFilter === "New Payment"
-                        ? "No payments recorded yet."
-                        : "No transactions yet."}
+                        ? "এখনও কোনো পেমেন্ট রেকর্ড হয়নি।"
+                        : "এখনও কোনো লেনদেন নেই।"}
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -169,7 +177,7 @@ export default function Accounting() {
                           t.type === "New Payment" && "bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300",
                           t.type === "Purchase" && "bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300",
                         )}>
-                          {t.type}
+                          {TXN_TYPE_LABEL[t.type]}
                         </span>
                       </TableCell>
                       <TableCell className="max-w-[220px] truncate">{t.reference}</TableCell>
@@ -188,7 +196,7 @@ export default function Accounting() {
           </div>
           <div className="mt-3 flex items-center justify-between">
             <p className={typography("body-muted")}>
-              {filteredAllTransactions.length} of {allTransactionsList.length} transactions
+              {allTransactionsList.length}টি লেনদেনের মধ্যে {filteredAllTransactions.length}টি
             </p>
           </div>
         </CardContent>

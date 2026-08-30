@@ -227,7 +227,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           {isCredit ? (
             <Select value={customer} onValueChange={setCustomer}>
               <SelectTrigger className={`h-[46px] rounded-xl bg-muted/40 dark:bg-white/5 ${tone.focus}`}>
-                <SelectValue placeholder="Select customer..." />
+                <SelectValue placeholder="খদ্দের বাছাই করুন..." />
               </SelectTrigger>
               <SelectContent>
                 {customerOptions.length === 0 ? (
@@ -245,7 +245,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             </Select>
           ) : (
             <Input
-              placeholder="Search or add customer..."
+              placeholder="খুঁজুন বা খদ্দের যোগ করুন..."
               value={customer}
               onChange={(e) => {
                 const words = e.target.value.split(/\s+/).filter(Boolean);
@@ -269,7 +269,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
               products={products}
               value={pickId}
               onChange={handleSelectProduct}
-              placeholder="Select product..."
+              placeholder="পণ্য বাছাই করুন..."
               disableOutOfStock
               showSaleInfo
               className={`h-[46px] rounded-xl bg-muted/40 hover:bg-muted/40 dark:bg-white/5 dark:hover:bg-white/5 ${tone.focus}`}

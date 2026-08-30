@@ -62,7 +62,7 @@ export default function Inventory() {
   const [addOpen, setAddOpen] = useState(false);
 
   // Filter sheet draft state — changes only commit to the active filters
-  // when the user presses "Apply filters". Drafts are seeded from the
+  // when the user presses "ফিল্টার প্রয়োগ করুন". Drafts are seeded from the
   // current values whenever the sheet opens.
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
   const [categorySheetOpen, setCategorySheetOpen] = useState(false);
@@ -161,8 +161,8 @@ export default function Inventory() {
   const handleExport = async (format: "csv" | "pdf") => {
     if (filteredForExport.length === 0) {
       toast({
-        title: "Nothing to export",
-        description: "No products match the current filters.",
+        title: "এক্সপোর্ট করার মতো কিছু নেই",
+        description: "বর্তমান ফিল্টারের সাথে কোনো পণ্য মেলে না।",
         variant: "destructive",
       });
       return;
@@ -171,20 +171,20 @@ export default function Inventory() {
       if (format === "csv") exportInventoryCSV(filteredForExport);
       else await exportInventoryPDF(filteredForExport);
       toast({
-        title: `Exported ${filteredForExport.length} item${filteredForExport.length === 1 ? "" : "s"}`,
-        description: `Inventory report saved as ${format.toUpperCase()}.`,
+        title: `${filteredForExport.length}টি আইটেম এক্সপোর্ট হয়েছে`,
+        description: `ইনভেন্টরি রিপোর্ট ${format.toUpperCase()} হিসেবে সংরক্ষিত হয়েছে।`,
       });
     } catch (e) {
       toast({
-        title: "Export failed",
-        description: e instanceof Error ? e.message : "Unknown error",
+        title: "এক্সপোর্ট ব্যর্থ হয়েছে",
+        description: e instanceof Error ? e.message : "অজানা ত্রুটি",
         variant: "destructive",
       });
     }
   };
 
   return (
-    <AppLayout title="Stocks">
+    <AppLayout title="স্টক">
       <div className="mb-4 space-y-3">
         <div className="flex items-center gap-2">
           <Sheet open={categorySheetOpen} onOpenChange={setCategorySheetOpen}>
@@ -192,10 +192,10 @@ export default function Inventory() {
               <Button
                 variant="outline"
                 className="flex-1 justify-between gap-2 sm:w-48 sm:flex-none"
-                aria-label="Select category"
+                aria-label="ক্যাটাগরি নির্বাচন করুন"
               >
                 <span className="truncate">
-                  {category === "all" ? "All categories" : category}
+                  {category === "all" ? "সব ক্যাটাগরি" : category}
                 </span>
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
               </Button>
@@ -205,11 +205,11 @@ export default function Inventory() {
               className="flex w-full flex-col gap-0 p-0 sm:max-w-sm"
             >
               <SheetHeader className="border-b px-6 py-4">
-                <SheetTitle>Categories</SheetTitle>
+                <SheetTitle>ক্যাটাগরি</SheetTitle>
               </SheetHeader>
               <ul className="flex-1 overflow-y-auto py-2">
                 {[
-                  { value: "all", label: "All categories" },
+                  { value: "all", label: "সব ক্যাটাগরি" },
                   ...categories.map((c) => ({ value: c, label: c })),
                 ].map((opt) => {
                   const active = category === opt.value;
@@ -242,7 +242,7 @@ export default function Inventory() {
             className="hidden shrink-0 gap-2 sm:ml-auto sm:inline-flex"
           >
             <Link to="/add-product">
-              <Plus className="h-4 w-4" /> Add product
+              <Plus className="h-4 w-4" /> পণ্য যোগ করুন
             </Link>
           </Button>
 
@@ -251,10 +251,10 @@ export default function Inventory() {
               <Button
                 variant="outline"
                 className="relative flex-1 gap-2 px-[26px] sm:flex-none sm:shrink-0"
-                aria-label="Open filters"
+                aria-label="ফিল্টার খুলুন"
               >
                 <SlidersHorizontal className="h-4 w-4" />
-                Filter
+                ফিল্টার
                 {advancedFilterCount > 0 && (
                   <Badge
                     variant="default"
@@ -271,21 +271,21 @@ export default function Inventory() {
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
               <SheetHeader className="px-6 pt-6">
-                <SheetTitle>Filter Stock Items</SheetTitle>
+                <SheetTitle>স্টক আইটেম ফিল্টার করুন</SheetTitle>
                 <div className="relative mt-3">
                   <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Find a Product"
+                    placeholder="পণ্য খুঁজুন"
                     className={cn("bg-white dark:bg-background", query ? "pr-[6.5rem]" : "pr-[4.5rem]")}
-                    aria-label="Search products"
+                    aria-label="পণ্য খুঁজুন"
                   />
                   {query && (
                     <button
                       type="button"
                       onClick={() => setQuery("")}
                       className="absolute right-[4.25rem] top-1/2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground hover:text-foreground"
-                      aria-label="Clear search"
+                      aria-label="খোঁজ মুছুন"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -297,31 +297,31 @@ export default function Inventory() {
                     className="absolute right-1 top-1/2 h-10 -translate-y-1/2 gap-1.5 px-3 md:h-8"
                   >
                     <Search className="h-4 w-4 text-white" />
-                    Search
+                    খুঁজুন
                   </Button>
                 </div>
               </SheetHeader>
 
               <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
                 <FilterRadioGroup
-                  title="Stock status"
+                  title="স্টক অবস্থা"
                   value={draftStock}
                   onValueChange={(v) => setDraftStock(v as StockFilter)}
                   options={[
-                    { value: "all", label: "All stock" },
-                    { value: "low", label: "Low stock (≤ reorder)" },
-                    { value: "out", label: "Out of stock" },
-                    { value: "in", label: "In stock" },
+                    { value: "all", label: "সব স্টক" },
+                    { value: "low", label: "কম স্টক (≤ রিঅর্ডার)" },
+                    { value: "out", label: "স্টক শেষ" },
+                    { value: "in", label: "স্টকে আছে" },
                   ]}
                 />
 
                 <FilterRadioGroup
-                  title="Expiry"
+                  title="মেয়াদ"
                   value={draftExpiry}
                   onValueChange={(v) => setDraftExpiry(v as ExpiryFilter)}
                   options={[
-                    { value: "all", label: "Any expiry" },
-                    { value: "expired", label: "Expired" },
+                    { value: "all", label: "যেকোনো মেয়াদ" },
+                    { value: "expired", label: "মেয়াদোত্তীর্ণ" },
                     { value: "3", label: "৩ দিনের মধ্যে মেয়াদ শেষ" },
                     { value: "7", label: "৭ দিনের মধ্যে মেয়াদ শেষ" },
                     { value: "30", label: "৩০ দিনের মধ্যে মেয়াদ শেষ" },
@@ -329,19 +329,19 @@ export default function Inventory() {
                 />
 
                 <FilterRadioGroup
-                  title="Sort by"
+                  title="সাজান"
                   value={draftSort}
                   onValueChange={(v) => setDraftSort(v as SortKey)}
                   options={[
-                    { value: "name-asc", label: "Name · A → Z" },
-                    { value: "name-desc", label: "Name · Z → A" },
-                    { value: "price-asc", label: "Price · Low to High" },
-                    { value: "price-desc", label: "Price · High to Low" },
-                    { value: "stock-asc", label: "Stock · Low to High" },
-                    { value: "stock-desc", label: "Stock · High to Low" },
-                    { value: "expiry-asc", label: "Expiry · Soonest first" },
-                    { value: "newest", label: "Newest first" },
-                    { value: "oldest", label: "Oldest first" },
+                    { value: "name-asc", label: "নাম · A → Z" },
+                    { value: "name-desc", label: "নাম · Z → A" },
+                    { value: "price-asc", label: "দাম · কম থেকে বেশি" },
+                    { value: "price-desc", label: "দাম · বেশি থেকে কম" },
+                    { value: "stock-asc", label: "স্টক · কম থেকে বেশি" },
+                    { value: "stock-desc", label: "স্টক · বেশি থেকে কম" },
+                    { value: "expiry-asc", label: "মেয়াদ · আগে যেটি শেষ হবে" },
+                    { value: "newest", label: "নতুন আগে" },
+                    { value: "oldest", label: "পুরোনো আগে" },
                   ]}
                 />
               </div>
@@ -353,11 +353,11 @@ export default function Inventory() {
                     onClick={resetDraftFilters}
                     className="w-full gap-2"
                   >
-                    <X className="h-4 w-4" /> Reset filters
+                    <X className="h-4 w-4" /> ফিল্টার রিসেট করুন
                   </Button>
                 )}
                 <Button onClick={applyDraftFilters} className="w-full">
-                  Apply filters
+                  ফিল্টার প্রয়োগ করুন
                 </Button>
               </div>
             </SheetContent>
@@ -365,7 +365,7 @@ export default function Inventory() {
 
           {filtersActive && (
             <Button variant="ghost" size="sm" onClick={clearFilters} className={cn("gap-1", BODY_TEXT)}>
-              <X className="h-3.5 w-3.5" /> Clear
+              <X className="h-3.5 w-3.5" /> মুছুন
             </Button>
           )}
         </div>
@@ -375,7 +375,7 @@ export default function Inventory() {
           className="w-full gap-2 sm:hidden"
         >
           <Link to="/add-product">
-            <Plus className="h-4 w-4" /> Add product
+            <Plus className="h-4 w-4" /> পণ্য যোগ করুন
           </Link>
         </Button>
       </div>
@@ -395,24 +395,24 @@ export default function Inventory() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="gap-2">
-              <Download className="h-4 w-4" /> Export
+              <Download className="h-4 w-4" /> এক্সপোর্ট
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className={BODY_TEXT}>
-              Export {filteredForExport.length} item{filteredForExport.length === 1 ? "" : "s"}
+              এক্সপোর্ট {filteredForExport.length}টি আইটেম
               {filtersActive && (
                 <span className={typography("body-muted", "block font-normal")}>
-                  Based on current filters
+                  বর্তমান ফিল্টারের ভিত্তিতে
                 </span>
               )}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => handleExport("csv")} className={cn("gap-2", BODY_TEXT)}>
-              <FileSpreadsheet className="h-4 w-4" /> Download CSV
+              <FileSpreadsheet className="h-4 w-4" /> CSV ডাউনলোড
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => handleExport("pdf")} className={cn("gap-2", BODY_TEXT)}>
-              <FileText className="h-4 w-4" /> Download PDF
+              <FileText className="h-4 w-4" /> PDF ডাউনলোড
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

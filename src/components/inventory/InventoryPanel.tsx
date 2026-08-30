@@ -348,7 +348,7 @@ export default function InventoryPanel({
               <Input
                 value={form.barcode ?? ""}
                 onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                placeholder="Scan or paste a barcode (optional)"
+                placeholder="বারকোড স্ক্যান বা পেস্ট করুন (ঐচ্ছিক)"
                 autoComplete="off"
                 inputMode="numeric"
                 pattern="[0-9]*"
@@ -412,8 +412,8 @@ export default function InventoryPanel({
             </Field>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
-            <Button onClick={submit}>{editing ? "Save" : "Add"}</Button>
+            <Button variant="ghost" onClick={() => setOpen(false)}>বাতিল</Button>
+            <Button onClick={submit}>{editing ? "সংরক্ষণ" : "যোগ করুন"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -425,13 +425,13 @@ export default function InventoryPanel({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[180px] md:min-w-0">Product</TableHead>
+                <TableHead className="min-w-[180px] md:min-w-0">পণ্য</TableHead>
                 <TableHead>SKU</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="min-w-[160px] md:min-w-0">Batch / Expiry</TableHead>
-                <TableHead className="text-right">Stock</TableHead>
-                <TableHead className="text-right">Cost</TableHead>
-                <TableHead className="text-right">Sell</TableHead>
+                <TableHead>ক্যাটাগরি</TableHead>
+                <TableHead className="min-w-[160px] md:min-w-0">লট / মেয়াদ</TableHead>
+                <TableHead className="text-right">স্টক</TableHead>
+                <TableHead className="text-right">মূল্য</TableHead>
+                <TableHead className="text-right">বিক্রি</TableHead>
                 <TableHead className="w-24" />
               </TableRow>
             </TableHeader>
@@ -541,7 +541,7 @@ export default function InventoryPanel({
       <AlertDialog open={!!pendingDelete} onOpenChange={(v) => !v && setPendingDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this product?</AlertDialogTitle>
+            <AlertDialogTitle>এই পণ্যটি মুছবেন?</AlertDialogTitle>
             <AlertDialogDescription asChild>
               {pendingDelete ? (
                 <div className="space-y-3">

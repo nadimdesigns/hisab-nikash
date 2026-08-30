@@ -3,7 +3,7 @@ import CustomersPanel from "@/components/sales/CustomersPanel";
 
 export default function Customers() {
   return (
-    <AppLayout title="Customers">
+    <AppLayout title="খদ্দের">
       <CustomersPanel />
     </AppLayout>
   );

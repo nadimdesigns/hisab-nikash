@@ -19,8 +19,8 @@ const OPTIONS: {
 }[] = [
   {
     type: "sale",
-    title: "Sale",
-    description: "Record a cash or due sale to a customer.",
+    title: "বিক্রি",
+    description: "খদ্দেরের কাছে নগদ বা বাকি বিক্রি রেকর্ড করুন।",
     icon: Banknote,
     surface: "bg-emerald-50 dark:bg-emerald-950/40",
     gradient: "from-emerald-400 to-green-600",
@@ -29,8 +29,8 @@ const OPTIONS: {
   },
   {
     type: "purchase",
-    title: "Purchase",
-    description: "Record an expense or stock purchase from a supplier.",
+    title: "ক্রয়",
+    description: "পাইকারের কাছ থেকে খরচ বা স্টক ক্রয় রেকর্ড করুন।",
     icon: PackagePlus,
     surface: "bg-rose-50 dark:bg-rose-950/40",
     gradient: "from-rose-400 to-red-500",
@@ -43,13 +43,13 @@ export default function NewTransaction() {
   const navigate = useNavigate();
 
   return (
-    <AppLayout title="New Transaction">
+    <AppLayout title="নতুন লেনদেন">
       <Card className="shadow-soft">
         <CardContent className="space-y-6 p-4 sm:p-6">
           <div>
-            <p className={typography("h4", "m-0")}>Choose transaction type</p>
+            <p className={typography("h4", "m-0")}>লেনদেনের ধরন নির্বাচন করুন</p>
             <p className={typography("body-muted", "mt-1")}>
-              Tap a type to open its form.
+              ফর্ম খুলতে একটি ধরনে চাপ দিন।
             </p>
           </div>
 

@@ -124,7 +124,7 @@ export default function Sales() {
     if (!m) return;
     if (quantity < 1) return;
     if (m.stock < quantity) {
-      toast({ title: `Only ${m.stock} in stock`, variant: "destructive" });
+      toast({ title: `স্টকে আছে মাত্র ${m.stock}`, variant: "destructive" });
       return;
     }
     const existing = items.find((i) => i.productId === m.id);
@@ -150,18 +150,18 @@ export default function Sales() {
 
   const checkout = () => {
     if (items.length === 0) {
-      toast({ title: "Add at least one item", variant: "destructive" });
+      toast({ title: "অন্তত একটি আইটেম যোগ করুন", variant: "destructive" });
       return;
     }
     const sale = recordSale({ customer: customer.trim() || "Walk-in", items });
     if (!sale) {
-      toast({ title: "Insufficient stock for one or more items", variant: "destructive" });
+      toast({ title: "এক বা একাধিক আইটেমের স্টক পর্যাপ্ত নয়", variant: "destructive" });
       return;
     }
     setItems([]);
     setCustomer("");
     clearDraft("cash");
-    toast({ title: "Sale recorded", description: `Invoice total ${currency(sale.total)}` });
+    toast({ title: "বিক্রি সংরক্ষিত হয়েছে", description: `চালানের মোট ${currency(sale.total)}` });
   };
 
   // ===== Due Customers state =====
@@ -236,11 +236,11 @@ export default function Sales() {
 
   const recordDue = () => {
     if (!dueCustomer.trim()) {
-      toast({ title: "Customer name is required", variant: "destructive" });
+      toast({ title: "খদ্দেরের নাম প্রয়োজন", variant: "destructive" });
       return;
     }
     if (dueItems.length === 0) {
-      toast({ title: "Add at least one item", variant: "destructive" });
+      toast({ title: "অন্তত একটি আইটেম যোগ করুন", variant: "destructive" });
       return;
     }
     const entry: DueEntry = {
@@ -256,7 +256,7 @@ export default function Sales() {
     setDuePickId("");
     setDueQty(1);
     clearDraft("due");
-    toast({ title: "Due recorded", description: `${entry.customer} owes ${currency(entry.total)}` });
+    toast({ title: "বাকি সংরক্ষিত হয়েছে", description: `${entry.customer} এর বকেয়া ${currency(entry.total)}` });
   };
 
   const clearDue = (id: string) => setDues(dues.filter((d) => d.id !== id));
@@ -513,11 +513,11 @@ export default function Sales() {
   const saveEditSale = () => {
     if (!editingSaleId || !editDraft) return;
     if (editDraft.items.some((i) => !i.name.trim())) {
-      toast({ title: "Item name cannot be empty", variant: "destructive" });
+      toast({ title: "আইটেমের নাম খালি রাখা যাবে না", variant: "destructive" });
       return;
     }
     if (editDraft.items.some((i) => !Number.isFinite(i.unitPrice) || i.unitPrice < 0)) {
-      toast({ title: "Enter a valid price for each item", variant: "destructive" });
+      toast({ title: "প্রতিটি আইটেমের জন্য সঠিক দাম দিন", variant: "destructive" });
       return;
     }
     const newTotal = editDraft.items.reduce((s, i) => s + i.qty * i.unitPrice, 0);
@@ -528,14 +528,14 @@ export default function Sales() {
       items: editDraft.items.map((i) => ({ ...i, name: i.name.trim() })),
       amountPaid: clampedPaid,
     });
-    toast({ title: "Sale updated" });
+    toast({ title: "বিক্রি হালনাগাদ হয়েছে" });
     closeEditSale();
   };
   const [confirmDeleteSale, setConfirmDeleteSale] = useState(false);
   const handleDeleteSale = () => {
     if (!editingSaleId) return;
     deleteSale(editingSaleId);
-    toast({ title: "Sale deleted" });
+    toast({ title: "বিক্রি মুছে ফেলা হয়েছে" });
     setConfirmDeleteSale(false);
     closeEditSale();
   };
@@ -577,20 +577,20 @@ export default function Sales() {
       return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
     };
     const header = [
-      "Date",
-      "Type",
-      "Transaction ID",
-      "Item",
-      "Product ID",
-      "Quantity",
-      "Unit Price",
-      "Line Total",
-      "Transaction Total",
+      "তারিখ",
+      "ধরন",
+      "লেনদেন আইডি",
+      "আইটেম",
+      "পণ্য আইডি",
+      "পরিমাণ",
+      "ইউনিট দাম",
+      "লাইনের মোট",
+      "লেনদেনের মোট",
     ];
     const rows: string[][] = [];
     selectedHistory.forEach((h) => {
       const dateStr = format(new Date(h.date), "yyyy-MM-dd HH:mm");
-      const typeLabel = h.kind === "due" ? "Due" : "Cash";
+      const typeLabel = h.kind === "due" ? "বাকি" : "নগদ";
       h.items.forEach((it) => {
         rows.push([
           dateStr,
@@ -606,13 +606,13 @@ export default function Sales() {
       });
     });
     rows.push([]);
-    rows.push(["Summary"]);
-    rows.push(["Customer", selectedRow.name]);
-    rows.push(["Total billed", selectedRow.totalBilled.toFixed(2)]);
-    rows.push(["Cash billed", selectedRow.cashBilled.toFixed(2)]);
-    rows.push(["Due billed", selectedRow.dueBilled.toFixed(2)]);
-    rows.push(["Paid", selectedRow.paid.toFixed(2)]);
-    rows.push(["Outstanding due", selectedRow.due.toFixed(2)]);
+    rows.push(["সারাংশ"]);
+    rows.push(["খদ্দের", selectedRow.name]);
+    rows.push(["মোট বিল", selectedRow.totalBilled.toFixed(2)]);
+    rows.push(["নগদ বিল", selectedRow.cashBilled.toFixed(2)]);
+    rows.push(["বাকি বিল", selectedRow.dueBilled.toFixed(2)]);
+    rows.push(["পরিশোধিত", selectedRow.paid.toFixed(2)]);
+    rows.push(["বকেয়া", selectedRow.due.toFixed(2)]);
 
     const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\n");
     const blob = new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8;" });
@@ -625,7 +625,7 @@ export default function Sales() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    toast({ title: "CSV exported", description: `${selectedRow.name} transactions downloaded.` });
+    toast({ title: "CSV এক্সপোর্ট হয়েছে", description: `${selectedRow.name} এর লেনদেন ডাউনলোড হয়েছে।` });
   };
 
   // Cash Sale tab = paid sales. Due Sale tab = unpaid + partial sales.
@@ -651,14 +651,14 @@ export default function Sales() {
   const markSalePaid = (sale: typeof sales[number]) => {
     updateSale(sale.id, { amountPaid: sale.total });
     toast({
-      title: "Marked as paid",
+      title: "পরিশোধিত হিসেবে চিহ্নিত হয়েছে",
       description: `${sale.customer || "Walk-in"} \u00b7 ${currency(sale.total)}`,
     });
   };
   const markSaleUnpaid = (sale: typeof sales[number]) => {
     updateSale(sale.id, { amountPaid: 0 });
     toast({
-      title: "Marked as unpaid",
+      title: "বাকি হিসেবে চিহ্নিত হয়েছে",
       description: `${sale.customer || "Walk-in"} \u00b7 ${currency(sale.total)}`,
     });
   };
@@ -747,17 +747,17 @@ export default function Sales() {
   );
 
   return (
-    <AppLayout title="All Sales">
+    <AppLayout title="সব বিক্রি">
       <div className="space-y-6">
         <div className="flex flex-wrap items-center gap-2">
           <Select value={saleTypeFilter} onValueChange={(v) => setSaleTypeFilter(v as "all" | "cash" | "credit")}>
             <SelectTrigger className="min-w-0 flex-1 md:w-[180px] md:flex-none">
-              <SelectValue placeholder="All Sales" />
+              <SelectValue placeholder="সব বিক্রি" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Sales</SelectItem>
-              <SelectItem value="cash">Cash Sales</SelectItem>
-              <SelectItem value="credit">Due Sales</SelectItem>
+              <SelectItem value="all">সব বিক্রি</SelectItem>
+              <SelectItem value="cash">নগদ বিক্রি</SelectItem>
+              <SelectItem value="credit">বাকি বিক্রি</SelectItem>
             </SelectContent>
           </Select>
           <Button
@@ -766,7 +766,7 @@ export default function Sales() {
             className="ml-auto shrink-0 border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 hover:text-emerald-800 dark:border-emerald-500/30 dark:bg-emerald-950/40 dark:text-emerald-300 dark:hover:bg-emerald-950/60"
           >
             <Link to="/new-sale">
-              <Plus className="h-4 w-4" /> Cash Sale
+              <Plus className="h-4 w-4" /> নগদ বিক্রি
             </Link>
           </Button>
           <Button
@@ -775,7 +775,7 @@ export default function Sales() {
             className="shrink-0 border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100 hover:text-rose-800 dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-300 dark:hover:bg-rose-950/60"
           >
             <Link to="/due-sale">
-              <Plus className="h-4 w-4" /> Due Sale
+              <Plus className="h-4 w-4" /> বাকি বিক্রি
             </Link>
           </Button>
         </div>
@@ -789,9 +789,9 @@ export default function Sales() {
         <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-lg">
           <SheetHeader className="border-b px-4 py-4 sm:px-6">
             <SheetTitle className="flex items-center gap-2">
-              <Receipt className="h-4 w-4 text-primary" /> Edit sale
+              <Receipt className="h-4 w-4 text-primary" /> বিক্রি সম্পাদনা
             </SheetTitle>
-            <SheetDescription>Update customer, sale type, and item details.</SheetDescription>
+            <SheetDescription>খদ্দের, বিক্রির ধরন এবং আইটেমের বিবরণ হালনাগাদ করুন।</SheetDescription>
           </SheetHeader>
 
           {editDraft && (
@@ -799,17 +799,17 @@ export default function Sales() {
               <div className="space-y-4">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="space-y-1.5">
-                    <Label>Customer name</Label>
+                    <Label>খদ্দেরের নাম</Label>
                     <Input
                       value={editDraft.customer}
                       onChange={(e) =>
                         setEditDraft((d) => (d ? { ...d, customer: e.target.value } : d))
                       }
-                      placeholder="Walk-in"
+                      placeholder="ওয়াক-ইন"
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Sale type</Label>
+                    <Label>বিক্রির ধরন</Label>
                     <Select
                       value={editDraft.saleType}
                       onValueChange={(v) =>
@@ -817,24 +817,24 @@ export default function Sales() {
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Sale type" />
+                        <SelectValue placeholder="বিক্রির ধরন" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="cash">Cash</SelectItem>
-                        <SelectItem value="credit">Due Payment</SelectItem>
+                        <SelectItem value="cash">নগদ</SelectItem>
+                        <SelectItem value="credit">বাকি পেমেন্ট</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Items</Label>
+                  <Label>আইটেম</Label>
                   <ul className="space-y-3">
                     {editDraft.items.map((it, idx) => (
                       <li key={`${it.productId}-${idx}`} className="rounded-md border bg-muted/20 p-3">
                         <div className="space-y-2">
                           <div className="space-y-1.5">
-                            <Label className={typography("body-muted")}>Item name</Label>
+                            <Label className={typography("body-muted")}>আইটেমের নাম</Label>
                             <Input
                               value={it.name}
                               onChange={(e) =>
@@ -853,7 +853,7 @@ export default function Sales() {
                           </div>
                           <div className="grid grid-cols-2 gap-2">
                             <div className="space-y-1.5">
-                              <Label className={typography("body-muted")}>Qty</Label>
+                              <Label className={typography("body-muted")}>পরিমাণ</Label>
                               <Input
                                 type="number"
                                 min={1}
@@ -874,7 +874,7 @@ export default function Sales() {
                               />
                             </div>
                             <div className="space-y-1.5">
-                              <Label className={typography("body-muted")}>Unit price</Label>
+                              <Label className={typography("body-muted")}>ইউনিট দাম</Label>
                               <Input
                                 type="number"
                                 min={0}
@@ -897,7 +897,7 @@ export default function Sales() {
                             </div>
                           </div>
                           <p className={typography("body-muted", "text-right")}>
-                            Subtotal: <span className="font-semibold text-foreground">{currency(it.qty * it.unitPrice)}</span>
+                            সাবটোটাল: <span className="font-semibold text-foreground">{currency(it.qty * it.unitPrice)}</span>
                           </p>
                         </div>
                       </li>
@@ -917,7 +917,7 @@ export default function Sales() {
                     <>
                       <div className="space-y-1.5 border-t pt-3">
                         <div className="flex items-center justify-between gap-2">
-                          <Label htmlFor="edit-amount-paid">Amount paid</Label>
+                          <Label htmlFor="edit-amount-paid">পরিশোধিত টাকা</Label>
                           <PaymentStatusBadge status={status} />
                         </div>
                         <Input
@@ -935,12 +935,12 @@ export default function Sales() {
                           }}
                         />
                         <p className={typography("body-muted")}>
-                          Outstanding: <span className="font-semibold text-foreground">{currency(Math.max(0, draftTotal - clampedPaid))}</span>
+                          বকেয়া: <span className="font-semibold text-foreground">{currency(Math.max(0, draftTotal - clampedPaid))}</span>
                         </p>
                       </div>
 
                       <div className="flex items-center justify-between border-t pt-3">
-                        <p className={typography("body-muted")}>Total</p>
+                        <p className={typography("body-muted")}>মোট</p>
                         <p className={typography("h3")}>{currency(draftTotal)}</p>
                       </div>
                     </>
@@ -957,11 +957,11 @@ export default function Sales() {
                 onClick={() => setConfirmDeleteSale(true)}
                 className="gap-1.5"
               >
-                <Trash2 className="h-4 w-4" /> Delete
+                <Trash2 className="h-4 w-4" /> মুছুন
               </Button>
               <div className="flex items-center gap-2">
-                <Button variant="outline" onClick={closeEditSale}>Cancel</Button>
-                <Button onClick={saveEditSale}>Save changes</Button>
+                <Button variant="outline" onClick={closeEditSale}>বাতিল</Button>
+                <Button onClick={saveEditSale}>পরিবর্তন সংরক্ষণ</Button>
               </div>
             </div>
           </div>
@@ -971,18 +971,18 @@ export default function Sales() {
       <AlertDialog open={confirmDeleteSale} onOpenChange={setConfirmDeleteSale}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this sale?</AlertDialogTitle>
+            <AlertDialogTitle>এই বিক্রিটি মুছবেন?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove the sale entry from Recent sales. This action cannot be undone.
+              এটি সাম্প্রতিক বিক্রি থেকে এন্ট্রিটি স্থায়ীভাবে মুছে ফেলবে। এই কাজটি আর ফেরানো যাবে না।
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>বাতিল</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteSale}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Delete
+              মুছুন
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -1039,8 +1039,8 @@ function SaleRow({
     if (clamped !== currentPaid) {
       onAmountPaidChange(clamped);
       toast({
-        title: "Payment updated",
-        description: `${sale.customer || "Walk-in"} \u00b7 ${currency(clamped)} of ${currency(sale.total)}`,
+        title: "পেমেন্ট হালনাগাদ হয়েছে",
+        description: `${sale.customer || "Walk-in"} \u00b7 ${currency(clamped)} / ${currency(sale.total)}`,
       });
     }
     setDraft(clamped.toString());
@@ -1052,8 +1052,7 @@ function SaleRow({
         <div className="min-w-0 flex-1">
           <p className={typography("body-strong", "truncate")}>{sale.customer}</p>
           <p className={typography("body-muted")}>
-            {format(new Date(sale.date), "MMM d, HH:mm")} · {sale.items.length} item
-            {sale.items.length > 1 ? "s" : ""}
+            {format(new Date(sale.date), "MMM d, HH:mm")} · {sale.items.length}টি আইটেম
           </p>
         </div>
         <PaymentStatusBadge status={status} />
@@ -1063,7 +1062,7 @@ function SaleRow({
       </div>
       <div className="flex items-center gap-2">
         <Label htmlFor={`paid-${sale.id}`} className={typography("body-muted", "shrink-0")}>
-          Paid
+          পরিশোধিত
         </Label>
         <Input
           id={`paid-${sale.id}`}
@@ -1084,7 +1083,7 @@ function SaleRow({
               e.currentTarget.blur();
             }
           }}
-          aria-label={`Amount paid for ${sale.customer}`}
+          aria-label={`${sale.customer} এর পরিশোধিত টাকা`}
           className="h-9 max-w-[7.5rem] flex-1"
         />
         <span className={typography("body-muted", "shrink-0")}>/ {currency(sale.total)}</span>
@@ -1094,8 +1093,8 @@ function SaleRow({
               size="icon"
               variant="ghost"
               className="h-8 w-8 shrink-0 text-muted-foreground hover:text-foreground"
-              aria-label={`Mark sale for ${sale.customer} as unpaid`}
-              title="Mark as unpaid"
+              aria-label={`${sale.customer} এর বিক্রি বাকি হিসেবে চিহ্নিত করুন`}
+              title="বাকি হিসেবে চিহ্নিত করুন"
               onClick={onMarkUnpaid}
             >
               <Undo2 className="h-4 w-4" />
@@ -1105,8 +1104,8 @@ function SaleRow({
               size="icon"
               variant="ghost"
               className="h-8 w-8 shrink-0 text-success hover:text-success"
-              aria-label={`Mark sale for ${sale.customer} as paid`}
-              title="Mark as paid"
+              aria-label={`${sale.customer} এর বিক্রি পরিশোধিত হিসেবে চিহ্নিত করুন`}
+              title="পরিশোধিত হিসেবে চিহ্নিত করুন"
               onClick={onMarkPaid}
             >
               <Check className="h-4 w-4" />
@@ -1116,7 +1115,7 @@ function SaleRow({
             size="icon"
             variant="ghost"
             className="h-8 w-8 shrink-0"
-            aria-label={`Edit sale for ${sale.customer}`}
+            aria-label={`${sale.customer} এর বিক্রি সম্পাদনা করুন`}
             onClick={onEdit}
           >
             <Pencil className="h-4 w-4" />

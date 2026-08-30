@@ -41,9 +41,9 @@ export default function Expenses() {
       id: p.id,
       date: p.date,
       type: "purchase",
-      typeLabel: "Purchase",
+      typeLabel: "ক্রয়",
       party: p.supplier,
-      detail: `${p.items.length} item${p.items.length > 1 ? "s" : ""}`,
+      detail: `${p.items.length}টি আইটেম`,
       amount: p.total,
     }));
     return all.sort((a, b) => +new Date(b.date) - +new Date(a.date));
@@ -67,14 +67,14 @@ export default function Expenses() {
   );
 
   return (
-    <AppLayout title="Expenses">
+    <AppLayout title="খরচ">
       <div className="w-full min-w-0 max-w-full space-y-6 overflow-x-hidden">
         <Card className="shadow-soft min-w-0 max-w-full overflow-hidden">
           <CardHeader className="px-4 sm:px-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <CardTitle className={typography("h4", "m-0")}>All expenses</CardTitle>
+              <CardTitle className={typography("h4", "m-0")}>সব খরচ</CardTitle>
               <Button size="sm" onClick={() => navigate("/purchases?action=new")}>
-                <Plus className="mr-1 h-4 w-4" /> New purchase
+                <Plus className="mr-1 h-4 w-4" /> নতুন ক্রয়
               </Button>
             </div>
           </CardHeader>
@@ -82,15 +82,15 @@ export default function Expenses() {
             <div className="grid gap-3 sm:grid-cols-[200px_1fr]">
               <Select value={type} onValueChange={(v) => setType(v as ExpenseType)}>
                 <SelectTrigger className="bg-[#f7f7f7] dark:bg-white/5">
-                  <SelectValue placeholder="Transaction type" />
+                  <SelectValue placeholder="লেনদেনের ধরন" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All types</SelectItem>
-                  <SelectItem value="purchase">Purchase</SelectItem>
+                  <SelectItem value="all">সব ধরনের</SelectItem>
+                  <SelectItem value="purchase">ক্রয়</SelectItem>
                 </SelectContent>
               </Select>
               <Input
-                placeholder="Search by supplier or type…"
+                placeholder="পাইকার বা ধরন অনুযায়ী খুঁজুন…"
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 className="bg-[#f7f7f7] dark:bg-white/5"
@@ -101,11 +101,11 @@ export default function Expenses() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Party</TableHead>
-                    <TableHead>Detail</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead>তারিখ</TableHead>
+                    <TableHead>ধরন</TableHead>
+                    <TableHead>পাইকার</TableHead>
+                    <TableHead>বিস্তারিত</TableHead>
+                    <TableHead className="text-right">পরিমাণ</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -120,7 +120,7 @@ export default function Expenses() {
                   ) : filtered.length === 0 ? (
                     <TableRow>
                       <TableCell colSpan={5} className={typography("body-muted", "py-8 text-center")}>
-                        No expense transactions yet.
+                        এখনও কোনো খরচের লেনদেন নেই।
                       </TableCell>
                     </TableRow>
                   ) : (
@@ -144,7 +144,7 @@ export default function Expenses() {
 
             <div className="flex items-center justify-end gap-[15px]">
               <p className={typography("body-muted")}>
-                Total ({filtered.length} transaction{filtered.length === 1 ? "" : "s"})
+                মোট ({filtered.length}টি লেনদেন)
               </p>
               <p className={typography("h3")}>{currency(total)}</p>
             </div>

@@ -108,7 +108,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
   return (
     <Card className="shadow-soft">
       <CardHeader>
-        <CardTitle>User management</CardTitle>
+        <CardTitle>ইউজার ব্যবস্থাপনা</CardTitle>
         <CardDescription>
           {users.length} {users.length === 1 ? "user" : "users"} total. Promote or demote admins.
         </CardDescription>
@@ -119,7 +119,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name or email"
+            placeholder="নাম বা ইমেইল দিয়ে খুঁজুন"
             className="pl-9"
           />
         </div>

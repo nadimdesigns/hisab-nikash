@@ -135,7 +135,7 @@ export function ProductQuickSearch() {
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Type a name, alias, ingredient, SKU, batch, or scan a barcode..."
+              placeholder="নাম, alias, উপাদান, SKU, লট বা বারকোড স্ক্যান করুন..."
               className="pl-9 pr-8"
             />
             {query && (
@@ -143,7 +143,7 @@ export function ProductQuickSearch() {
                 type="button"
                 onClick={() => setQuery("")}
                 className="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground hover:text-foreground"
-                aria-label="Clear search"
+                aria-label="খুঁজুন মুছুন"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
