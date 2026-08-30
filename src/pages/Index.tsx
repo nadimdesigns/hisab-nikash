@@ -67,10 +67,10 @@ const Index = () => {
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
         {hydrated ? (
           <>
-            <StatCard icon={Wallet} iconColor="text-sky-500" iconBg="bg-sky-500/10" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} />
-            <StatCard icon={LineChart} iconColor="text-emerald-500" iconBg="bg-emerald-500/10" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} />
-            <StatCard icon={Package} iconColor="text-violet-500" iconBg="bg-violet-500/10" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} />
-            <StatCard icon={AlertTriangle} iconColor="text-amber-500" iconBg="bg-amber-500/10" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
+            <StatCard icon={Wallet} gradient="sky" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} />
+            <StatCard icon={LineChart} gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} />
+            <StatCard icon={Package} gradient="violet" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} />
+            <StatCard icon={AlertTriangle} gradient="amber" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
           </>
         ) : (
           Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
@@ -204,27 +204,35 @@ function StatCardSkeleton() {
 
 function StatCard({
   icon: Icon,
-  iconColor,
-  iconBg,
+  gradient,
   label,
   value,
   sub,
   tone,
 }: {
   icon: LucideIcon;
-  iconColor: string;
-  iconBg: string;
+  gradient: "sky" | "emerald" | "violet" | "amber";
   label: string;
   value: string;
   sub?: string;
   tone?: "ok" | "warn";
 }) {
+  // Soft pastel gradient card (Schoolzee style): translucent white icon
+  // chip on a tinted gradient, deeper icon color, dark mode = faint tint.
+  const STYLE = {
+    sky: { card: "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5", icon: "text-sky-600 dark:text-sky-300" },
+    emerald: { card: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5", icon: "text-emerald-600 dark:text-emerald-300" },
+    violet: { card: "bg-gradient-to-br from-violet-100 to-purple-50 dark:from-violet-500/15 dark:to-violet-500/5", icon: "text-violet-600 dark:text-violet-300" },
+    amber: { card: "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-500/15 dark:to-amber-500/5", icon: "text-amber-600 dark:text-amber-300" },
+  } as const;
+  const s = STYLE[gradient];
+
   return (
-    <Card className="shadow-soft">
+    <Card className={`border-0 rounded-2xl shadow-soft ${s.card}`}>
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
-          <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl md:h-14 md:w-14 ${iconBg}`}>
-            <Icon className={`h-6 w-6 md:h-7 md:w-7 ${iconColor}`} strokeWidth={2} aria-hidden />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/70 shadow-sm dark:bg-white/10 md:h-14 md:w-14">
+            <Icon className={`h-6 w-6 md:h-7 md:w-7 ${s.icon}`} strokeWidth={2} aria-hidden />
           </div>
           <div className="flex min-w-0 flex-1 flex-col">
             <p className={typography("stat-label", "truncate")}>{label}</p>
