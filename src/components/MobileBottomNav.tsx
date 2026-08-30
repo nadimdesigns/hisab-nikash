@@ -219,12 +219,12 @@ export function MobileBottomNav() {
                 <div className="flex h-9 w-12 items-center justify-center">
                   <Menu className="h-5 w-5" />
                 </div>
-                <span>More</span>
+                <span>আরও</span>
               </button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[92%] sm:max-w-sm">
               <SheetHeader>
-                <SheetTitle className={typography("h3")}>More</SheetTitle>
+                <SheetTitle className={typography("h3")}>আরও</SheetTitle>
               </SheetHeader>
               <div className="mt-6 grid grid-cols-2 gap-4">
                 {reportItems.map((action, idx) => {
@@ -277,12 +277,8 @@ export function MobileBottomNav() {
           side="bottom"
           className="rounded-t-3xl border-t-0 bg-background p-0 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
         >
-          {/* Drag handle */}
-          <div className="flex justify-center pt-3">
-            <div className="h-1.5 w-12 rounded-full bg-muted-foreground/30" />
-          </div>
           <SheetHeader className="px-6 pt-4">
-            <SheetTitle className={typography("h3")}>Quick Actions</SheetTitle>
+            <SheetTitle className={typography("h3")}>দ্রুত কাজ</SheetTitle>
           </SheetHeader>
           <div className="grid grid-cols-2 gap-4 px-5 pb-2 pt-5">
             {quickActions.map((action, idx) => {

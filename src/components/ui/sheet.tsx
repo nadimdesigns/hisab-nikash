@@ -53,31 +53,87 @@ interface SheetContentProps
     VariantProps<typeof sheetVariants> {}
 
 const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(
-  ({ side = "right", className, children, onOpenAutoFocus, ...props }, ref) => (
-    <SheetPortal>
-      <SheetOverlay />
-      <SheetPrimitive.Content
-        ref={ref}
-        className={cn(sheetVariants({ side }), className)}
-        // Globally suppress the default Radix behaviour of auto-focusing the
-        // first focusable element when a sheet opens — keeps inputs in the
-        // popup from being focused (and the mobile keyboard from popping up)
-        // the moment the panel slides in. Callers can still override by
-        // passing their own `onOpenAutoFocus`.
-        onOpenAutoFocus={(event) => {
-          event.preventDefault();
-          onOpenAutoFocus?.(event);
-        }}
-        {...props}
-      >
-        {children}
-        <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-secondary hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-          <X style={{ width: "1.6rem", height: "1.6rem", strokeWidth: 2 }} />
-          <span className="sr-only">Close</span>
-        </SheetPrimitive.Close>
-      </SheetPrimitive.Content>
-    </SheetPortal>
-  ),
+  ({ side = "right", className, children, onOpenAutoFocus, ...props }, ref) => {
+    // Bottom sheets support swipe-down-to-close: drag the handle, release past
+    // the threshold and the sheet dismisses (Escape keydown is how Radix is
+    // asked to close — its dismissable layer listens on document).
+    const contentRef = React.useRef<HTMLDivElement | null>(null);
+    const [dragY, setDragY] = React.useState(0);
+    const [dragging, setDragging] = React.useState(false);
+    const dragStart = React.useRef<number | null>(null);
+
+    const isBottom = side === "bottom";
+
+    const onHandlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+      dragStart.current = e.clientY;
+      setDragging(true);
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+    };
+    const onHandlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+      if (dragStart.current == null) return;
+      setDragY(Math.max(0, e.clientY - dragStart.current));
+    };
+    const endDrag = () => {
+      dragStart.current = null;
+      setDragging(false);
+      if (dragY > 120) {
+        contentRef.current?.dispatchEvent(
+          new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+        );
+      }
+      setDragY(0);
+    };
+
+    return (
+      <SheetPortal>
+        <SheetOverlay />
+        <SheetPrimitive.Content
+          ref={(node) => {
+            contentRef.current = node;
+            if (typeof ref === "function") ref(node);
+            else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
+          }}
+          className={cn(sheetVariants({ side }), className)}
+          style={
+            isBottom && dragY > 0
+              ? {
+                  transform: `translateY(${dragY}px)`,
+                  transition: dragging ? "none" : "transform 250ms ease",
+                }
+              : undefined
+          }
+          // Globally suppress the default Radix behaviour of auto-focusing the
+          // first focusable element when a sheet opens — keeps inputs in the
+          // popup from being focused (and the mobile keyboard from popping up)
+          // the moment the panel slides in. Callers can still override by
+          // passing their own `onOpenAutoFocus`.
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            onOpenAutoFocus?.(event);
+          }}
+          {...props}
+        >
+          {isBottom && (
+            <div
+              className="flex h-8 shrink-0 cursor-grab touch-none select-none items-center justify-center active:cursor-grabbing"
+              onPointerDown={onHandlePointerDown}
+              onPointerMove={onHandlePointerMove}
+              onPointerUp={endDrag}
+              onPointerCancel={endDrag}
+              aria-hidden
+            >
+              <div className="h-1.5 w-12 rounded-full bg-muted-foreground/30" />
+            </div>
+          )}
+          {children}
+          <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity data-[state=open]:bg-secondary hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+            <X style={{ width: "1.6rem", height: "1.6rem", strokeWidth: 2 }} />
+            <span className="sr-only">Close</span>
+          </SheetPrimitive.Close>
+        </SheetPrimitive.Content>
+      </SheetPortal>
+    );
+  },
 );
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
