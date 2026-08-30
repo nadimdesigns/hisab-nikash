@@ -71,7 +71,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
     if (!m) return;
     if (quantity < 1) return;
     if (m.stock < quantity) {
-      toast({ title: `Only ${m.stock} in stock`, variant: "destructive" });
+      toast({ title: `স্টকে আছে মাত্র ${m.stock}`, variant: "destructive" });
       return;
     }
     const existing = items.find((i) => i.productId === m.id);
@@ -97,26 +97,26 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
 
   const checkout = () => {
     if (items.length === 0) {
-      toast({ title: "Add at least one item", variant: "destructive" });
+      toast({ title: "কমপক্ষে একটি আইটেম যোগ করুন", variant: "destructive" });
       return;
     }
     if (invoiceSaleType === "credit" && !customer.trim()) {
-      toast({ title: "Select a customer", variant: "destructive" });
+      toast({ title: "একটি খদ্দের নির্বাচন করুন", variant: "destructive" });
       return;
     }
     const sale = recordSale({
-      customer: customer.trim() || "Unknown",
+      customer: customer.trim() || "অজানা",
       items,
       saleType: invoiceSaleType,
     });
     if (!sale) {
-      toast({ title: "Insufficient stock for one or more items", variant: "destructive" });
+      toast({ title: "এক বা একাধিক পণ্যের স্টক অপ্রতুল", variant: "destructive" });
       return;
     }
     setItems([]);
     setCustomer("");
     clearDraft("cash");
-    toast({ title: "Sale recorded", description: `Invoice total ${currency(sale.total)}` });
+    toast({ title: "বিক্রি সংরক্ষিত হয়েছে", description: `চালানের মোট ${currency(sale.total)}` });
   };
 
   // Existing customer names derived from past sales AND saved customer
@@ -160,7 +160,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         pillBg: "bg-rose-50 border-rose-100 dark:bg-rose-950/40 dark:border-rose-500/20",
         pillText: "text-rose-600 dark:text-rose-300",
         pillDot: "bg-rose-500",
-        pillLabel: "Due Sale",
+        pillLabel: "বাকি বিক্রি",
         focus: "focus-visible:ring-rose-500/20 focus-visible:border-rose-500",
         emptyHover: "hover:border-rose-300 dark:hover:border-rose-500/40",
         gradient: "from-rose-500 to-red-600",
@@ -174,7 +174,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         pillBg: "bg-emerald-50 border-emerald-100 dark:bg-emerald-950/40 dark:border-emerald-500/20",
         pillText: "text-emerald-600 dark:text-emerald-300",
         pillDot: "bg-emerald-500",
-        pillLabel: "Paid",
+        pillLabel: "পরিশোধিত",
         focus: "focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500",
         emptyHover: "hover:border-emerald-300 dark:hover:border-emerald-500/40",
         gradient: "from-emerald-500 to-green-600",
@@ -186,14 +186,14 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
     <div
       className={
         className ??
-        `w-full min-w-0 overflow-hidden rounded-3xl border ${tone.border} ${tone.shadow} bg-card`
+        `w-full min-w-0 overflow-hidden rounded-3xl border-0 ${tone.shadow} bg-emerald-50 dark:bg-emerald-950/30`
       }
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-3 sm:px-6">
         <div>
           <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${tone.label}`}>
-            Transaction Date
+            লেনদেনের তারিখ
           </p>
           <h2 className={typography("h4", "m-0 leading-tight")}>{formatDate(now, "MMM d, yyyy")}</h2>
         </div>
@@ -222,17 +222,17 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       <div className="space-y-4 px-5 sm:px-6">
         <div>
           <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-            Customer Name
+            খদ্দেরের নাম
           </label>
           {isCredit ? (
             <Select value={customer} onValueChange={setCustomer}>
-              <SelectTrigger className={`h-[46px] rounded-xl bg-muted/40 dark:bg-white/5 ${tone.focus}`}>
+              <SelectTrigger className={`h-[46px] rounded-xl bg-white dark:bg-white/10 ${tone.focus}`}>
                 <SelectValue placeholder="খদ্দের বাছাই করুন..." />
               </SelectTrigger>
               <SelectContent>
                 {customerOptions.length === 0 ? (
                   <div className={typography("body-muted", "px-3 py-2")}>
-                    No customers yet. Add one from New Customer.
+                    এখনো কোনো খদ্দের নেই। নতুন খদ্দের থেকে যোগ করুন।
                   </div>
                 ) : (
                   customerOptions.map((name) => (
@@ -255,7 +255,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
                   setCustomer(e.target.value);
                 }
               }}
-              className={`h-[46px] rounded-xl bg-muted/40 dark:bg-white/5 ${tone.focus}`}
+              className={`h-[46px] rounded-xl bg-white dark:bg-white/10 ${tone.focus}`}
             />
           )}
         </div>
@@ -263,7 +263,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         <div className="grid grid-cols-12 gap-3">
           <div className="col-span-8 min-w-0">
             <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-              Product Name
+              পণ্যের নাম
             </label>
             <ProductPickerSheet
               products={products}
@@ -272,18 +272,18 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
               placeholder="পণ্য বাছাই করুন..."
               disableOutOfStock
               showSaleInfo
-              className={`h-[46px] rounded-xl bg-muted/40 hover:bg-muted/40 dark:bg-white/5 dark:hover:bg-white/5 ${tone.focus}`}
+              className={`h-[46px] rounded-xl bg-white hover:bg-white dark:bg-white/10 dark:hover:bg-white/10 ${tone.focus}`}
             />
           </div>
           <div className="col-span-4">
             <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-              Qty
+              পরিমাণ
             </label>
             <QtyStepper
               value={qty}
               onChange={handleQtyChange}
               unit={pickedProduct?.unit}
-              className="h-[46px] rounded-xl bg-muted/40 dark:bg-white/5"
+              className="h-[46px] rounded-xl bg-white dark:bg-white/10"
             />
           </div>
         </div>
@@ -293,23 +293,23 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       <div className="mt-6 px-5 sm:px-6">
         {items.length === 0 ? (
           <div
-            className={`flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-muted/30 p-8 transition-colors ${tone.emptyHover}`}
+            className={`flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-white/70 p-8 transition-colors ${tone.emptyHover}`}
           >
             <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background shadow-sm">
               <svg className={`h-5 w-5 ${tone.label}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <p className="text-xs font-medium text-muted-foreground">No items added yet</p>
+            <p className="text-xs font-medium text-muted-foreground">এখনো কোনো আইটেম যোগ হয়নি</p>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-2xl border">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[34%] min-w-[130px]">Item</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead>Price</TableHead>
+                  <TableHead className="w-[34%] min-w-[130px]">আইটেম</TableHead>
+                  <TableHead>পরিমাণ</TableHead>
+                  <TableHead>দাম</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
               </TableHeader>
@@ -337,7 +337,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       {/* Summary + Save */}
       <div className="px-5 pb-6 pt-2 sm:px-6">
         <div className="mb-5 mt-4 flex items-center justify-between border-t border-border pt-4">
-          <span className="text-sm font-semibold text-muted-foreground">Grand Total</span>
+          <span className="text-sm font-semibold text-muted-foreground">সর্বমোট</span>
           <span className={typography("h3", "m-0 tracking-tight tabular-nums")}>{currency(total)}</span>
         </div>
 
@@ -348,7 +348,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           className={`w-full rounded-2xl bg-gradient-to-r ${tone.gradient} ${tone.gradientHover} ${tone.buttonShadow} py-4 font-bold tracking-wide text-white transition-all active:scale-[0.98]`}
         >
           <Save className="h-4 w-4" />
-          {isCredit ? "Save Due Sale" : "Save Cash Sale"}
+          {isCredit ? "বাকি বিক্রি সংরক্ষণ" : "নগদ বিক্রি সংরক্ষণ"}
         </Button>
       </div>
     </div>

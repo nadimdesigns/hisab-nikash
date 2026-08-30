@@ -253,6 +253,14 @@
       hsl(48 96% 55%) 100%
     );
   }
+
+  /* Login-card style form surface: light green body so white fields pop. */
+  .form-surface {
+    background-color: hsl(152 60% 96%) !important;
+  }
+  .dark .form-surface {
+    background-color: hsl(165 60% 7%) !important;
+  }
 }
 
 @layer base {

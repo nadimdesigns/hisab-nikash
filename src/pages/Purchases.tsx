@@ -181,7 +181,7 @@ export default function Purchases() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-soft min-w-0 max-w-full overflow-hidden">
+        <Card className="form-surface shadow-soft min-w-0 max-w-full overflow-hidden">
           <CardHeader><CardTitle>সাম্প্রতিক ক্রয়</CardTitle></CardHeader>
           <CardContent>
             {!hydrated ? (

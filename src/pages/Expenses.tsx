@@ -69,7 +69,7 @@ export default function Expenses() {
   return (
     <AppLayout title="খরচ">
       <div className="w-full min-w-0 max-w-full space-y-6 overflow-x-hidden">
-        <Card className="shadow-soft min-w-0 max-w-full overflow-hidden">
+        <Card className="form-surface shadow-soft min-w-0 max-w-full overflow-hidden">
           <CardHeader className="px-4 sm:px-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <CardTitle className={typography("h4", "m-0")}>সব খরচ</CardTitle>

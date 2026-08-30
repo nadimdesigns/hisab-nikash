@@ -75,10 +75,10 @@ export default function SalesPanel() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-3">
-      <Card className="lg:col-span-2 shadow-soft">
+      <Card className="form-surface lg:col-span-2 shadow-soft">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Receipt className="h-4 w-4 text-primary" /> New invoice
+            <Receipt className="h-4 w-4 text-primary" /> নতুন চালান
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -161,9 +161,9 @@ export default function SalesPanel() {
         </CardContent>
       </Card>
 
-      <Card className="shadow-soft">
+      <Card className="form-surface shadow-soft">
         <CardHeader>
-          <CardTitle>Recent sales</CardTitle>
+          <CardTitle>সাম্প্রতিক বিক্রি</CardTitle>
         </CardHeader>
         <CardContent>
           <ul className="space-y-3">

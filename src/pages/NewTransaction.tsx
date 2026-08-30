@@ -44,7 +44,7 @@ export default function NewTransaction() {
 
   return (
     <AppLayout title="নতুন লেনদেন">
-      <Card className="shadow-soft">
+      <Card className="form-surface shadow-soft">
         <CardContent className="space-y-6 p-4 sm:p-6">
           <div>
             <p className={typography("h4", "m-0")}>লেনদেনের ধরন নির্বাচন করুন</p>

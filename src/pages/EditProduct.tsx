@@ -74,7 +74,7 @@ export default function EditProduct() {
         </Button>
       </div>
 
-      <Card className="shadow-soft">
+      <Card className="form-surface shadow-soft">
         <CardContent className="p-6">
           {!hydrated ? (
             <div className="space-y-3">

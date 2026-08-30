@@ -133,7 +133,7 @@ export default function Accounting() {
       </div>
 
 
-      <Card className="shadow-soft">
+      <Card className="form-surface shadow-soft">
         <CardContent>
           <div className="overflow-x-auto">
             <Table>

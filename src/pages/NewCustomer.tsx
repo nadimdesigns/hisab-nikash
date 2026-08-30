@@ -107,7 +107,7 @@ export default function NewCustomer() {
 
   return (
     <AppLayout title="নতুন খদ্দের">
-      <Card className="shadow-soft mx-auto max-w-2xl min-w-0">
+      <Card className="form-surface shadow-soft mx-auto max-w-2xl min-w-0">
         <CardHeader className="px-4 sm:px-6">
           <div className="flex items-center justify-between gap-3">
             <CardTitle className={typography("h4", "m-0 leading-tight")}>

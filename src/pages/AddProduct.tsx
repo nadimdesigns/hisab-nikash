@@ -103,7 +103,7 @@ export default function AddProduct() {
         </Button>
       </div>
 
-      <Card className="shadow-soft">
+      <Card className="form-surface shadow-soft">
         <CardContent className="p-4 sm:p-6">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Field label="পণ্যের ছবি" className="sm:col-span-2">
