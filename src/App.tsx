@@ -30,7 +30,6 @@ import Account from "./pages/Account.tsx";
 import Login from "./pages/Login.tsx";
 import ResetPassword from "./pages/ResetPassword.tsx";
 import RequireAuth from "./components/RequireAuth";
-import TypographyHoverInspector from "./components/TypographyHoverInspector";
 import { ProductQuickSearch } from "./components/ProductQuickSearch";
 import { ScrollToTop } from "./components/ScrollToTop";
 
@@ -43,7 +42,6 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <TypographyHoverInspector />
         <BrowserRouter>
           <HeaderSlotProvider>
             <ScrollToTop />
