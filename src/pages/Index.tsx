@@ -5,16 +5,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
-import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, ShoppingCart, UserPlus, Receipt, Share, type LucideIcon } from "lucide-react";
+import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, ShoppingCart, UserPlus, Receipt, Share, Clock, ArrowDownLeft, ArrowUpRight, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
+import { cn } from "@/lib/utils";
 import { unitLabel } from "@/lib/copy";
 
 const Index = () => {
   const { products, sales, purchases } = useShop();
   const hydrated = useShopHydrated();
+  const [period, setPeriod] = useState<"today" | "week" | "month" | "year">("month");
 
   const stats = useMemo(() => {
     const inventoryValue = products.reduce((s, m) => s + m.stock * m.costPrice, 0);
@@ -28,14 +30,37 @@ const Index = () => {
     const monthRevenue = monthSales.reduce((s, x) => s + x.total, 0);
     const monthProfit = monthSales.reduce((s, x) => s + (x.total - x.cost), 0);
 
-    // Cash in hand: everything paid in (cash sales + any partial/credit
-    // payments received) minus money spent on stock (purchases).
+    // Period-scoped income/expense/net for the balance card (Hisab-Kitab style).
+    const periodStart = subDays(new Date(), period === "today" ? 1 : period === "week" ? 7 : period === "month" ? 30 : 365).getTime();
+    const periodIncome = sales
+      .filter((s) => new Date(s.date).getTime() >= periodStart)
+      .reduce((s, x) => s + (x.saleType === "credit" ? (x.amountPaid ?? 0) : x.total), 0);
+    const periodExpense = purchases
+      .filter((p) => new Date(p.date).getTime() >= periodStart)
+      .reduce((s, p) => s + p.total, 0);
+    const periodNet = periodIncome - periodExpense;
+
+    // Cash in hand (all-time): everything paid in minus money spent on stock.
     const cashReceived = sales.reduce(
       (s, x) => s + (x.saleType === "credit" ? (x.amountPaid ?? 0) : x.total),
       0
     );
     const cashSpent = purchases.reduce((s, p) => s + p.total, 0);
     const cashBalance = cashReceived - cashSpent;
+
+    // Upcoming: sales with money still owed (unpaid / partial).
+    const dues = sales
+      .filter((s) => {
+        const paid = s.amountPaid ?? (s.saleType === "credit" ? 0 : s.total);
+        return paid < s.total;
+      })
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+      .slice(0, 3);
+
+    // Recent activity: latest sales first.
+    const recent = [...sales]
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, 5);
 
     // Best selling products (last 30 days) by qty sold
     const tally = new Map<string, { name: string; qty: number; revenue: number }>();
@@ -52,8 +77,8 @@ const Index = () => {
       .sort((a, b) => b.qty - a.qty)
       .slice(0, 5);
 
-    return { inventoryValue, lowStock, bestSelling, todayRevenue, monthRevenue, monthProfit, cashBalance };
-  }, [products, sales, purchases]);
+    return { inventoryValue, lowStock, bestSelling, todayRevenue, monthRevenue, monthProfit, cashBalance, periodIncome, periodExpense, periodNet, dues, recent };
+  }, [products, sales, purchases, period]);
 
   const chartData = useMemo(() => {
     const days = 14;
@@ -74,13 +99,103 @@ const Index = () => {
   return (
     <AppLayout title="হোম">
       <div className="space-y-4">
-        {hydrated ? <BalanceCard balance={stats.cashBalance} /> : <BalanceCardSkeleton />}
+        {/* Time period filter pills (Hisab-Kitab style) */}
+        <div className="flex gap-2 overflow-x-auto pb-0.5">
+          {([
+            { k: "today", l: "আজ" },
+            { k: "week", l: "এই সপ্তাহ" },
+            { k: "month", l: "এই মাস" },
+            { k: "year", l: "এই বছর" },
+          ] as const).map(({ k, l }) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => setPeriod(k)}
+              className={cn(
+                "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                period === k
+                  ? "bg-blue-700 text-white shadow-md shadow-blue-700/25"
+                  : "border border-border bg-card text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {l}
+            </button>
+          ))}
+        </div>
+
+        {hydrated ? (
+          <BalanceCard net={stats.periodNet} income={stats.periodIncome} expense={stats.periodExpense} />
+        ) : (
+          <BalanceCardSkeleton />
+        )}
 
         <div className="grid grid-cols-3 gap-3">
           <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" />
           <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/new-customer" tint="sky" />
           <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/new-transaction" tint="amber" />
         </div>
+
+        {/* Upcoming dues (Hisab-Kitab "Upcoming" section) */}
+        <section>
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-base font-bold">বাকি জমা</h2>
+            <Link to="/due-sale" className="text-[13px] font-medium text-blue-700 hover:underline">সব দেখুন</Link>
+          </div>
+          {!hydrated ? (
+            <Skeleton className="h-[76px] w-full rounded-2xl" />
+          ) : stats.dues.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
+              কোনো বাকি নেই — সব জমা হয়ে গেছে 🎉
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {stats.dues.map((d) => {
+                const paid = d.amountPaid ?? (d.saleType === "credit" ? 0 : d.total);
+                return (
+                  <li key={d.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-soft">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+                      <Clock className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{d.customer || "বিক্রি"}</p>
+                      <p className="text-xs text-muted-foreground">{formatDate(new Date(d.date), "MMM d")} · বাকি {currency(d.total - paid)}</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+
+        {/* Recent activity (Hisab-Kitab "Recent activity" section) */}
+        <section>
+          <div className="mb-2 flex items-center justify-between">
+            <h2 className="text-base font-bold">সাম্প্রতিক লেনদেন</h2>
+            <Link to="/sales" className="text-[13px] font-medium text-blue-700 hover:underline">সব দেখুন</Link>
+          </div>
+          {!hydrated ? (
+            <Skeleton className="h-[76px] w-full rounded-2xl" />
+          ) : stats.recent.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
+              এখনো কোনো লেনদেন নেই — প্রথম বিক্রি করে শুরু করুন!
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {stats.recent.map((s) => (
+                <li key={s.id} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-soft">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+                    <ArrowDownLeft className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">{s.customer || "নগদ বিক্রি"}</p>
+                    <p className="text-xs text-muted-foreground">{formatDate(new Date(s.date), "MMM d")} · {s.items.reduce((n, it) => n + it.qty, 0)}টি আইটেম</p>
+                  </div>
+                  <span className="text-sm font-bold text-emerald-600">+{currency(s.total)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           {hydrated ? (
@@ -206,46 +321,81 @@ const Index = () => {
 };
 
 /**
- * Credit-card style cash balance card (Bank Asia app inspiration): dark→bright
- * teal/emerald gradient, glowing wave lines, "Tap for Balance" reveal.
+ * Credit-card style net-balance card (Bank Asia + Hisab-Kitab inspiration):
+ * rich blue gradient, glossy premium 3D finish (sheen overlay + embossed
+ * digits), tap to reveal the amount, and a bottom Income / Expense split.
  */
-function BalanceCard({ balance }: { balance: number }) {
+function BalanceCard({ net, income, expense }: { net: number; income: number; expense: number }) {
   const [revealed, setRevealed] = useState(false);
   return (
     <button
       type="button"
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
-      className="relative w-full overflow-hidden rounded-[24px] bg-gradient-to-br from-teal-800 via-teal-600 to-emerald-500 p-5 text-left text-white shadow-elevated transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="relative w-full overflow-hidden rounded-[24px] bg-gradient-to-br from-blue-800 via-blue-600 to-blue-500 p-5 text-left text-white shadow-[0_18px_40px_-12px_rgba(29,78,216,0.5)] transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Glowing wave lines */}
-      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 240" preserveAspectRatio="none" aria-hidden>
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
         <path d="M0 150 Q 50 115, 100 150 T 200 150 T 300 150 T 400 150" stroke="rgba(255,255,255,0.22)" strokeWidth="2.5" fill="none" />
         <path d="M0 185 Q 50 150, 100 185 T 200 185 T 300 185 T 400 185" stroke="rgba(255,255,255,0.12)" strokeWidth="2" fill="none" />
-        <path d="M0 215 Q 50 185, 100 215 T 200 215 T 300 215 T 400 215" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
+        <path d="M0 220 Q 50 190, 100 220 T 200 220 T 300 220 T 400 220" stroke="rgba(255,255,255,0.07)" strokeWidth="2" fill="none" />
       </svg>
 
+      {/* Glossy premium sheen */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(115deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.10) 28%, transparent 45%, transparent 70%, rgba(255,255,255,0.14) 88%, rgba(255,255,255,0.28) 100%)",
+        }}
+        aria-hidden
+      />
+      <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/15 blur-2xl" aria-hidden />
+
       <div className="relative flex items-start justify-between">
-        <div className="flex items-center gap-2">
-          <img src="/logo.png" alt="" className="h-8 w-8 rounded-lg object-contain shadow-md" />
-          <span className="text-sm font-semibold">হিসাব নিকাশ</span>
-        </div>
-        <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide">Active</span>
+        {/* EMV-style chip */}
+        <span className="flex h-8 w-11 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40 ring-1 ring-amber-200/60">
+          <span className="flex flex-col gap-[3px]">
+            <span className="h-px w-6 bg-amber-900/50" />
+            <span className="h-px w-6 bg-amber-900/50" />
+            <span className="h-px w-6 bg-amber-900/50" />
+          </span>
+        </span>
+        <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide backdrop-blur-sm">Active</span>
       </div>
 
-      <div className="relative mt-8">
-        <p className="text-[11px] uppercase tracking-wider text-white/70">Tap for Balance</p>
-        <p className="mt-1.5 text-[34px] font-bold leading-none tracking-tight tabular-nums">
-          {revealed ? currency(balance) : "৳ ••••"}
+      <p className="relative mt-4 text-sm font-semibold tracking-wide [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">হিসাব নিকাশ</p>
+
+      <div className="relative mt-4">
+        <p className="text-[11px] uppercase tracking-wider text-white/70">Net Balance · Tap for Balance</p>
+        {/* Embossed 3D digits */}
+        <p className="mt-1.5 text-[34px] font-extrabold leading-none tracking-tight tabular-nums [text-shadow:0_1px_0_rgba(255,255,255,0.28),0_2px_2px_rgba(0,0,0,0.35),0_6px_16px_rgba(0,0,0,0.35)]">
+          {revealed ? currency(net) : "৳ ••••"}
         </p>
       </div>
 
-      <div className="relative mt-7 flex items-end justify-between">
+      {/* Income / Expense split */}
+      <div className="relative mt-5 grid grid-cols-2 gap-3">
+        <div className="rounded-2xl bg-white/10 px-3.5 py-2.5 backdrop-blur-sm ring-1 ring-white/15">
+          <p className="flex items-center gap-1 text-[11px] text-white/70">
+            <ArrowUpRight className="h-3.5 w-3.5" /> আয়
+          </p>
+          <p className="mt-0.5 text-base font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(income) : "৳ ••••"}</p>
+        </div>
+        <div className="rounded-2xl bg-white/10 px-3.5 py-2.5 backdrop-blur-sm ring-1 ring-white/15">
+          <p className="flex items-center gap-1 text-[11px] text-white/70">
+            <ArrowDownLeft className="h-3.5 w-3.5" /> খরচ
+          </p>
+          <p className="mt-0.5 text-base font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(expense) : "৳ ••••"}</p>
+        </div>
+      </div>
+
+      <div className="relative mt-4 flex items-end justify-between">
         <div>
           <p className="text-[11px] text-white/70">নগদ ব্যালেন্স</p>
           <p className="mt-0.5 text-xs font-medium text-white/90">মুদি দোকান · ********</p>
         </div>
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
           <Share className="h-4 w-4 text-white/90" />
         </span>
       </div>
@@ -255,7 +405,7 @@ function BalanceCard({ balance }: { balance: number }) {
 
 function BalanceCardSkeleton() {
   return (
-    <Skeleton aria-busy="true" aria-label="Loading" className="h-[210px] w-full rounded-[24px]" />
+    <Skeleton aria-busy="true" aria-label="Loading" className="h-[260px] w-full rounded-[24px]" />
   );
 }
 

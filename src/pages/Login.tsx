@@ -172,7 +172,7 @@ const Login = () => {
       <Card className="w-full max-w-sm rounded-[28px] border-0 shadow-elevated overflow-hidden">
         {/* Playful gradient header: logo centered (1.7x), name + tagline
             stacked vertically below it, per explicit owner instruction. */}
-        <div className="relative bg-gradient-to-br from-teal-600 to-emerald-500 px-6 pt-10 pb-8 flex flex-col items-center gap-2.5 overflow-hidden">
+        <div className="relative bg-gradient-to-br from-blue-800 via-blue-600 to-blue-500 px-6 pt-10 pb-8 flex flex-col items-center gap-2.5 overflow-hidden">
           <div className="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-white/10" aria-hidden />
           <div className="absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-white/10" aria-hidden />
           <img
@@ -267,7 +267,7 @@ const Login = () => {
               </p>
             )}
 
-            <Button type="submit" size="lg" className="w-full rounded-2xl bg-gradient-to-r from-teal-600 to-emerald-500 font-semibold shadow-lg shadow-emerald-500/25 transition-transform hover:from-teal-500 hover:to-emerald-400 active:scale-[0.98]" disabled={submitting}>
+            <Button type="submit" size="lg" className="w-full rounded-2xl bg-gradient-to-r from-blue-700 to-blue-500 font-semibold shadow-lg shadow-blue-700/25 transition-transform hover:from-blue-600 hover:to-blue-400 active:scale-[0.98]" disabled={submitting}>
               {submitting
                 ? mode === "login" ? "Logging in…" : "Creating account…"
                 : mode === "login" ? "লগইন" : "অ্যাকাউন্ট খুলুন"}

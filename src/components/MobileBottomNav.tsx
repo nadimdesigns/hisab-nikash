@@ -138,7 +138,7 @@ const NAV_BG = "hsl(222 47% 11%)";
 const NAV_BORDER = "hsl(217 33% 18%)";
 const NAV_FG = "hsl(210 40% 90%)";
 const NAV_FG_DIM = "hsl(210 40% 90% / 0.6)";
-const NAV_ACTIVE_FG = "hsl(174 72% 46%)";
+const NAV_ACTIVE_FG = "hsl(217 91% 60%)";
 
 export function MobileBottomNav() {
   const location = useLocation();
