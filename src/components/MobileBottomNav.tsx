@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, BarChart3, LineChart, Plus, Menu, Truck, Calculator, Banknote, Clock, Wallet, PackagePlus, UserPlus, BookUser, Users, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Package, BarChart3, LineChart, Plus, Menu, Truck, Calculator, Banknote, Clock, Wallet, PackagePlus, UserPlus, Users, type LucideIcon } from "lucide-react";
 import { ACTION, NAV } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography";
@@ -112,15 +112,6 @@ const reportItems: QuickAction[] = [
     gradient: "from-violet-400 to-purple-600",
     iconColor: "text-white",
     ring: "ring-violet-200/60 dark:ring-violet-500/20",
-  },
-  {
-    title: NAV.khata,
-    icon: BookUser,
-    url: "/tally-khata",
-    surface: "bg-teal-50 dark:bg-teal-950/40",
-    gradient: "from-teal-400 to-cyan-600",
-    iconColor: "text-white",
-    ring: "ring-teal-200/60 dark:ring-teal-500/20",
   },
   {
     title: NAV.customers,
