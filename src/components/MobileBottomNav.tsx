@@ -19,15 +19,6 @@ type QuickAction = {
 
 const quickActions: QuickAction[] = [
   {
-    title: ACTION.receivePayment,
-    icon: Wallet,
-    url: "/customers",
-    surface: "bg-emerald-50 dark:bg-emerald-950/40",
-    gradient: "from-emerald-400 to-green-600",
-    iconColor: "text-white",
-    ring: "ring-emerald-200/60 dark:ring-emerald-500/20",
-  },
-  {
     title: ACTION.cashSale,
     icon: Banknote,
     url: "/new-sale?mode=cash",

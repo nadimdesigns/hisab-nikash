@@ -408,13 +408,13 @@ export default function CustomersPanel() {
       });
     });
     rows.push([]);
-    rows.push(["Summary"]);
-    rows.push(["Customer", selectedRow.name]);
-    rows.push(["Total billed", selectedRow.totalBilled.toFixed(2)]);
-    rows.push(["Cash billed", selectedRow.cashBilled.toFixed(2)]);
-    rows.push(["Due billed", selectedRow.dueBilled.toFixed(2)]);
-    rows.push(["Paid", selectedRow.paid.toFixed(2)]);
-    rows.push(["Outstanding due", selectedRow.due.toFixed(2)]);
+    rows.push(["সারাংশ"]);
+    rows.push(["খদ্দের", selectedRow.name]);
+    rows.push(["মোট বিল", selectedRow.totalBilled.toFixed(2)]);
+    rows.push(["নগদ বিল", selectedRow.cashBilled.toFixed(2)]);
+    rows.push(["বাকি বিল", selectedRow.dueBilled.toFixed(2)]);
+    rows.push(["পরিশোধিত", selectedRow.paid.toFixed(2)]);
+    rows.push(["অপরিশোধিত বাকি", selectedRow.due.toFixed(2)]);
 
     const csv = [header, ...rows].map((r) => r.map(esc).join(",")).join("\n");
     const blob = new Blob([`\ufeff${csv}`], { type: "text/csv;charset=utf-8;" });
@@ -427,30 +427,30 @@ export default function CustomersPanel() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-    toast({ title: "CSV exported", description: `${selectedRow.name} transactions downloaded.` });
+    toast({ title: "CSV এক্সপোর্ট হয়েছে", description: `${selectedRow.name} এর লেনদেন ডাউনলোড হয়েছে।` });
   };
 
   return (
     <>
-      <Card className="shadow-soft min-w-0">
+      <Card className="form-surface shadow-soft min-w-0 rounded-3xl border-0">
         <Sheet open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
           <CardHeader className="px-4 sm:px-6">
             <div className="flex items-center justify-between gap-2">
               <CardTitle className="flex items-center gap-2">
-                <UserCircle2 className="h-4 w-4 text-primary" /> Customers
+                <UserCircle2 className="h-4 w-4 text-primary" /> খদ্দের
                 <span className="text-muted-foreground">({customers.length})</span>
               </CardTitle>
               <div className="flex items-center gap-2">
                 {custFiltersActive && (
                   <Button variant="ghost" size="sm" onClick={clearCustFilters} className="gap-1">
-                    <X className="h-3.5 w-3.5" /> Clear
+                    <X className="h-3.5 w-3.5" /> মুছুন
                   </Button>
                 )}
                 <Button asChild variant="default" size="sm" className="gap-1.5">
                   <Link to="/new-customer">
                     <UserPlus className="h-4 w-4" />
-                    <span className="hidden sm:inline">Add Customer</span>
-                    <span className="sm:hidden">Add</span>
+                    <span className="hidden sm:inline">খদ্দের যোগ করুন</span>
+                    <span className="sm:hidden">যোগ করুন</span>
                   </Link>
                 </Button>
                 <SheetTrigger asChild>
@@ -503,27 +503,27 @@ export default function CustomersPanel() {
             <div
               className="mb-4 grid w-full grid-cols-2 gap-1.5 overflow-hidden sm:gap-3"
               role="group"
-              aria-label="Customer totals"
+              aria-label="খদ্দেরের মোট"
             >
               <div
-                className="min-w-0 overflow-hidden rounded-md bg-[#f7f7f7] dark:bg-muted/40 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px]"
+                className="min-w-0 overflow-hidden rounded-2xl bg-white py-[16px] pl-[21px] pr-1.5 shadow-sm sm:px-3 sm:py-[7px] dark:bg-white/10"
                 role="group"
-                aria-label={`Total billed: ${currency(customers.reduce((s, c) => s + c.totalBilled, 0))}`}
+                aria-label={`মোট বিল: ${currency(customers.reduce((s, c) => s + c.totalBilled, 0))}`}
               >
                 <p aria-hidden="true" className={typography("body-muted", "truncate leading-tight")}>
-                  Total billed
+                  মোট বিল
                 </p>
                 <p aria-hidden="true" className={typography("h4", "mt-0.5 truncate tabular-nums sm:mt-1")}>
                   {fmtMoney(customers.reduce((s, c) => s + c.totalBilled, 0))}
                 </p>
               </div>
               <div
-                className="min-w-0 overflow-hidden rounded-md bg-[#f7f7f7] dark:bg-muted/40 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px]"
+                className="min-w-0 overflow-hidden rounded-2xl bg-white py-[16px] pl-[21px] pr-1.5 shadow-sm sm:px-3 sm:py-[7px] dark:bg-white/10"
                 role="group"
-                aria-label={`Total due: ${currency(customers.reduce((s, c) => s + c.due, 0))}`}
+                aria-label={`মোট বাকি: ${currency(customers.reduce((s, c) => s + c.due, 0))}`}
               >
                 <p aria-hidden="true" className={typography("body-muted", "truncate leading-tight")}>
-                  Total due
+                  মোট বাকি
                 </p>
                 <p
                   aria-hidden="true"
@@ -644,20 +644,20 @@ export default function CustomersPanel() {
                   </Button>
                 )}
                 <Button onClick={applyCustDraftFilters} className="w-full">
-                  Apply filters
+                  ফিল্টার প্রয়োগ করুন
                 </Button>
               </div>
             </SheetContent>
 
             <p className={typography("body-muted", "mb-2")}>
-              Showing {filteredCustomers.length} of {customers.length} customers
+              {filteredCustomers.length} এর মধ্যে {customers.length} জন খদ্দের দেখানো হচ্ছে
             </p>
 
             {filteredCustomers.length === 0 ? (
               <div className={typography("body-muted", "rounded-lg border py-10 text-center")}>
                 {customers.length === 0
-                  ? "No customers yet."
-                  : "No customers match these filters."}
+                  ? "এখনো কোনো খদ্দের নেই।"
+                  : "কোনো খদ্দের ফিল্টারের সাথে মিলছে না।"}
               </div>
             ) : (
               <ul className="divide-y rounded-lg border">
@@ -679,18 +679,18 @@ export default function CustomersPanel() {
                         </div>
                         <div className="mt-0.5 flex items-center justify-between gap-2">
                           <span className={typography("body-muted", "truncate")}>
-                            {c.purchases + c.dueEntries} txn ·{" "}
+                            {c.purchases + c.dueEntries}টি লেনদেন ·{" "}
                             {c.lastPurchase
                               ? formatDate(c.lastPurchase, "MMM d, yyyy")
-                              : "No activity"}
+                              : "কোনো কার্যকলাপ নেই"}
                           </span>
                           <span className="shrink-0 tabular-nums">
                             {c.due > 0 ? (
                               <span className="font-medium text-destructive">
-                                Due {fmtMoney(c.due)}
+                                বাকি {fmtMoney(c.due)}
                               </span>
                             ) : (
-                              <span className="text-muted-foreground">Cleared</span>
+                              <span className="text-muted-foreground">পরিশোধিত</span>
                             )}
                           </span>
                         </div>

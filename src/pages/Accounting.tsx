@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,7 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { currency } from "@/lib/format";
 import { format } from "date-fns";
-import { Plus, Search, X } from "lucide-react";
+import { Plus } from "lucide-react";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +49,6 @@ export default function Accounting() {
   const hydrated = useShopHydrated();
 
   const [allTypeFilter, setAllTypeFilter] = useState<"all" | AllTxnType>("all");
-  const [allSearch, setAllSearch] = useState("");
 
   const allTransactionsList = useMemo<AllTxn[]>(() => {
     const rows: AllTxn[] = [];
@@ -79,42 +77,17 @@ export default function Accounting() {
   }, [sales, purchases]);
 
   const filteredAllTransactions = useMemo(() => {
-    const q = allSearch.trim().toLowerCase();
     return allTransactionsList.filter((t) => {
       if (allTypeFilter !== "all" && t.type !== allTypeFilter) return false;
-      if (!q) return true;
-      return (
-        t.summary.toLowerCase().includes(q) ||
-        t.reference.toLowerCase().includes(q) ||
-        t.type.toLowerCase().includes(q)
-      );
+      return true;
     });
-  }, [allTransactionsList, allTypeFilter, allSearch]);
+  }, [allTransactionsList, allTypeFilter]);
 
   return (
     <AppLayout title="হিসাব">
       <div className="mb-[10px] flex w-full flex-nowrap items-center gap-2">
-        <div className="relative min-w-0 flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={allSearch}
-            onChange={(e) => setAllSearch(e.target.value)}
-            placeholder="খুঁজুন..."
-            className="pl-9 pr-9"
-          />
-          {allSearch && (
-            <button
-              type="button"
-              onClick={() => setAllSearch("")}
-              aria-label="খুঁজুন মুছুন"
-              className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
         <Select value={allTypeFilter} onValueChange={(v) => setAllTypeFilter(v as "all" | AllTxnType)}>
-          <SelectTrigger className="h-10 w-auto shrink-0 gap-2 rounded-md border border-input bg-white px-3 py-2 hover:bg-accent hover:text-accent-foreground dark:bg-white/5 dark:text-foreground dark:border-input dark:hover:bg-white/10 dark:hover:text-foreground">
+          <SelectTrigger className="h-12 w-auto shrink-0 gap-2 rounded-md border border-input bg-white px-3 py-2 hover:bg-accent hover:text-accent-foreground dark:bg-white/5 dark:text-foreground dark:border-input dark:hover:bg-white/10 dark:hover:text-foreground md:h-10">
             <SelectValue placeholder="সব ধরনের" />
           </SelectTrigger>
           <SelectContent>
