@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, BarChart3, LineChart, Plus, Menu, Truck, Calculator, Banknote, Clock, Wallet, PackagePlus, UserPlus, Users, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Package, BarChart3, Plus, Banknote, Clock, Wallet, PackagePlus, UserPlus, Users, type LucideIcon } from "lucide-react";
 import { ACTION, NAV } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 type QuickAction = {
   title: string;
@@ -83,45 +83,7 @@ const leftItems: NavItem[] = [
 
 const rightItems: NavItem[] = [
   { title: NAV.accounting, url: "/accounting", icon: BarChart3 },
-];
-
-const reportItems: QuickAction[] = [
-  {
-    title: NAV.expenses,
-    icon: Truck,
-    url: "/expenses",
-    surface: "bg-rose-50 dark:bg-rose-950/40",
-    gradient: "from-rose-400 to-red-500",
-    iconColor: "text-white",
-    ring: "ring-rose-200/60 dark:ring-rose-500/20",
-  },
-  {
-    title: NAV.accounting,
-    icon: Calculator,
-    url: "/accounting",
-    surface: "bg-sky-50 dark:bg-sky-950/40",
-    gradient: "from-sky-400 to-indigo-500",
-    iconColor: "text-white",
-    ring: "ring-sky-200/60 dark:ring-sky-500/20",
-  },
-  {
-    title: NAV.analytics,
-    icon: LineChart,
-    url: "/analytics",
-    surface: "bg-violet-50 dark:bg-violet-950/40",
-    gradient: "from-violet-400 to-purple-600",
-    iconColor: "text-white",
-    ring: "ring-violet-200/60 dark:ring-violet-500/20",
-  },
-  {
-    title: NAV.customers,
-    icon: Users,
-    url: "/customers",
-    surface: "bg-fuchsia-50 dark:bg-fuchsia-950/40",
-    gradient: "from-fuchsia-400 to-pink-600",
-    iconColor: "text-white",
-    ring: "ring-fuchsia-200/60 dark:ring-fuchsia-500/20",
-  },
+  { title: NAV.customers, url: "/customers", icon: Users },
 ];
 
 // Fixed very-dark-green glass palette — does NOT change with app theme.
@@ -134,7 +96,6 @@ const NAV_ACTIVE_FG = "hsl(48 96% 55%)";
 export function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [reportsOpen, setReportsOpen] = useState(false);
   const [quickOpen, setQuickOpen] = useState(false);
 
   const renderItem = (item: (typeof leftItems)[number]) => {
@@ -195,71 +156,6 @@ export function MobileBottomNav() {
         </li>
 
         {rightItems.map(renderItem)}
-
-        <li>
-          <Sheet open={reportsOpen} onOpenChange={setReportsOpen}>
-            <SheetTrigger asChild>
-              <button
-                type="button"
-                className={cn(
-                  "flex w-full flex-col items-center justify-center gap-1 py-2.5 transition-colors",
-                  typography("small"),
-                )}
-                style={{ color: NAV_FG_DIM }}
-              >
-                <div className="flex h-9 w-12 items-center justify-center">
-                  <Menu className="h-5 w-5" />
-                </div>
-                <span>আরও</span>
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[92%] sm:max-w-sm">
-              <SheetHeader>
-                <SheetTitle className={typography("h3")}>আরও</SheetTitle>
-              </SheetHeader>
-              <div className="mt-6 grid grid-cols-2 gap-4">
-                {reportItems.map((action, idx) => {
-                  const Icon = action.icon;
-                  return (
-                    <button
-                      key={action.title}
-                      type="button"
-                      onClick={() => {
-                        setReportsOpen(false);
-                        navigate(action.url);
-                      }}
-                      className={cn(
-                        "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl p-5 ring-1 transition-all active:scale-[0.97] animate-fade-in",
-                        action.surface,
-                        action.ring,
-                      )}
-                      style={{ animationDelay: `${idx * 60}ms` }}
-                    >
-                      <span
-                        className={cn(
-                          "pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gradient-to-br opacity-20 blur-2xl",
-                          action.gradient,
-                        )}
-                      />
-                      <span
-                        className={cn(
-                          "relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg shadow-black/10 transition-transform group-active:scale-95",
-                          action.gradient,
-                        )}
-                      >
-                        <span className="absolute inset-x-2 top-1 h-3 rounded-full bg-white/30 blur-[2px]" />
-                        <Icon className={cn("relative h-7 w-7 drop-shadow-sm", action.iconColor)} strokeWidth={2} />
-                      </span>
-                      <span className={cn(typography("body-strong"), "text-center text-foreground")}>
-                        {action.title}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </SheetContent>
-          </Sheet>
-        </li>
       </ul>
 
       {/* Quick action bottom sheet */}
