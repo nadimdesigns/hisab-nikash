@@ -112,22 +112,22 @@ export default function Accounting() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>তারিখ</TableHead>
-                  <TableHead>ধরন</TableHead>
                   <TableHead>রেফারেন্স</TableHead>
                   <TableHead>বিস্তারিত</TableHead>
                   <TableHead className="text-right">পরিমাণ</TableHead>
+                  <TableHead>তারিখ</TableHead>
+                  <TableHead>ধরন</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {!hydrated ? (
                   Array.from({ length: 6 }).map((_, i) => (
                     <TableRow key={`all-sk-${i}`}>
-                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell className="text-right"><Skeleton className="ml-auto h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                     </TableRow>
                   ))
                 ) : filteredAllTransactions.length === 0 ? (
@@ -141,6 +141,14 @@ export default function Accounting() {
                 ) : (
                   filteredAllTransactions.map((t) => (
                     <TableRow key={t.id}>
+                      <TableCell className="max-w-[220px] truncate">{t.reference}</TableCell>
+                      <TableCell className="text-muted-foreground">{t.summary}</TableCell>
+                      <TableCell className={cn(
+                        "text-right tabular-nums font-medium",
+                        t.type === "Purchase" ? "text-destructive" : "text-foreground",
+                      )}>
+                        {t.type === "Purchase" ? "−" : ""}{currency(t.amount)}
+                      </TableCell>
                       <TableCell className="whitespace-nowrap">{format(new Date(t.date), "MMM d, yyyy")}</TableCell>
                       <TableCell className="whitespace-nowrap">
                         <span className={cn(
@@ -152,14 +160,6 @@ export default function Accounting() {
                         )}>
                           {TXN_TYPE_LABEL[t.type]}
                         </span>
-                      </TableCell>
-                      <TableCell className="max-w-[220px] truncate">{t.reference}</TableCell>
-                      <TableCell className="text-muted-foreground">{t.summary}</TableCell>
-                      <TableCell className={cn(
-                        "text-right tabular-nums font-medium",
-                        t.type === "Purchase" ? "text-destructive" : "text-foreground",
-                      )}>
-                        {t.type === "Purchase" ? "−" : ""}{currency(t.amount)}
                       </TableCell>
                     </TableRow>
                   ))
