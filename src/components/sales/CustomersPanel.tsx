@@ -20,7 +20,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -434,48 +434,47 @@ export default function CustomersPanel() {
     <>
       <Card className="form-surface shadow-soft min-w-0 rounded-3xl border-0">
         <Sheet open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
-          <CardHeader className="px-4 sm:px-6">
-            <div className="flex items-center justify-between gap-2">
-              <CardTitle className="flex items-center gap-2">
-                <UserCircle2 className="h-4 w-4 text-primary" /> খদ্দের
-                <span className="text-muted-foreground">({customers.length})</span>
-              </CardTitle>
-              <div className="flex items-center gap-2">
-                {custFiltersActive && (
-                  <Button variant="ghost" size="sm" onClick={clearCustFilters} className="gap-1">
-                    <X className="h-3.5 w-3.5" /> মুছুন
-                  </Button>
-                )}
-                <Button asChild variant="default" size="sm" className="gap-1.5">
-                  <Link to="/new-customer">
-                    <UserPlus className="h-4 w-4" />
-                    <span className="hidden sm:inline">খদ্দের যোগ করুন</span>
-                    <span className="sm:hidden">যোগ করুন</span>
-                  </Link>
+          <CardHeader className="px-4 pt-5 sm:px-6">
+            <div className="flex w-full items-center gap-2">
+              {custFiltersActive && (
+                <Button variant="ghost" size="sm" onClick={clearCustFilters} className="shrink-0 gap-1">
+                  <X className="h-3.5 w-3.5" /> মুছুন
                 </Button>
-                <SheetTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="relative shrink-0 gap-2 border-2"
-                    aria-label="খদ্দের ফিল্টার খুলুন"
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                    ফিল্টার
-                    {custAdvancedFilterCount > 0 && (
-                      <Badge
-                        variant="default"
-                        className={typography(
-                          "small",
-                          "absolute -right-1.5 -top-1.5 h-5 min-w-5 justify-center rounded-full px-1 leading-none text-primary-foreground",
-                        )}
-                      >
-                        {custAdvancedFilterCount}
-                      </Badge>
-                    )}
-                  </Button>
-                </SheetTrigger>
-              </div>
+              )}
+              <Button
+                asChild
+                variant="default"
+                size="sm"
+                className="flex-1 gap-1.5 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300"
+              >
+                <Link to="/new-customer">
+                  <UserPlus className="h-4 w-4" />
+                  <span className="hidden sm:inline">খদ্দের যোগ করুন</span>
+                  <span className="sm:hidden">যোগ করুন</span>
+                </Link>
+              </Button>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="relative flex-1 shrink-0 gap-2 border-2 bg-white"
+                  aria-label="খদ্দের ফিল্টার খুলুন"
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                  ফিল্টার
+                  {custAdvancedFilterCount > 0 && (
+                    <Badge
+                      variant="default"
+                      className={typography(
+                        "small",
+                        "absolute -right-1.5 -top-1.5 h-5 min-w-5 justify-center rounded-full px-1 leading-none text-primary-foreground",
+                      )}
+                    >
+                      {custAdvancedFilterCount}
+                    </Badge>
+                  )}
+                </Button>
+              </SheetTrigger>
             </div>
           </CardHeader>
           <CardContent className="px-4 sm:px-6">
