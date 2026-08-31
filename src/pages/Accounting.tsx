@@ -87,7 +87,7 @@ export default function Accounting() {
     <AppLayout title="হিসাব">
       <div className="mb-[10px] flex w-full flex-nowrap items-center gap-2">
         <Select value={allTypeFilter} onValueChange={(v) => setAllTypeFilter(v as "all" | AllTxnType)}>
-          <SelectTrigger className="h-12 w-auto shrink-0 gap-2 rounded-md border border-input bg-white px-3 py-2 hover:bg-accent hover:text-accent-foreground dark:bg-white/5 dark:text-foreground dark:border-input dark:hover:bg-white/10 dark:hover:text-foreground md:h-10">
+          <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-md border border-input bg-white px-3 py-2 hover:bg-accent hover:text-accent-foreground dark:bg-white/5 dark:text-foreground dark:border-input dark:hover:bg-white/10 dark:hover:text-foreground md:h-10">
             <SelectValue placeholder="সব ধরনের" />
           </SelectTrigger>
           <SelectContent>
@@ -98,7 +98,7 @@ export default function Accounting() {
             <SelectItem value="Purchase">ক্রয়</SelectItem>
           </SelectContent>
         </Select>
-        <Button asChild className="shrink-0">
+        <Button asChild className="flex-1 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300">
           <Link to="/new-transaction">
             <Plus className="h-4 w-4" /> নতুন লেনদেন
           </Link>
