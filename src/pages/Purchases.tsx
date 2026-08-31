@@ -73,7 +73,7 @@ export default function Purchases() {
   return (
     <AppLayout title="ক্রয়">
       <div className="grid gap-6 lg:grid-cols-3 w-full min-w-0 max-w-full overflow-x-hidden">
-        <Card className="lg:col-span-2 shadow-soft min-w-0 max-w-full overflow-hidden">
+        <Card className="form-surface lg:col-span-2 shadow-soft min-w-0 max-w-full overflow-hidden rounded-3xl border-0">
           <CardHeader className="px-4 sm:px-6">
             <div className="flex items-center justify-between gap-3">
               <CardTitle className={typography("h4", "m-0 leading-tight")}>
@@ -90,7 +90,7 @@ export default function Purchases() {
                 placeholder="পাইকারের নাম"
                 value={supplier}
                 onChange={(e) => setSupplier(e.target.value)}
-                className="bg-[#f7f7f7] dark:bg-white/5"
+                className="h-12 rounded-2xl bg-white dark:bg-white/10"
               />
             </div>
 
@@ -99,14 +99,14 @@ export default function Purchases() {
                 placeholder="পাইকারের কোম্পানির নাম"
                 value={supplierCompany}
                 onChange={(e) => setSupplierCompany(e.target.value)}
-                className="bg-[#f7f7f7] dark:bg-white/5"
+                className="h-12 rounded-2xl bg-white dark:bg-white/10"
               />
               <Input
                 type="tel"
                 placeholder="পাইকারের ফোন নম্বর"
                 value={supplierPhone}
                 onChange={(e) => setSupplierPhone(e.target.value)}
-                className="bg-[#f7f7f7] dark:bg-white/5"
+                className="h-12 rounded-2xl bg-white dark:bg-white/10"
               />
             </div>
 
@@ -117,11 +117,11 @@ export default function Purchases() {
                   value={pickId}
                   onChange={handlePick}
                   placeholder="পণ্য নির্বাচন করুন..."
-                  className="bg-[#f7f7f7] hover:bg-[#f7f7f7] dark:bg-white/5 dark:hover:bg-white/5"
+                  className="h-12 rounded-2xl bg-white hover:bg-white dark:bg-white/10 dark:hover:bg-white/10"
                 />
               </div>
               <div className="w-[120px] shrink-0">
-                <QtyStepper value={qty} onChange={setQty} unit={pickedProduct?.unit} className="bg-[#f7f7f7] dark:bg-white/5" />
+                <QtyStepper value={qty} onChange={setQty} unit={pickedProduct?.unit} className="h-12 rounded-2xl bg-white dark:bg-white/10" />
               </div>
             </div>
 
@@ -133,11 +133,11 @@ export default function Purchases() {
                 value={cost}
                 onChange={(e) => setCost(+e.target.value)}
                 placeholder="ইউনিট খরচ"
-                className="bg-[#f7f7f7] dark:bg-white/5"
+                className="h-12 rounded-2xl bg-white dark:bg-white/10"
               />
             </div>
 
-            <div className="rounded-lg border overflow-x-auto">
+            <div className="overflow-x-auto rounded-2xl border bg-white/70">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -175,7 +175,7 @@ export default function Purchases() {
               <p className={typography("h3")}>{currency(total)}</p>
             </div>
 
-            <Button onClick={submit} className="w-full" size="lg" disabled={items.length === 0}>
+            <Button onClick={submit} className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 font-semibold shadow-lg shadow-emerald-600/25 transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300 active:scale-[0.98]" size="lg" disabled={items.length === 0}>
               ক্রয় সংরক্ষণ
             </Button>
           </CardContent>
