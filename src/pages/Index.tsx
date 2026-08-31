@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
 import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, ShoppingCart, UserPlus, Receipt, Share, Clock, ArrowDownLeft, ArrowUpRight, type LucideIcon } from "lucide-react";
@@ -100,35 +100,6 @@ const Index = () => {
   return (
     <AppLayout title="হোম">
       <div className="space-y-4">
-        {/* Top nav tab bar (Bank Asia style) — above the period pills */}
-        <nav className="-mx-1 flex gap-5 overflow-x-auto border-b border-border px-1 pb-0 scrollbar-none">
-          {([
-            { l: "হোম", to: "/", end: true },
-            { l: "স্টক", to: "/stocks", end: false },
-            { l: "বিক্রি", to: "/sales", end: false },
-            { l: "খদ্দের", to: "/customers", end: false },
-            { l: "ক্রয়", to: "/purchases", end: false },
-            { l: "খরচ", to: "/expenses", end: false },
-            { l: "রিপোর্ট", to: "/analytics", end: false },
-          ] as const).map(({ l, to, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                cn(
-                  "-mb-px shrink-0 border-b-2 pb-1.5 text-[15px] font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                  isActive
-                    ? "border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                )
-              }
-            >
-              {l}
-            </NavLink>
-          ))}
-        </nav>
-
         {/* Time period filter pills (Hisab-Kitab style) */}
         <div className="flex gap-2 overflow-x-auto pb-0.5">
           {([
