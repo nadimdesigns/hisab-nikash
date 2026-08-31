@@ -107,7 +107,7 @@ export function ProductQuickSearch() {
     saveDraft("cash", { customer: current?.customer ?? "", items });
     setOpen(false);
     toast.success(`${m.name} added to sale`);
-    navigate("/sales");
+    navigate("/new-sale");
   };
 
   // Barcode / UPN auto-jump: when the typed (or scanned/pasted) value is an

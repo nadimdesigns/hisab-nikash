@@ -1,5 +1,5 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Truck, BarChart3, LineChart, Palette, Settings as SettingsIcon, Users, Wallet } from "lucide-react";
+import { LayoutDashboard, Package, Truck, BarChart3, LineChart, Palette, Settings as SettingsIcon, Users, Wallet } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { APP_NAME, APP_TAGLINE, NAV } from "@/lib/copy";
 import {
@@ -20,7 +20,6 @@ import { cn } from "@/lib/utils";
 const items = [
   { title: NAV.dashboard, url: "/", icon: LayoutDashboard, end: true },
   { title: NAV.stocks, url: "/stocks", icon: Package },
-  { title: NAV.sales, url: "/sales", icon: ShoppingCart },
   { title: NAV.customers, url: "/customers", icon: Users },
   { title: NAV.purchases, url: "/purchases", icon: Truck },
   { title: NAV.expenses, url: "/expenses", icon: Wallet },

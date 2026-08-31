@@ -10,7 +10,6 @@ import Index from "./pages/Index.tsx";
 import Inventory from "./pages/Inventory.tsx";
 import AddProduct from "./pages/AddProduct.tsx";
 import EditProduct from "./pages/EditProduct.tsx";
-import Sales from "./pages/Sales.tsx";
 import NewSale from "./pages/NewSale.tsx";
 import NewTransaction from "./pages/NewTransaction.tsx";
 import DueSale from "./pages/DueSale.tsx";
@@ -21,7 +20,6 @@ import Purchases from "./pages/Purchases.tsx";
 import Expenses from "./pages/Expenses.tsx";
 import Accounting from "./pages/Accounting.tsx";
 import Analytics from "./pages/Analytics.tsx";
-import Downloads from "./pages/Downloads.tsx";
 import StyleGuide from "./pages/StyleGuide.tsx";
 import Settings from "./pages/Settings.tsx";
 import NotFound from "./pages/NotFound.tsx";
@@ -53,7 +51,6 @@ const App = () => (
               <Route path="/add-product" element={<RequireAuth><AddProduct /></RequireAuth>} />
               <Route path="/edit-product/:id" element={<RequireAuth><EditProduct /></RequireAuth>} />
               <Route path="/inventory" element={<Navigate to="/stocks" replace />} />
-              <Route path="/sales" element={<RequireAuth><Sales /></RequireAuth>} />
               <Route path="/new-sale" element={<RequireAuth><NewSale /></RequireAuth>} />
               <Route path="/new-transaction" element={<RequireAuth><NewTransaction /></RequireAuth>} />
               <Route path="/due-sale" element={<RequireAuth><DueSale /></RequireAuth>} />
@@ -64,7 +61,6 @@ const App = () => (
               <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
               <Route path="/accounting" element={<RequireAuth><Accounting /></RequireAuth>} />
               <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
-              <Route path="/downloads" element={<RequireAuth><Downloads /></RequireAuth>} />
               <Route path="/style-guide" element={<RequireAuth><StyleGuide /></RequireAuth>} />
               <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
               <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />

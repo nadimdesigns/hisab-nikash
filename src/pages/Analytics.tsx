@@ -366,7 +366,7 @@ export default function Analytics() {
               value={String(products.length)}
             />
             <AnalyticsStatCard
-              to="/sales"
+              to="/new-sale"
               icon={ShoppingCart}
               iconColor="text-emerald-500"
               iconBg="bg-emerald-500/10"
