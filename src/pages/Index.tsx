@@ -334,7 +334,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
       type="button"
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
-      className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#022c22_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#022c22_100%)] p-4 text-left text-white transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[radial-gradient(130%_100%_at_18%_0%,rgba(52,211,153,0.30)_0%,rgba(16,185,129,0.10)_38%,transparent_62%),linear-gradient(125deg,#01140d_0%,#03301f_22%,#06694a_42%,#0fa673_56%,#06604a_76%,#01140d_100%)] p-4 text-left text-white transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Glowing wave lines (50% reduced opacity) */}
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
