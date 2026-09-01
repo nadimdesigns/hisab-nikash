@@ -184,12 +184,14 @@ export default function Accounting() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="text-muted-foreground">{t.summary}</div>
-                        <div className={cn(
-                          "tabular-nums font-medium",
-                          t.type === "Purchase" ? "text-destructive" : "text-foreground",
+                        <span className={cn(
+                          "mt-1 inline-flex items-center whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums",
+                          t.type === "Purchase" || t.type === "Expense"
+                            ? "bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300"
+                            : "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300",
                         )}>
-                          {t.type === "Purchase" ? "−" : ""}{currency(t.amount)}
-                        </div>
+                          {t.type === "Purchase" || t.type === "Expense" ? "−" : ""}{currency(t.amount)}
+                        </span>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">{format(new Date(t.date), "MMM d, yyyy")}</TableCell>
                     </TableRow>
