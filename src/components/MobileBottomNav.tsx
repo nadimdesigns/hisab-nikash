@@ -138,7 +138,7 @@ export function MobileBottomNav() {
             type="button"
             onClick={() => setQuickOpen(true)}
             aria-label="Quick actions"
-            className="shimmer-overlay relative -mt-[85px] flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-primary text-primary-foreground shadow-lg ring-4 transition-transform active:scale-95"
+            className="shimmer-overlay relative -mt-[85px] flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-lg shadow-emerald-600/25 ring-4 transition-transform active:scale-95"
             style={{ ["--tw-ring-color" as string]: NAV_BG }}
           >
             <Plus className="relative z-10 h-7 w-7" strokeWidth={2} />
