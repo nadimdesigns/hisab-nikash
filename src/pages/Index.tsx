@@ -140,7 +140,7 @@ const Index = () => {
         <section>
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-base font-bold">বাকি জমা</h2>
-            <Link to="/due-sale" className="text-[13px] font-medium text-emerald-600 hover:underline">সব দেখুন</Link>
+            <Link to="/customers" className="text-[13px] font-medium text-emerald-600 hover:underline">সব দেখুন</Link>
           </div>
           {!hydrated ? (
             <Skeleton className="h-[76px] w-full rounded-2xl" />

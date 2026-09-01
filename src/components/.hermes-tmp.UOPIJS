@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { LayoutDashboard, Package, BarChart3, Plus, Banknote, Clock, Wallet, PackagePlus, UserPlus, Users, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Package, BarChart3, Plus, Banknote, Clock, PackagePlus, UserPlus, Users, type LucideIcon } from "lucide-react";
 import { ACTION, NAV } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography";
@@ -39,7 +39,7 @@ const quickActions: QuickAction[] = [
   {
     title: ACTION.dueSale,
     icon: Clock,
-    url: "/new-sale?mode=credit",
+    url: "/due-sale",
     surface: "bg-rose-50 dark:bg-rose-950/40",
     gradient: "from-rose-400 to-red-500",
     iconColor: "text-white",

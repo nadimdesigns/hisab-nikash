@@ -32,7 +32,7 @@ import { loadProfiles, PROFILES_KEY } from "@/lib/customerProfiles";
 
 export default function NewInvoiceCard({ className, title = "Cash Sale" }: { className?: string; title?: string }) {
   const { products, recordSale, sales } = useShop();
-  const invoiceSaleType: "cash" | "credit" = title === "Due Sale" ? "credit" : "cash";
+  const invoiceSaleType: "cash" | "credit" = title === "Due Sale" || title === "বাকি বিক্রি" ? "credit" : "cash";
   const initialDrafts = useMemo(() => loadDrafts(), []);
   const [customer, setCustomer] = useState(initialDrafts.cash?.customer ?? "");
   const [items, setItems] = useState<SaleItem[]>(initialDrafts.cash?.items ?? []);
