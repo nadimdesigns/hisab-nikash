@@ -439,13 +439,9 @@ export default function InventoryPanel({
           <Table className="table-global">
             <TableHeader>
               <TableRow>
-                <TableHead className="min-w-[180px] md:min-w-0">পণ্য</TableHead>
-                <TableHead>SKU</TableHead>
+                <TableHead>পণ্য</TableHead>
                 <TableHead>ক্যাটাগরি</TableHead>
-                <TableHead className="min-w-[160px] md:min-w-0">লট / মেয়াদ</TableHead>
-                <TableHead className="text-right">স্টক</TableHead>
-                <TableHead className="text-right">মূল্য</TableHead>
-                <TableHead className="text-right">বিক্রি</TableHead>
+                <TableHead className="text-right">স্টক / দাম</TableHead>
                 <TableHead className="w-24" />
               </TableRow>
             </TableHeader>
@@ -453,21 +449,27 @@ export default function InventoryPanel({
               {!hydrated ? (
                 Array.from({ length: 8 }).map((_, i) => (
                   <TableRow key={`sk-${i}`} aria-busy="true">
-                    <TableCell className="min-w-[180px] md:min-w-0">
+                    <TableCell>
                       <div className="flex items-center gap-3">
                         <Skeleton className="h-10 w-10 shrink-0 rounded-md" />
-                        <Skeleton className="h-4 w-32" />
+                        <div className="min-w-0 flex-1 space-y-1.5">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-16" />
+                        </div>
                       </div>
                     </TableCell>
-                    <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                    <TableCell className="min-w-[160px] md:min-w-0">
-                      <Skeleton className="mb-1 h-3 w-24" />
-                      <Skeleton className="h-3 w-28" />
+                    <TableCell>
+                      <div className="space-y-1.5">
+                        <Skeleton className="h-3 w-20" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
                     </TableCell>
-                    <TableCell className="text-right"><Skeleton className="ml-auto h-5 w-10 rounded-full" /></TableCell>
-                    <TableCell className="text-right"><Skeleton className="ml-auto h-4 w-14" /></TableCell>
-                    <TableCell className="text-right"><Skeleton className="ml-auto h-4 w-14" /></TableCell>
+                    <TableCell className="text-right">
+                      <div className="ml-auto space-y-1.5">
+                        <Skeleton className="ml-auto h-5 w-14 rounded-full" />
+                        <Skeleton className="ml-auto h-3 w-16" />
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <div className="flex justify-end gap-1">
                         <Skeleton className="h-8 w-8 rounded-md" />
@@ -490,7 +492,7 @@ export default function InventoryPanel({
                           highlightId === m.id && "bg-primary/15 ring-2 ring-primary/40",
                         )}
                       >
-                        <TableCell className="min-w-[180px] font-medium md:min-w-0">
+                        <TableCell className="font-medium">
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
                               {m.imageUrl ? (
@@ -504,22 +506,24 @@ export default function InventoryPanel({
                                 <ShoppingBasket className="h-4 w-4 text-muted-foreground" aria-hidden />
                               )}
                             </div>
-                            <span className="item-name-cell">{m.name}</span>
+                            <span className="min-w-0">
+                              <span className="item-name-cell">{m.name}</span>
+                              <span className="block text-xs text-muted-foreground">{m.sku}</span>
+                            </span>
                           </div>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">{m.sku}</TableCell>
-                        <TableCell>{m.category}</TableCell>
-                        <TableCell className="min-w-[160px] md:min-w-0">
-                          <div className={typography("muted", "line-clamp-1")}>{m.batch}</div>
-                          <div className={cn(typography("muted", "line-clamp-1"), days <= 60 && "text-warning")}>
-                            {m.expiry} {days >= 0 ? `(${days}d)` : "(expired)"}
+                        <TableCell>
+                          <div className="line-clamp-1">{m.category || "—"}</div>
+                          <div className={cn("line-clamp-1 text-xs text-muted-foreground", days <= 60 && "text-warning")}>
+                            {m.batch ? `${m.batch} · ` : ""}{m.expiry} {days >= 0 ? `(${days}d)` : "(expired)"}
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <Badge variant={low ? "destructive" : "secondary"}>{bnNumber(m.stock)} {unitLabel(m.unit)}</Badge>
+                          <div className="mt-1 text-xs tabular-nums text-muted-foreground">
+                            {currency(m.costPrice)} / {currency(m.sellPrice)}
+                          </div>
                         </TableCell>
-                        <TableCell className="text-right">{currency(m.costPrice)}</TableCell>
-                        <TableCell className="text-right">{currency(m.sellPrice)}</TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-1">
                             <Button size="icon" variant="ghost" onClick={() => openEdit(m)}>
@@ -540,7 +544,7 @@ export default function InventoryPanel({
                   })}
                   {filtered.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={8} className={typography("body-muted", "py-10 text-center")}>
+                      <TableCell colSpan={4} className={typography("body-muted", "py-10 text-center")}>
                         No products found.
                       </TableCell>
                     </TableRow>
