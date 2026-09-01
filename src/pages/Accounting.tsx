@@ -113,8 +113,8 @@ export default function Accounting() {
               <TableHeader>
                 <TableRow>
                   <TableHead>রেফারেন্স</TableHead>
-                  <TableHead>বিস্তারিত</TableHead>
-                  <TableHead className="text-right">পরিমাণ</TableHead>
+                  <TableHead>পরিমাণ</TableHead>
+                  <TableHead className="text-right">বিল</TableHead>
                   <TableHead>তারিখ</TableHead>
                 </TableRow>
               </TableHeader>
