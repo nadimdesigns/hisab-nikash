@@ -145,7 +145,7 @@ export default function Accounting() {
               <TableHeader>
                 <TableRow className="border-transparent bg-emerald-900 hover:bg-emerald-900">
                   <TableHead className="text-white">রেফারেন্স</TableHead>
-                  <TableHead className="text-right text-white">বিল</TableHead>
+                  <TableHead className="text-right text-white">পরিমাণ ও দাম</TableHead>
                   <TableHead className="text-white">তারিখ</TableHead>
                 </TableRow>
               </TableHeader>
@@ -189,7 +189,7 @@ export default function Accounting() {
                           {TXN_TYPE_LABEL[t.type]}
                         </span>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="whitespace-nowrap text-right">
                         <div className="text-muted-foreground">{t.summary}</div>
                         <span className={cn(
                           "mt-1 inline-flex items-center whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums",
