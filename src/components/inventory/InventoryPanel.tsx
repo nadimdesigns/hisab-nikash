@@ -434,7 +434,7 @@ export default function InventoryPanel({
 
       <CrossTabSyncBanner className="mb-3" />
 
-      <Card className="shadow-soft">
+      <Card className="shadow-soft overflow-hidden rounded-[15px]">
         <CardContent className="p-0">
           <Table className="table-global">
             <TableHeader>

@@ -245,7 +245,7 @@ export default function Inventory() {
           <Button
             type="button"
             onClick={() => setAddOpen(true)}
-            className="hidden shrink-0 gap-2 sm:ml-auto sm:inline-flex"
+            className="hidden shrink-0 gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 sm:ml-auto sm:inline-flex"
           >
             <Plus className="h-4 w-4" /> পণ্য যোগ করুন
           </Button>
@@ -377,7 +377,7 @@ export default function Inventory() {
         <Button
           type="button"
           onClick={() => setAddOpen(true)}
-          className="w-full gap-2 sm:hidden"
+          className="w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 sm:hidden"
         >
           <Plus className="h-4 w-4" /> পণ্য যোগ করুন
         </Button>
