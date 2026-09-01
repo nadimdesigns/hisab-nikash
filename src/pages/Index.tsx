@@ -130,7 +130,7 @@ const Index = () => {
           <BalanceCardSkeleton />
         )}
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-1.5">
           <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" />
           <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="sky" />
           <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/accounting?new=1" tint="amber" />
@@ -421,9 +421,9 @@ function QuickAction({
   return (
     <Link
       to={to}
-      className={`flex flex-col items-center gap-2 rounded-2xl border-0 p-4 text-center shadow-soft transition-transform active:scale-[0.97] ${t.bg}`}
+      className={`flex flex-col items-center gap-2 rounded-2xl border-0 p-4 text-center transition-transform active:scale-[0.97] ${t.bg}`}
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 shadow-sm dark:bg-white/10">
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 dark:bg-white/10">
         <Icon className={`h-5 w-5 ${t.icon}`} strokeWidth={2.2} />
       </span>
       <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
