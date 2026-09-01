@@ -13,6 +13,8 @@ import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { APP_NAME, APP_TAGLINE } from "@/lib/copy";
+import { PlayCircle } from "lucide-react";
+import { enableDemoMode, setCachedRole } from "@/lib/demoMode";
 
 // Supabase auth is email+password under the hood (phone auth is not enabled
 // on the project), but the app's login/signup is a BD mobile number + a
@@ -78,9 +80,17 @@ const Login = () => {
   };
 
   /**
-   * Demo sandbox removed (owner instruction, Aug 2026) — the app is
-   * admin-only now. Sign in with a real phone + PIN account.
+   * Enter the demo sandbox. Purely client-side — no backend call. Every
+   * persisted key gets a `demo:` prefix, so this cannot touch real data.
    */
+  const loginAsDemo = () => {
+    enableDemoMode();
+    setCachedRole(null);
+    window.dispatchEvent(new Event("pharmasee-demo-changed"));
+    toast({ title: "ডেমো মোড", description: "নমুনা তথ্য দিয়ে অ্যাপটি ঘুরে দেখুন।" });
+    window.location.replace("/");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -233,6 +243,27 @@ const Login = () => {
                 {mode === "login" ? "অ্যাকাউন্ট খুলুন" : "লগইন"}
               </button>
             </p>
+
+            <div className="space-y-2">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden>
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center">
+                  <span className={typography("muted", "bg-card px-2")}>অথবা</span>
+                </div>
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full gap-2"
+                onClick={loginAsDemo}
+              >
+                <PlayCircle className="h-4 w-4" />
+                ডেমো অ্যাকাউন্ট দিয়ে দেখুন
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>

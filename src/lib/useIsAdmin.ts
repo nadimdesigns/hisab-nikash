@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { setCachedRole, type CachedRole } from "@/lib/demoMode";
+import { supabase } from "@/integrations/supabase/client";
+import { isDemoMode, setCachedRole, type CachedRole } from "@/lib/demoMode";
 type Role = CachedRole;
 
 /**
@@ -18,7 +18,7 @@ export function useUserRole(): { role: Role | null; loading: boolean } {
   useEffect(() => {
     let cancelled = false;
     if (authLoading) return;
-    if (!user) {
+    if (!user || isDemoMode()) {
       setRole(null);
       setCachedRole(null);
       setLoading(false);

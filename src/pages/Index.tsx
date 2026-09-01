@@ -11,6 +11,7 @@ import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianG
 import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
+import { isDemoMode } from "@/lib/demoMode";
 import { unitLabel } from "@/lib/copy";
 
 const Index = () => {
@@ -326,7 +327,8 @@ const Index = () => {
  * digits), tap to reveal the amount, and a bottom Income / Expense split.
  */
 function BalanceCard({ net, income, expense }: { net: number; income: number; expense: number }) {
-  const [revealed, setRevealed] = useState(false);
+  // Demo account: show the seeded amounts immediately (never blank/masked).
+  const [revealed, setRevealed] = useState(isDemoMode());
   return (
     <button
       type="button"
