@@ -441,7 +441,7 @@ export default function CustomersPanel() {
 
   return (
     <>
-      <Card className="form-surface shadow-soft min-w-0 rounded-3xl border-0">
+      <Card className="shadow-soft min-w-0 rounded-3xl border-0">
         <Sheet open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
           <CardHeader className="px-0 pt-5 sm:px-6">
             <div className="flex w-full items-center gap-2">
@@ -454,7 +454,7 @@ export default function CustomersPanel() {
                 type="button"
                 variant="default"
                 onClick={() => setNewCustOpen(true)}
-                className="h-12 flex-1 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300 md:h-10"
+                className="h-12 flex-1 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300 md:h-10"
               >
                 <UserPlus className="h-4 w-4" />
                 <span className="hidden sm:inline">কাস্টমার যোগ করুন</span>
@@ -511,7 +511,7 @@ export default function CustomersPanel() {
               aria-label="কাস্টমারের মোট"
             >
               <div
-                className="min-w-0 overflow-hidden rounded-2xl bg-white py-[16px] pl-[21px] pr-1.5 shadow-sm sm:px-3 sm:py-[7px] dark:bg-white/10"
+                className="min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:from-emerald-500/15 dark:to-emerald-500/5"
                 role="group"
                 aria-label={`মোট বিল: ${currency(customers.reduce((s, c) => s + c.totalBilled, 0))}`}
               >
@@ -523,7 +523,7 @@ export default function CustomersPanel() {
                 </p>
               </div>
               <div
-                className="min-w-0 overflow-hidden rounded-2xl bg-white py-[16px] pl-[21px] pr-1.5 shadow-sm sm:px-3 sm:py-[7px] dark:bg-white/10"
+                className="min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:from-rose-500/15 dark:to-rose-500/5"
                 role="group"
                 aria-label={`মোট বাকি: ${currency(customers.reduce((s, c) => s + c.due, 0))}`}
               >
@@ -665,7 +665,7 @@ export default function CustomersPanel() {
                   : "কোনো কাস্টমার ফিল্টারের সাথে মিলছে না।"}
               </div>
             ) : (
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {filteredCustomers.map((c) => (
                   <li key={c.name}>
                     <Link

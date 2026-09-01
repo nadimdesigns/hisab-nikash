@@ -129,7 +129,7 @@ export default function Accounting() {
         <Button
           type="button"
           onClick={() => setTxnOpen(true)}
-          className="flex-1 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300"
+          className="flex-1 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300"
         >
           <Plus className="h-4 w-4" /> নতুন লেনদেন
         </Button>

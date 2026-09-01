@@ -224,7 +224,7 @@ const Login = () => {
               </p>
             )}
 
-            <Button type="submit" size="lg" className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 font-semibold shadow-lg shadow-emerald-600/25 transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300 active:scale-[0.98]" disabled={submitting}>
+            <Button type="submit" size="lg" className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 font-semibold transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300 active:scale-[0.98]" disabled={submitting}>
               {submitting
                 ? mode === "login" ? "লগইন হচ্ছে…" : "অ্যাকাউন্ট তৈরি হচ্ছে…"
                 : mode === "login" ? "লগইন" : "অ্যাকাউন্ট খুলুন"}
