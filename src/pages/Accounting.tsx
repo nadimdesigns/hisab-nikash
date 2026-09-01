@@ -116,7 +116,6 @@ export default function Accounting() {
                   <TableHead>বিস্তারিত</TableHead>
                   <TableHead className="text-right">পরিমাণ</TableHead>
                   <TableHead>তারিখ</TableHead>
-                  <TableHead>ধরন</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -127,12 +126,11 @@ export default function Accounting() {
                       <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell className="text-right"><Skeleton className="ml-auto h-4 w-16" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-16" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                     </TableRow>
                   ))
                 ) : filteredAllTransactions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className={typography("body-muted", "py-8 text-center")}>
+                    <TableCell colSpan={4} className={typography("body-muted", "py-8 text-center")}>
                       {allTypeFilter === "New Payment"
                         ? "এখনও কোনো পেমেন্ট রেকর্ড হয়নি।"
                         : "এখনও কোনো লেনদেন নেই।"}
@@ -141,18 +139,10 @@ export default function Accounting() {
                 ) : (
                   filteredAllTransactions.map((t) => (
                     <TableRow key={t.id}>
-                      <TableCell className="max-w-[220px] truncate">{t.reference}</TableCell>
-                      <TableCell className="text-muted-foreground">{t.summary}</TableCell>
-                      <TableCell className={cn(
-                        "text-right tabular-nums font-medium",
-                        t.type === "Purchase" ? "text-destructive" : "text-foreground",
-                      )}>
-                        {t.type === "Purchase" ? "−" : ""}{currency(t.amount)}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">{format(new Date(t.date), "MMM d, yyyy")}</TableCell>
-                      <TableCell className="whitespace-nowrap">
+                      <TableCell className="max-w-[220px]">
+                        <div className="truncate">{t.reference}</div>
                         <span className={cn(
-                          "inline-flex items-center whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-medium",
+                          "mt-1 inline-flex items-center whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-medium",
                           t.type === "Cash Sale" && "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300",
                           t.type === "Due Sale" && "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300",
                           t.type === "New Payment" && "bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300",
@@ -161,6 +151,14 @@ export default function Accounting() {
                           {TXN_TYPE_LABEL[t.type]}
                         </span>
                       </TableCell>
+                      <TableCell className="text-muted-foreground">{t.summary}</TableCell>
+                      <TableCell className={cn(
+                        "text-right tabular-nums font-medium",
+                        t.type === "Purchase" ? "text-destructive" : "text-foreground",
+                      )}>
+                        {t.type === "Purchase" ? "−" : ""}{currency(t.amount)}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap">{format(new Date(t.date), "MMM d, yyyy")}</TableCell>
                     </TableRow>
                   ))
                 )}
