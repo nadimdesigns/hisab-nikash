@@ -143,10 +143,10 @@ export default function Accounting() {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>রেফারেন্স</TableHead>
-                  <TableHead className="text-right">বিল</TableHead>
-                  <TableHead>তারিখ</TableHead>
+                <TableRow className="border-transparent bg-emerald-900 hover:bg-emerald-900">
+                  <TableHead className="text-white">রেফারেন্স</TableHead>
+                  <TableHead className="text-right text-white">বিল</TableHead>
+                  <TableHead className="text-white">তারিখ</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
