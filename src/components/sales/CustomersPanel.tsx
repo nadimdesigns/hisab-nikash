@@ -672,24 +672,24 @@ export default function CustomersPanel() {
                       to={`/customers/${encodeURIComponent(c.name)}`}
                       className="flex w-full items-center gap-3 rounded-2xl border-0 bg-white p-3 text-left shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:bg-white/5"
                     >
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
                         <UserCircle2 className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <span className={typography("body-strong", "truncate")}>{c.name}</span>
-                          <span className="shrink-0 font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
+                          <span className="truncate text-sm font-semibold">{c.name}</span>
+                          <span className="shrink-0 text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
                             {fmtMoney(c.totalBilled)}
                           </span>
                         </div>
                         <div className="mt-0.5 flex items-center justify-between gap-2">
-                          <span className={typography("body-muted", "truncate")}>
+                          <span className="truncate text-xs text-muted-foreground">
                             {c.purchases + c.dueEntries}টি লেনদেন ·{" "}
                             {c.lastPurchase
                               ? formatDate(c.lastPurchase, "MMM d, yyyy")
                               : "কোনো কার্যকলাপ নেই"}
                           </span>
-                          <span className="shrink-0 tabular-nums">
+                          <span className="shrink-0 text-xs tabular-nums">
                             {c.due > 0 ? (
                               <span className="font-medium text-destructive">
                                 বাকি {fmtMoney(c.due)}
