@@ -446,16 +446,15 @@ export default function CustomersPanel() {
           <CardHeader className="px-4 pt-5 sm:px-6">
             <div className="flex w-full items-center gap-2">
               {custFiltersActive && (
-                <Button variant="ghost" size="sm" onClick={clearCustFilters} className="shrink-0 gap-1">
+                <Button variant="ghost" onClick={clearCustFilters} className="h-12 shrink-0 gap-1 rounded-xl md:h-10">
                   <X className="h-3.5 w-3.5" /> মুছুন
                 </Button>
               )}
               <Button
                 type="button"
                 variant="default"
-                size="sm"
                 onClick={() => setNewCustOpen(true)}
-                className="flex-1 gap-1.5 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300"
+                className="h-12 flex-1 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300 md:h-10"
               >
                 <UserPlus className="h-4 w-4" />
                 <span className="hidden sm:inline">কাস্টমার যোগ করুন</span>
@@ -464,8 +463,7 @@ export default function CustomersPanel() {
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  size="sm"
-                  className="relative flex-1 shrink-0 gap-2 border-2 bg-white"
+                  className="relative h-12 flex-1 shrink-0 gap-2 rounded-xl border-2 bg-white md:h-10"
                   aria-label="কাস্টমার ফিল্টার খুলুন"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
