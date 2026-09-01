@@ -175,13 +175,20 @@ const seedSales = (products: Product[]): Sale[] => {
       const qty = fractional
         ? roundQty(0.5 + Math.floor(Math.random() * 8) * 0.5)
         : 1 + Math.floor(Math.random() * 5);
+      const customer = ["নগদ কাস্টমার", "রহিম উদ্দিন", "আয়েশা সিদ্দিকা", "করিম হোসেন", "সুমাইয়া আক্তার", "তানভীর আহমেদ"][Math.floor(Math.random() * 6)];
+      const total = roundQty(qty * m.sellPrice);
+      // ~35% of named-customer sales are credit (বাকি) with partial payment,
+      // so the accounting page shows due sales and customers carry dues.
+      const isCredit = customer !== "নগদ কাস্টমার" && Math.random() < 0.35;
       sales.push({
         id: uid(),
         date: d.toISOString(),
-        customer: ["নগদ কাস্টমার", "রহিম উদ্দিন", "আয়েশা সিদ্দিকা", "করিম হোসেন", "সুমাইয়া আক্তার", "তানভীর আহমেদ"][Math.floor(Math.random() * 6)],
+        customer,
         items: [{ productId: m.id, name: m.name, qty, unitPrice: m.sellPrice, unitCost: m.costPrice }],
-        total: roundQty(qty * m.sellPrice),
+        total,
         cost: roundQty(qty * m.costPrice),
+        saleType: isCredit ? "credit" : "cash",
+        amountPaid: isCredit ? roundQty(total * (0.3 + Math.random() * 0.5)) : total,
       });
     }
   }

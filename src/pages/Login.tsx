@@ -87,6 +87,15 @@ const Login = () => {
   const loginAsDemo = () => {
     enableDemoMode();
     setCachedRole(null);
+    // Clear any stale demo-namespace data so the store re-seeds fresh on
+    // reload with the full sample dataset (cash+due sales, purchases, dues).
+    ["demo:dokan-store-v1", "demo:medishop-dues-v1", "demo:medishop-customer-profiles-v1", "demo:medishop-payments-v1"].forEach((k) => {
+      try {
+        localStorage.removeItem(k);
+      } catch {
+        /* ignore */
+      }
+    });
     seedDemoCustomers();
     window.dispatchEvent(new Event("pharmasee-demo-changed"));
     toast({ title: "ডেমো মোড", description: "নমুনা তথ্য দিয়ে অ্যাপটি ঘুরে দেখুন।" });

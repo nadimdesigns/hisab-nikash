@@ -25,6 +25,8 @@ const DEMO_CUSTOMERS: {
 export function seedDemoCustomers(): void {
   if (!isDemoMode()) return;
 
+  // Always (re)seed — the demo sandbox should show the full sample dataset
+  // on every entry, even if an older demo session left profiles behind.
   DEMO_CUSTOMERS.forEach((c) =>
     upsertProfile(c.name, { phone: c.phone, address: c.address }),
   );
