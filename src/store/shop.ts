@@ -188,6 +188,34 @@ const seedSales = (products: Product[]): Sale[] => {
   return sales;
 };
 
+const seedPurchases = (products: Product[]): Purchase[] => {
+  const purchases: Purchase[] = [];
+  const now = new Date();
+  const suppliers = ["সোনালী ট্রেডার্স", "ঢাকা কোম্পানি", "রহমান এন্টারপ্রাইজ", "গ্রামীণ সুপার শপ"];
+  const phone = () => "01" + String(7000000000 + Math.floor(Math.random() * 900000000));
+  for (let i = 0; i < 4; i++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - (30 - i * 7));
+    const m1 = products[Math.floor(Math.random() * products.length)];
+    const m2 = products[Math.floor(Math.random() * products.length)];
+    const qty = 5 + Math.floor(Math.random() * 20);
+    const qty2 = 3 + Math.floor(Math.random() * 10);
+    purchases.push({
+      id: uid(),
+      date: d.toISOString(),
+      supplier: suppliers[i],
+      supplierCompany: `${suppliers[i]} লিমিটেড`,
+      supplierPhone: phone(),
+      items: [
+        { productId: m1.id, name: m1.name, qty, unitCost: m1.costPrice },
+        { productId: m2.id, name: m2.name, qty: qty2, unitCost: m2.costPrice },
+      ],
+      total: roundQty(qty * m1.costPrice + qty2 * m2.costPrice),
+    });
+  }
+  return purchases;
+};
+
 const LEGACY_STORE_KEY = dataKey("medishop-store-v2-bd");
 const STORE_KEY = dataKey("dokan-store-v1");
 
@@ -382,7 +410,7 @@ export const useShop = create<ShopState>()(
       resetAll: () => {
         if (blockedByDemo()) return;
         const items = seedProducts();
-        set({ products: items, sales: seedSales(items), purchases: [] });
+        set({ products: items, sales: seedSales(items), purchases: seedPurchases(items) });
       },
     }),
     {
@@ -392,6 +420,7 @@ export const useShop = create<ShopState>()(
           const items = seedProducts();
           state.products = items;
           state.sales = seedSales(items);
+          state.purchases = seedPurchases(items);
         }
       },
     }

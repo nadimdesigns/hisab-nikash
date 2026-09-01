@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { APP_NAME, APP_TAGLINE } from "@/lib/copy";
 import { PlayCircle } from "lucide-react";
 import { enableDemoMode, setCachedRole } from "@/lib/demoMode";
+import { seedDemoCustomers } from "@/lib/demoSeed";
 
 // Supabase auth is email+password under the hood (phone auth is not enabled
 // on the project), but the app's login/signup is a BD mobile number + a
@@ -86,6 +87,7 @@ const Login = () => {
   const loginAsDemo = () => {
     enableDemoMode();
     setCachedRole(null);
+    seedDemoCustomers();
     window.dispatchEvent(new Event("pharmasee-demo-changed"));
     toast({ title: "ডেমো মোড", description: "নমুনা তথ্য দিয়ে অ্যাপটি ঘুরে দেখুন।" });
     window.location.replace("/");
