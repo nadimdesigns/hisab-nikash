@@ -21,13 +21,14 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useShop, useShopHydrated } from "@/store/shop";
+import { loadPayments } from "@/lib/customerPaymentsLog";
 import { currency } from "@/lib/format";
 import { format } from "date-fns";
 import { Plus } from "lucide-react";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
-type AllTxnType = "Cash Sale" | "Due Sale" | "New Payment" | "Purchase";
+type AllTxnType = "Cash Sale" | "Due Sale" | "New Payment" | "Purchase" | "Expense";
 type AllTxn = {
   id: string;
   type: AllTxnType;
@@ -41,9 +42,13 @@ type AllTxn = {
 const TXN_TYPE_LABEL: Record<AllTxnType, string> = {
   "Cash Sale": "নগদ বিক্রি",
   "Due Sale": "বাকি বিক্রি",
-  "New Payment": "নতুন পেমেন্ট",
+  "New Payment": "নগদ পেমেন্ট",
   "Purchase": "ক্রয়",
+  "Expense": "খরচ",
 };
+
+/** খরচ filter shows the same rows as ক্রয় (purchases are the expense records). */
+const EXPENSE_ALIASES: AllTxnType[] = ["Purchase", "Expense"];
 
 export default function Accounting() {
   const { sales, purchases } = useShop();
@@ -82,13 +87,26 @@ export default function Accounting() {
         amount: p.total,
       });
     });
+    // Standalone cash payments (receipts against dues) — full history view.
+    loadPayments().forEach((pay) => {
+      rows.push({
+        id: `payment-${pay.id}`,
+        type: "New Payment",
+        date: pay.date,
+        reference: pay.customer || "—",
+        summary: pay.note ? `পেমেন্ট · ${pay.note}` : "নগদ পেমেন্ট",
+        amount: pay.amount,
+      });
+    });
     return rows.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [sales, purchases]);
 
   const filteredAllTransactions = useMemo(() => {
     return allTransactionsList.filter((t) => {
-      if (allTypeFilter !== "all" && t.type !== allTypeFilter) return false;
-      return true;
+      if (allTypeFilter === "all") return true;
+      // খরচ and ক্রয় filters both surface the purchase (expense) rows.
+      if (allTypeFilter === "Expense") return EXPENSE_ALIASES.includes(t.type);
+      return t.type === allTypeFilter;
     });
   }, [allTransactionsList, allTypeFilter]);
 
@@ -101,10 +119,11 @@ export default function Accounting() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">সব ধরনের</SelectItem>
+            <SelectItem value="Purchase">ক্রয়</SelectItem>
+            <SelectItem value="Expense">খরচ</SelectItem>
             <SelectItem value="Cash Sale">নগদ বিক্রি</SelectItem>
             <SelectItem value="Due Sale">বাকি বিক্রি</SelectItem>
-            <SelectItem value="New Payment">নতুন পেমেন্ট</SelectItem>
-            <SelectItem value="Purchase">ক্রয়</SelectItem>
+            <SelectItem value="New Payment">নগদ পেমেন্ট</SelectItem>
           </SelectContent>
         </Select>
         <Button
@@ -158,6 +177,7 @@ export default function Accounting() {
                           t.type === "Due Sale" && "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300",
                           t.type === "New Payment" && "bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300",
                           t.type === "Purchase" && "bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300",
+                          t.type === "Expense" && "bg-orange-100 text-orange-800 dark:bg-orange-500/15 dark:text-orange-300",
                         )}>
                           {TXN_TYPE_LABEL[t.type]}
                         </span>
