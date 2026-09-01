@@ -418,7 +418,7 @@ export default function CustomersPanel() {
     });
     rows.push([]);
     rows.push(["সারাংশ"]);
-    rows.push(["খদ্দের", selectedRow.name]);
+    rows.push(["কাস্টমার", selectedRow.name]);
     rows.push(["মোট বিল", selectedRow.totalBilled.toFixed(2)]);
     rows.push(["নগদ বিল", selectedRow.cashBilled.toFixed(2)]);
     rows.push(["বাকি বিল", selectedRow.dueBilled.toFixed(2)]);
@@ -458,7 +458,7 @@ export default function CustomersPanel() {
                 className="flex-1 gap-1.5 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300"
               >
                 <UserPlus className="h-4 w-4" />
-                <span className="hidden sm:inline">খদ্দের যোগ করুন</span>
+                <span className="hidden sm:inline">কাস্টমার যোগ করুন</span>
                 <span className="sm:hidden">যোগ করুন</span>
               </Button>
               <SheetTrigger asChild>
@@ -466,7 +466,7 @@ export default function CustomersPanel() {
                   variant="outline"
                   size="sm"
                   className="relative flex-1 shrink-0 gap-2 border-2 bg-white"
-                  aria-label="খদ্দের ফিল্টার খুলুন"
+                  aria-label="কাস্টমার ফিল্টার খুলুন"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   ফিল্টার
@@ -493,7 +493,7 @@ export default function CustomersPanel() {
                 onChange={(e) => setCustQuery(e.target.value)}
                 placeholder="নাম, নম্বর বা আইডি দিয়ে খুঁজুন"
                 className="pl-9 pr-9"
-                aria-label="খদ্দের খুঁজুন"
+                aria-label="কাস্টমার খুঁজুন"
               />
               {custQuery && (
                 <button
@@ -510,7 +510,7 @@ export default function CustomersPanel() {
             <div
               className="mb-4 grid w-full grid-cols-2 gap-1.5 overflow-hidden sm:gap-3"
               role="group"
-              aria-label="খদ্দেরের মোট"
+              aria-label="কাস্টমারের মোট"
             >
               <div
                 className="min-w-0 overflow-hidden rounded-2xl bg-white py-[16px] pl-[21px] pr-1.5 shadow-sm sm:px-3 sm:py-[7px] dark:bg-white/10"
@@ -547,7 +547,7 @@ export default function CustomersPanel() {
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
               <SheetHeader className="px-6 pt-6">
-                <SheetTitle>খদ্দের ফিল্টার</SheetTitle>
+                <SheetTitle>কাস্টমার ফিল্টার</SheetTitle>
               </SheetHeader>
 
               <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
@@ -657,14 +657,14 @@ export default function CustomersPanel() {
             </SheetContent>
 
             <p className={typography("body-muted", "mb-2")}>
-              {filteredCustomers.length} এর মধ্যে {customers.length} জন খদ্দের দেখানো হচ্ছে
+              {filteredCustomers.length} এর মধ্যে {customers.length} জন কাস্টমার দেখানো হচ্ছে
             </p>
 
             {filteredCustomers.length === 0 ? (
               <div className={typography("body-muted", "rounded-lg border py-10 text-center")}>
                 {customers.length === 0
-                  ? "এখনো কোনো খদ্দের নেই।"
-                  : "কোনো খদ্দের ফিল্টারের সাথে মিলছে না।"}
+                  ? "এখনো কোনো কাস্টমার নেই।"
+                  : "কোনো কাস্টমার ফিল্টারের সাথে মিলছে না।"}
               </div>
             ) : (
               <ul className="divide-y rounded-lg border">

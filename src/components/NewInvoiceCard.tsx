@@ -101,7 +101,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       return;
     }
     if (invoiceSaleType === "credit" && !customer.trim()) {
-      toast({ title: "একটি খদ্দের নির্বাচন করুন", variant: "destructive" });
+      toast({ title: "একটি কাস্টমার নির্বাচন করুন", variant: "destructive" });
       return;
     }
     const sale = recordSale({
@@ -222,17 +222,17 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       <div className="space-y-4 px-5 sm:px-6">
         <div>
           <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-            খদ্দেরের নাম
+            কাস্টমারের নাম
           </label>
           {isCredit ? (
             <Select value={customer} onValueChange={setCustomer}>
               <SelectTrigger className={`h-[46px] rounded-xl bg-white dark:bg-white/10 ${tone.focus}`}>
-                <SelectValue placeholder="খদ্দের বাছাই করুন..." />
+                <SelectValue placeholder="কাস্টমার বাছাই করুন..." />
               </SelectTrigger>
               <SelectContent>
                 {customerOptions.length === 0 ? (
                   <div className={typography("body-muted", "px-3 py-2")}>
-                    এখনো কোনো খদ্দের নেই। নতুন খদ্দের থেকে যোগ করুন।
+                    এখনো কোনো কাস্টমার নেই। নতুন কাস্টমার থেকে যোগ করুন।
                   </div>
                 ) : (
                   customerOptions.map((name) => (
@@ -245,7 +245,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             </Select>
           ) : (
             <Input
-              placeholder="খুঁজুন বা খদ্দের যোগ করুন..."
+              placeholder="খুঁজুন বা কাস্টমার যোগ করুন..."
               value={customer}
               onChange={(e) => {
                 const words = e.target.value.split(/\s+/).filter(Boolean);

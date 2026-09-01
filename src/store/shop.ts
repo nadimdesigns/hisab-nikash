@@ -178,7 +178,7 @@ const seedSales = (products: Product[]): Sale[] => {
       sales.push({
         id: uid(),
         date: d.toISOString(),
-        customer: ["নগদ খদ্দের", "রহিম উদ্দিন", "আয়েশা সিদ্দিকা", "করিম হোসেন", "সুমাইয়া আক্তার", "তানভীর আহমেদ"][Math.floor(Math.random() * 6)],
+        customer: ["নগদ কাস্টমার", "রহিম উদ্দিন", "আয়েশা সিদ্দিকা", "করিম হোসেন", "সুমাইয়া আক্তার", "তানভীর আহমেদ"][Math.floor(Math.random() * 6)],
         items: [{ productId: m.id, name: m.name, qty, unitPrice: m.sellPrice, unitCost: m.costPrice }],
         total: roundQty(qty * m.sellPrice),
         cost: roundQty(qty * m.costPrice),

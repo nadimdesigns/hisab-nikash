@@ -232,7 +232,7 @@ export default function CustomerDetails() {
     saveProfiles(next);
     setErrors({});
     setIsEditing(false);
-    toast({ title: "খদ্দেরের তথ্য সংরক্ষিত হয়েছে" });
+    toast({ title: "কাস্টমারের তথ্য সংরক্ষিত হয়েছে" });
   };
 
   const updateDraft = <K extends keyof CustomerProfile>(key: K, value: string) => {
@@ -313,7 +313,7 @@ export default function CustomerDetails() {
   const hasDue = stats.due > 0;
 
   return (
-    <AppLayout title="খদ্দের">
+    <AppLayout title="কাস্টমার">
       <div className="mx-auto max-w-3xl space-y-6">
         {/* Top nav */}
         <div className="flex items-center justify-between gap-2">
@@ -321,7 +321,7 @@ export default function CustomerDetails() {
             <ArrowLeft className="h-4 w-4" /> ফিরে যান
           </Button>
           <Button asChild variant="ghost" size="sm">
-            <Link to="/customers">সব খদ্দের</Link>
+            <Link to="/customers">সব কাস্টমার</Link>
           </Button>
         </div>
 
@@ -331,7 +331,7 @@ export default function CustomerDetails() {
             <UserCircle2 className="h-7 w-7" />
           </div>
           <div className="min-w-0 flex-1">
-            <h1 className={typography("h2", "truncate")}>{customerName || "খদ্দের"}</h1>
+            <h1 className={typography("h2", "truncate")}>{customerName || "কাস্টমার"}</h1>
             <p className={typography("body-muted")}>
               {hasAny
                 ? `${stats.purchases + stats.dueEntries}টি লেনদেন · সর্বশেষ ${
@@ -359,7 +359,7 @@ export default function CustomerDetails() {
         <Card className="shadow-soft">
           <CardContent className="p-4 sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className={typography("body-strong")}>খদ্দেরের বিস্তারিত</h3>
+              <h3 className={typography("body-strong")}>কাস্টমারের বিস্তারিত</h3>
               {!isEditing && (
                 <Button type="button" variant="ghost" size="sm" className="gap-1" onClick={startEdit}>
                   <Pencil className="h-3.5 w-3.5" />
@@ -377,7 +377,7 @@ export default function CustomerDetails() {
                   <InfoRow icon={<StickyNote className="h-4 w-4" />} label="নোট" value={profile.notes} wide />
                 </dl>
               ) : (
-                <p className={typography("body-muted")}>এখনও কোনো যোগাযোগের তথ্য নেই। এই খদ্দেরের জন্য ফোন, ইমেইল, ঠিকানা বা নোট যোগ করুন।</p>
+                <p className={typography("body-muted")}>এখনও কোনো যোগাযোগের তথ্য নেই। এই কাস্টমারের জন্য ফোন, ইমেইল, ঠিকানা বা নোট যোগ করুন।</p>
               )
             ) : (
               <div className="space-y-3">

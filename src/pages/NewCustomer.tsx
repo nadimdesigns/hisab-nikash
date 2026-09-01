@@ -17,7 +17,7 @@ const customerSchema = z.object({
   name: z
     .string()
     .trim()
-    .nonempty({ message: "খদ্দেরের নাম আবশ্যক" })
+    .nonempty({ message: "কাস্টমারের নাম আবশ্যক" })
     .max(100, { message: "নাম ১০০ অক্ষরের কম হতে হবে" }),
   phone: z
     .string()
@@ -89,7 +89,7 @@ export default function NewCustomerDialog({
     const cleanName = result.data.name;
     const existing = loadProfiles();
     if (Object.keys(existing).some((k) => k.toLowerCase() === cleanName.toLowerCase())) {
-      setErrors({ name: "এই নামে একজন খদ্দের আগে থেকেই আছে" });
+      setErrors({ name: "এই নামে একজন কাস্টমার আগে থেকেই আছে" });
       return;
     }
     setErrors({});
@@ -99,7 +99,7 @@ export default function NewCustomerDialog({
       address: result.data.address || undefined,
       notes: result.data.notes || undefined,
     });
-    toast({ title: "খদ্দের সংরক্ষিত হয়েছে", description: `${cleanName} যোগ করা হয়েছে।` });
+    toast({ title: "কাস্টমার সংরক্ষিত হয়েছে", description: `${cleanName} যোগ করা হয়েছে।` });
     setName("");
     setPhone("");
     setEmail("");
@@ -127,7 +127,7 @@ export default function NewCustomerDialog({
                 id="new-cust-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="খদ্দেরের নাম"
+                placeholder="কাস্টমারের নাম"
                 maxLength={100}
                 aria-invalid={Boolean(errors.name)}
               />
@@ -182,7 +182,7 @@ export default function NewCustomerDialog({
             </FieldRow>
 
             <Button type="submit" className="w-full" size="lg">
-              খদ্দের সংরক্ষণ করুন
+              কাস্টমার সংরক্ষণ করুন
             </Button>
           </form>
         </div>

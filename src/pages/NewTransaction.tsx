@@ -19,7 +19,7 @@ const OPTIONS: {
   {
     type: "sale",
     title: "বিক্রি",
-    description: "খদ্দেরের কাছে নগদ বা বাকি বিক্রি রেকর্ড করুন।",
+    description: "কাস্টমারের কাছে নগদ বা বাকি বিক্রি রেকর্ড করুন।",
     icon: Banknote,
     surface: "bg-emerald-50 dark:bg-emerald-950/40",
     gradient: "from-emerald-400 to-green-600",

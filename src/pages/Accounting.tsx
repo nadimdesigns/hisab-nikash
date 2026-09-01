@@ -126,7 +126,6 @@ export default function Accounting() {
               <TableHeader>
                 <TableRow>
                   <TableHead>রেফারেন্স</TableHead>
-                  <TableHead>পরিমাণ</TableHead>
                   <TableHead className="text-right">বিল</TableHead>
                   <TableHead>তারিখ</TableHead>
                 </TableRow>
@@ -136,14 +135,13 @@ export default function Accounting() {
                   Array.from({ length: 6 }).map((_, i) => (
                     <TableRow key={`all-sk-${i}`}>
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                      <TableCell><Skeleton className="h-4 w-20" /></TableCell>
                       <TableCell className="text-right"><Skeleton className="ml-auto h-4 w-16" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                     </TableRow>
                   ))
                 ) : filteredAllTransactions.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className={typography("body-muted", "py-8 text-center")}>
+                  <TableCell colSpan={3} className={typography("body-muted", "py-8 text-center")}>
                       {allTypeFilter === "New Payment"
                         ? "এখনও কোনো পেমেন্ট রেকর্ড হয়নি।"
                         : "এখনও কোনো লেনদেন নেই।"}
@@ -164,12 +162,14 @@ export default function Accounting() {
                           {TXN_TYPE_LABEL[t.type]}
                         </span>
                       </TableCell>
-                      <TableCell className="text-muted-foreground">{t.summary}</TableCell>
-                      <TableCell className={cn(
-                        "text-right tabular-nums font-medium",
-                        t.type === "Purchase" ? "text-destructive" : "text-foreground",
-                      )}>
-                        {t.type === "Purchase" ? "−" : ""}{currency(t.amount)}
+                      <TableCell className="text-right">
+                        <div className="text-muted-foreground">{t.summary}</div>
+                        <div className={cn(
+                          "tabular-nums font-medium",
+                          t.type === "Purchase" ? "text-destructive" : "text-foreground",
+                        )}>
+                          {t.type === "Purchase" ? "−" : ""}{currency(t.amount)}
+                        </div>
                       </TableCell>
                       <TableCell className="whitespace-nowrap">{format(new Date(t.date), "MMM d, yyyy")}</TableCell>
                     </TableRow>
