@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { isDemoMode, setCachedRole, type CachedRole } from "@/lib/demoMode";
-
+import { setCachedRole, type CachedRole } from "@/lib/demoMode";
 type Role = CachedRole;
 
 /**
@@ -19,7 +18,7 @@ export function useUserRole(): { role: Role | null; loading: boolean } {
   useEffect(() => {
     let cancelled = false;
     if (authLoading) return;
-    if (!user || isDemoMode()) {
+    if (!user) {
       setRole(null);
       setCachedRole(null);
       setLoading(false);
@@ -34,7 +33,7 @@ export function useUserRole(): { role: Role | null; loading: boolean } {
       .rpc("hisab_nikash_ensure_self")
       .then(({ data }) => {
         if (cancelled) return;
-        const resolved: Role = (data as Role | null) ?? "user";
+        const resolved: Role = data === "admin" ? "admin" : null;
         setRole(resolved);
         setCachedRole(resolved);
         setLoading(false);

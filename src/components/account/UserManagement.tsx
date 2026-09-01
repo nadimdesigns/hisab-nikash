@@ -16,7 +16,7 @@ type AdminUser = {
   avatar_url: string | null;
   created_at: string;
   last_sign_in_at: string | null;
-  role: "admin" | "demo" | "user" | null;
+  role: "admin" | null;
 };
 
 const formatDate = (iso: string) => {
@@ -79,18 +79,18 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
           .eq("user_id", u.id)
           .eq("role", "admin");
         if (error) throw error;
-        toast({ title: "Admin removed", description: `${u.email ?? "User"} is no longer an admin.` });
+        toast({ title: "অ্যাডমিন সরানো হয়েছে", description: `${u.email ?? "ইউজার"} আর অ্যাডমিন নন।` });
       } else {
         const { error } = await supabase
           .from("hisab_nikash_user_roles")
           .insert({ user_id: u.id, role: "admin" });
         if (error) throw error;
-        toast({ title: "Admin added", description: `${u.email ?? "User"} is now an admin.` });
+        toast({ title: "অ্যাডমিন যোগ হয়েছে", description: `${u.email ?? "ইউজার"} এখন অ্যাডমিন।` });
       }
       await load();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Action failed";
-      toast({ title: "Error", description: msg, variant: "destructive" });
+      const msg = e instanceof Error ? e.message : "কাজটি ব্যর্থ হয়েছে";
+      toast({ title: "ত্রুটি", description: msg, variant: "destructive" });
     } finally {
       setBusyId(null);
     }
@@ -110,7 +110,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
       <CardHeader>
         <CardTitle>ইউজার ব্যবস্থাপনা</CardTitle>
         <CardDescription>
-          {users.length} {users.length === 1 ? "user" : "users"} total. Promote or demote admins.
+          মোট {users.length} জন ইউজার। অ্যাডমিন যোগ বা সরান।
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -127,18 +127,17 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
         {loading ? (
           <div className="flex items-center justify-center py-10 text-muted-foreground">
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Loading users…
+            ইউজার লোড হচ্ছে…
           </div>
         ) : error ? (
           <p className={typography("muted", "text-destructive")}>{error}</p>
         ) : filtered.length === 0 ? (
-          <p className={typography("muted", "text-center py-6")}>No users found.</p>
+          <p className={typography("muted", "text-center py-6")}>কোনো ইউজার পাওয়া যায়নি।</p>
         ) : (
           <ul className="divide-y divide-border rounded-lg border border-border">
             {filtered.map((u) => {
               const isSelf = u.id === currentUserId;
               const isAdmin = u.role === "admin";
-              const isDemo = u.role === "demo";
               const initials = (u.display_name ?? u.email ?? "U").slice(0, 2).toUpperCase();
               return (
                 <li key={u.id} className="flex items-center gap-3 p-3 sm:p-4">
@@ -151,20 +150,19 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className={typography("body-strong", "truncate")}>
-                        {u.display_name ?? u.email ?? "Unnamed"}
+                        {u.display_name ?? u.email ?? "নামহীন"}
                       </p>
                       {isAdmin && (
                         <Badge variant="secondary" className="gap-1">
                           <ShieldCheck className="h-3 w-3" />
-                          Admin
+                          অ্যাডমিন
                         </Badge>
                       )}
-                      {isDemo && <Badge variant="outline">Demo</Badge>}
-                      {isSelf && <Badge variant="outline">You</Badge>}
+                      {isSelf && <Badge variant="outline">আপনি</Badge>}
                     </div>
                     <p className={typography("muted", "truncate")}>{u.email ?? "—"}</p>
-                    <p className={typography("muted")}>Joined {formatDate(u.created_at)}</p>
-                    <p className={typography("muted")}>Last login {formatDateTime(u.last_sign_in_at)}</p>
+                    <p className={typography("muted")}>যোগদান {formatDate(u.created_at)}</p>
+                    <p className={typography("muted")}>সর্বশেষ লগইন {formatDateTime(u.last_sign_in_at)}</p>
                   </div>
                   <Button
                     size="sm"
@@ -181,7 +179,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                       <ShieldCheck className="h-4 w-4" />
                     )}
                     <span className="hidden sm:inline">
-                      {isAdmin ? "Remove admin" : "Make admin"}
+                      {isAdmin ? "অ্যাডমিন সরান" : "অ্যাডমিন করুন"}
                     </span>
                   </Button>
                 </li>
