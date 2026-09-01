@@ -295,11 +295,11 @@ export default function Expenses() {
                 <Table className="table-global">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[44%] min-w-[160px]">আইটেম</TableHead>
-                      <TableHead className="text-right">পরিমাণ</TableHead>
+                      <TableHead className="w-[36%]">আইটেম</TableHead>
+                      <TableHead className="text-center">পরিমাণ</TableHead>
                       <TableHead className="text-right">ইউনিট খরচ</TableHead>
                       <TableHead className="text-right">সাবটোটাল</TableHead>
-                      <TableHead className="w-10" />
+                      <TableHead className="w-9" />
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -311,7 +311,7 @@ export default function Expenses() {
                       </TableRow>
                     ) : items.map((i, idx) => (
                       <TableRow key={idx}>
-                        <TableCell className="w-[44%] min-w-[160px] font-medium">
+                        <TableCell className="w-[36%] font-medium">
                           <span className="item-name-cell">{i.name}</span>
                         </TableCell>
                         <TableCell className="text-right">{i.qty}</TableCell>

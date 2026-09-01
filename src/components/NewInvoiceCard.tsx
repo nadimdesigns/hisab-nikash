@@ -307,16 +307,16 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             <Table className="table-global">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[34%] min-w-[130px]">আইটেম</TableHead>
-                  <TableHead>পরিমাণ</TableHead>
-                  <TableHead>দাম</TableHead>
+                  <TableHead className="w-[38%]">আইটেম</TableHead>
+                  <TableHead className="text-center">পরিমাণ</TableHead>
+                  <TableHead className="text-right">দাম</TableHead>
                   <TableHead className="w-10" />
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.map((i) => (
                   <TableRow key={i.productId}>
-                    <TableCell className="w-[34%] min-w-[130px] font-medium">
+                    <TableCell className="w-[38%] font-medium">
                       <span className="item-name-cell">{i.name}</span>
                     </TableCell>
                     <TableCell>{i.qty}</TableCell>
