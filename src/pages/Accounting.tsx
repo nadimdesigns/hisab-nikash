@@ -107,7 +107,7 @@ export default function Accounting() {
 
 
       <Card className="form-surface shadow-soft">
-        <CardContent>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -165,7 +165,7 @@ export default function Accounting() {
               </TableBody>
             </Table>
           </div>
-          <div className="mt-3 flex items-center justify-between">
+          <div className="mt-3 flex items-center justify-between px-4 pb-4">
             <p className={typography("body-muted")}>
               {allTransactionsList.length}টি লেনদেনের মধ্যে {filteredAllTransactions.length}টি
             </p>
