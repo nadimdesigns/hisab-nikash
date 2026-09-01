@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
+import NewTransactionDialog from "./NewTransaction.tsx";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,6 +50,14 @@ export default function Accounting() {
   const hydrated = useShopHydrated();
 
   const [allTypeFilter, setAllTypeFilter] = useState<"all" | AllTxnType>("all");
+  const [txnOpen, setTxnOpen] = useState(false);
+
+  // Auto-open the transaction dialog when arriving via ?new=1 (homepage quick action).
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("new") === "1") setTxnOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const allTransactionsList = useMemo<AllTxn[]>(() => {
     const rows: AllTxn[] = [];
@@ -98,12 +107,16 @@ export default function Accounting() {
             <SelectItem value="Purchase">ক্রয়</SelectItem>
           </SelectContent>
         </Select>
-        <Button asChild className="flex-1 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300">
-          <Link to="/new-transaction">
-            <Plus className="h-4 w-4" /> নতুন লেনদেন
-          </Link>
+        <Button
+          type="button"
+          onClick={() => setTxnOpen(true)}
+          className="flex-1 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300"
+        >
+          <Plus className="h-4 w-4" /> নতুন লেনদেন
         </Button>
       </div>
+
+      <NewTransactionDialog open={txnOpen} onOpenChange={setTxnOpen} />
 
 
       <Card className="form-surface shadow-soft">

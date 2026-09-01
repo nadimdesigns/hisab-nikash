@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import AppLayout from "@/components/AppLayout";
-import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Banknote, PackagePlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography";
@@ -39,13 +38,19 @@ const OPTIONS: {
   },
 ];
 
-export default function NewTransaction() {
+export default function NewTransactionDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const navigate = useNavigate();
 
   return (
-    <AppLayout title="নতুন লেনদেন">
-      <Card className="form-surface shadow-soft">
-        <CardContent className="space-y-6 p-4 sm:p-6">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
+        <div className="space-y-6 p-1">
           <div>
             <p className={typography("h4", "m-0")}>লেনদেনের ধরন নির্বাচন করুন</p>
             <p className={typography("body-muted", "mt-1")}>
@@ -60,7 +65,10 @@ export default function NewTransaction() {
                 <button
                   key={opt.type}
                   type="button"
-                  onClick={() => navigate(opt.route)}
+                  onClick={() => {
+                    onOpenChange(false);
+                    navigate(opt.route);
+                  }}
                   className={cn(
                     "group relative flex items-center gap-4 overflow-hidden rounded-2xl p-5 text-left ring-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-2 active:scale-[0.98]",
                     opt.surface,
@@ -93,8 +101,8 @@ export default function NewTransaction() {
               );
             })}
           </div>
-        </CardContent>
-      </Card>
-    </AppLayout>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

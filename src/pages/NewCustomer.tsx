@@ -1,9 +1,7 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
 import { formatDate } from "@/lib/format";
 import { z } from "zod";
-import AppLayout from "@/components/AppLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,9 +49,14 @@ const customerSchema = z.object({
 
 type FormErrors = Partial<Record<"name" | "phone" | "email" | "address" | "notes", string>>;
 
-export default function NewCustomer() {
+export default function NewCustomerDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -102,23 +105,22 @@ export default function NewCustomer() {
     setEmail("");
     setAddress("");
     setNotes("");
-    navigate(`/customers/${encodeURIComponent(cleanName)}`);
+    onOpenChange(false);
   };
 
   return (
-    <AppLayout title="নতুন খদ্দের">
-      <Card className="form-surface shadow-soft mx-auto max-w-2xl min-w-0">
-        <CardHeader className="px-4 sm:px-6">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[85svh] overflow-y-auto sm:max-w-lg">
+        <div className="space-y-4">
           <div className="flex items-center justify-between gap-3">
-            <CardTitle className={typography("h4", "m-0 leading-tight")}>
+            <p className={typography("h4", "m-0 leading-tight")}>
               {formatDate(now, "MMM d, yyyy")}
-            </CardTitle>
+            </p>
             <span className={typography("body", "text-muted-foreground tabular-nums")}>
               {formatDate(now, "h:mm:ss a")}
             </span>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4 pb-[34px] px-4 sm:px-6">
+
           <form onSubmit={handleSubmit} className="space-y-3">
             <FieldRow label="নাম" htmlFor="new-cust-name" required error={errors.name}>
               <Input
@@ -183,9 +185,9 @@ export default function NewCustomer() {
               খদ্দের সংরক্ষণ করুন
             </Button>
           </form>
-        </CardContent>
-      </Card>
-    </AppLayout>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

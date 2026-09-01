@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import NewCustomerDialog from "@/pages/NewCustomer.tsx";
 import { UserPlus } from "lucide-react";
 import { format } from "date-fns";
 import type { DateRange } from "react-day-picker";
@@ -210,6 +211,14 @@ export default function CustomersPanel() {
   const [custDueRange, setCustDueRange] = useState<"any" | "gt0" | "gt500" | "gt2000">("any");
   const [custSort, setCustSort] = useState<CustSortKey>("billed-desc");
   const [custDateRange, setCustDateRange] = useState<DateRange | undefined>(undefined);
+  const [newCustOpen, setNewCustOpen] = useState(false);
+
+  // Auto-open the new-customer dialog when arriving via ?new=1 (bottom nav / homepage).
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    if (searchParams.get("new") === "1") setNewCustOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const customerActivity = useMemo(() => {
     const map = new Map<string, number[]>();
@@ -442,16 +451,15 @@ export default function CustomersPanel() {
                 </Button>
               )}
               <Button
-                asChild
+                type="button"
                 variant="default"
                 size="sm"
+                onClick={() => setNewCustOpen(true)}
                 className="flex-1 gap-1.5 bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white shadow-md shadow-emerald-600/25 hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300"
               >
-                <Link to="/new-customer">
-                  <UserPlus className="h-4 w-4" />
-                  <span className="hidden sm:inline">খদ্দের যোগ করুন</span>
-                  <span className="sm:hidden">যোগ করুন</span>
-                </Link>
+                <UserPlus className="h-4 w-4" />
+                <span className="hidden sm:inline">খদ্দের যোগ করুন</span>
+                <span className="sm:hidden">যোগ করুন</span>
               </Button>
               <SheetTrigger asChild>
                 <Button
@@ -701,6 +709,8 @@ export default function CustomersPanel() {
             )}
           </CardContent>
         </Sheet>
+
+      <NewCustomerDialog open={newCustOpen} onOpenChange={setNewCustOpen} />
       </Card>
 
       <Sheet open={!!selectedCustomer} onOpenChange={(v) => !v && setSelectedCustomer(null)}>

@@ -48,7 +48,7 @@ const quickActions: QuickAction[] = [
   {
     title: ACTION.newCustomer,
     icon: UserPlus,
-    url: "/new-customer",
+    url: "/customers?new=1",
     surface: "bg-sky-50 dark:bg-sky-950/40",
     gradient: "from-sky-400 to-blue-600",
     iconColor: "text-white",
@@ -57,7 +57,7 @@ const quickActions: QuickAction[] = [
   {
     title: `${NAV.stocks} ${ACTION.add}`,
     icon: Package,
-    url: "/add-product",
+    url: "/stocks?new=1",
     surface: "bg-violet-50 dark:bg-violet-950/40",
     gradient: "from-violet-400 to-purple-600",
     iconColor: "text-white",

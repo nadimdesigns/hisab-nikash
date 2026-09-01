@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import InventoryPanel from "@/components/inventory/InventoryPanel";
 import { Button } from "@/components/ui/button";
@@ -61,6 +61,12 @@ export default function Inventory() {
   const [sort, setSort] = usePersistentState<SortKey>("inv.sort", "name-asc", isSort);
   const [addOpen, setAddOpen] = useState(false);
 
+  // Auto-open the add-product dialog when arriving via ?new=1 (bottom nav).
+  useEffect(() => {
+    if (searchParams.get("new") === "1") setAddOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Filter sheet draft state — changes only commit to the active filters
   // when the user presses "ফিল্টার প্রয়োগ করুন". Drafts are seeded from the
   // current values whenever the sheet opens.
@@ -100,7 +106,6 @@ export default function Inventory() {
     next.delete("focus");
     setSearchParams(next, { replace: true });
   };
-  
   const { products } = useShop();
 
   const categories = useMemo(() => {
@@ -238,12 +243,11 @@ export default function Inventory() {
           </Sheet>
 
           <Button
-            asChild
+            type="button"
+            onClick={() => setAddOpen(true)}
             className="hidden shrink-0 gap-2 sm:ml-auto sm:inline-flex"
           >
-            <Link to="/add-product">
-              <Plus className="h-4 w-4" /> পণ্য যোগ করুন
-            </Link>
+            <Plus className="h-4 w-4" /> পণ্য যোগ করুন
           </Button>
 
           <Sheet open={filterSheetOpen} onOpenChange={handleSheetOpenChange}>
@@ -371,12 +375,11 @@ export default function Inventory() {
         </div>
 
         <Button
-          asChild
+          type="button"
+          onClick={() => setAddOpen(true)}
           className="w-full gap-2 sm:hidden"
         >
-          <Link to="/add-product">
-            <Plus className="h-4 w-4" /> পণ্য যোগ করুন
-          </Link>
+          <Plus className="h-4 w-4" /> পণ্য যোগ করুন
         </Button>
       </div>
       <InventoryPanel

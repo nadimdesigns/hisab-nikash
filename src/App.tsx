@@ -8,11 +8,7 @@ import DesignTokensProvider from "@/components/DesignTokensProvider";
 import { HeaderSlotProvider } from "@/components/HeaderSlot";
 import Index from "./pages/Index.tsx";
 import Inventory from "./pages/Inventory.tsx";
-import AddProduct from "./pages/AddProduct.tsx";
-import EditProduct from "./pages/EditProduct.tsx";
 import NewSale from "./pages/NewSale.tsx";
-import NewTransaction from "./pages/NewTransaction.tsx";
-import NewCustomer from "./pages/NewCustomer.tsx";
 import Customers from "./pages/Customers.tsx";
 import CustomerDetails from "./pages/CustomerDetails.tsx";
 import Purchases from "./pages/Purchases.tsx";
@@ -43,12 +39,8 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
               <Route path="/stocks" element={<RequireAuth><Inventory /></RequireAuth>} />
-              <Route path="/add-product" element={<RequireAuth><AddProduct /></RequireAuth>} />
-              <Route path="/edit-product/:id" element={<RequireAuth><EditProduct /></RequireAuth>} />
               <Route path="/inventory" element={<Navigate to="/stocks" replace />} />
               <Route path="/new-sale" element={<RequireAuth><NewSale /></RequireAuth>} />
-              <Route path="/new-transaction" element={<RequireAuth><NewTransaction /></RequireAuth>} />
-              <Route path="/new-customer" element={<RequireAuth><NewCustomer /></RequireAuth>} />
               <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
               <Route path="/customers/:id" element={<RequireAuth><CustomerDetails /></RequireAuth>} />
               <Route path="/purchases" element={<RequireAuth><Purchases /></RequireAuth>} />

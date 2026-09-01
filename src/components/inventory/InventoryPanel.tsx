@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -117,7 +116,6 @@ export default function InventoryPanel({
 }) {
   const { products, sales, purchases, addProduct, updateProduct, deleteProduct, restoreProduct } = useShop();
   const hydrated = useShopHydrated();
-  const navigate = useNavigate();
   const [internalOpen, setInternalOpen] = useState(false);
   const open = addOpen ?? internalOpen;
   const setOpen = setAddOpen ?? setInternalOpen;
@@ -240,25 +238,41 @@ export default function InventoryPanel({
   }, [focusId]);
 
   const openEdit = (m: Product) => {
-    // Edits now live on a dedicated page rather than the off-canvas dialog,
-    // which kept stale form state and felt cramped on mobile.
-    navigate(`/edit-product/${m.id}`);
+    // Edit lives in the same dialog as add — dialog re-mounts per target via
+    // the `key`, so form state is always fresh.
+    setEditing(m);
+    setForm({
+      name: m.name,
+      sku: m.sku,
+      category: m.category ?? "",
+      sellPrice: m.sellPrice,
+      costPrice: m.costPrice,
+      stock: m.stock,
+      unit: m.unit,
+      expiry: m.expiry,
+      reorderLevel: m.reorderLevel,
+      imageUrl: m.imageUrl,
+      barcode: m.barcode ?? "",
+      aliases: m.aliases ?? [],
+      batch: m.batch ?? "",
+    });
+    setOpen(true);
   };
 
   const submit = () => {
     if (!form.name.trim() || !form.sku.trim()) {
-      toast({ title: "Name and SKU are required", variant: "destructive" });
+      toast({ title: "নাম এবং SKU প্রয়োজন", variant: "destructive" });
       return;
     }
     if (form.sellPrice < form.costPrice) {
-      toast({ title: "Sell price is below cost price", description: "Double-check pricing before saving." });
+      toast({ title: "বিক্রয় মূল্য মূল্যের চেয়ে কম", description: "সংরক্ষণের আগে দাম আবার যাচাই করুন।" });
     }
     if (editing) {
       updateProduct(editing.id, form);
-      toast({ title: "Product updated" });
+      toast({ title: "পণ্য আপডেট হয়েছে" });
     } else {
       addProduct(form);
-      toast({ title: "Product added" });
+      toast({ title: "পণ্য যোগ করা হয়েছে" });
     }
     setOpen(false);
   };
@@ -305,23 +319,23 @@ export default function InventoryPanel({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{editing ? "Edit product" : "Add product"}</DialogTitle>
+            <DialogTitle>{editing ? "পণ্য সম্পাদনা" : "পণ্য যোগ করুন"}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Product image" className="col-span-2">
+            <Field label="পণ্যের ছবি" className="col-span-2">
               <ImageUploadField
                 value={form.imageUrl}
                 onChange={(url) => setForm({ ...form, imageUrl: url })}
                 productName={form.name}
               />
             </Field>
-            <Field label="Name" className="col-span-2">
+            <Field label="নাম" className="col-span-2">
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </Field>
             <Field label="SKU">
               <Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
             </Field>
-            <Field label="Category">
+            <Field label="ক্যাটাগরি">
               <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
             </Field>
             <Field label="একক">

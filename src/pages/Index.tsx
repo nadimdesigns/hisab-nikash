@@ -132,8 +132,8 @@ const Index = () => {
 
         <div className="grid grid-cols-3 gap-3">
           <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" />
-          <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/new-customer" tint="sky" />
-          <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/new-transaction" tint="amber" />
+          <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="sky" />
+          <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/accounting?new=1" tint="amber" />
         </div>
 
         {/* Upcoming dues (Hisab-Kitab "Upcoming" section) */}
