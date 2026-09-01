@@ -454,7 +454,7 @@ export default function CustomersPanel() {
                 type="button"
                 variant="default"
                 onClick={() => setNewCustOpen(true)}
-                className="h-12 flex-1 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300 md:h-10"
+                className="h-12 flex-1 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-10"
               >
                 <UserPlus className="h-4 w-4" />
                 <span className="hidden sm:inline">কাস্টমার যোগ করুন</span>

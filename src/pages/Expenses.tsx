@@ -333,7 +333,7 @@ export default function Expenses() {
                 <p className={typography("h3")}>{currency(purchaseTotal)}</p>
               </div>
 
-              <Button onClick={submit} className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-lime-400 font-semibold transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-lime-300 active:scale-[0.98]" size="lg" disabled={items.length === 0}>
+              <Button onClick={submit} className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]" size="lg" disabled={items.length === 0}>
                 ক্রয় সংরক্ষণ
               </Button>
             </CardContent>
