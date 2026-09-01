@@ -30,7 +30,7 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
           <AppSidebar />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-emerald-900/40 bg-emerald-950/80 text-sidebar-foreground px-4 pt-[5px] shadow-sm backdrop-blur-xl md:pt-0">
+          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-emerald-900/40 bg-[rgba(3,28,18,0.92)] text-sidebar-foreground px-4 pt-[5px] shadow-sm backdrop-blur-xl md:pt-0">
             <div className="hidden md:block">
               <SidebarTrigger />
             </div>
