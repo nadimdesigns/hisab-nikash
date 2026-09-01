@@ -195,7 +195,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${tone.label}`}>
             লেনদেনের তারিখ
           </p>
-          <h2 className={typography("h4", "m-0 leading-tight")}>{formatDate(now, "MMM d, yyyy")}</h2>
+          <h2 className={typography("h4", "m-0 leading-tight")}>{formatDate(now, "MMMM d, yyyy")}</h2>
         </div>
         <div className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 ${tone.pillBg}`}>
           <span className={`h-2 w-2 rounded-full ${tone.pillDot} animate-pulse`} />
