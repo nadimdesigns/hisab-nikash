@@ -304,7 +304,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           </div>
         ) : (
           <div className="overflow-x-auto rounded-2xl border">
-            <Table>
+            <Table className="table-global">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[34%] min-w-[130px]">আইটেম</TableHead>

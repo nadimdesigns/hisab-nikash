@@ -436,7 +436,7 @@ export default function InventoryPanel({
 
       <Card className="shadow-soft">
         <CardContent className="p-0">
-          <Table>
+          <Table className="table-global">
             <TableHeader>
               <TableRow>
                 <TableHead className="min-w-[180px] md:min-w-0">পণ্য</TableHead>

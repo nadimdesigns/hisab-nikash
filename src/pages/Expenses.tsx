@@ -181,7 +181,7 @@ export default function Expenses() {
               </div>
 
               <div className="rounded-lg border overflow-x-auto">
-                <Table>
+                <Table className="table-global">
                   <TableHeader>
                     <TableRow>
                       <TableHead>তারিখ</TableHead>
@@ -292,7 +292,7 @@ export default function Expenses() {
               </div>
 
               <div className="overflow-x-auto rounded-2xl border bg-white/70">
-                <Table>
+                <Table className="table-global">
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-[44%] min-w-[160px]">আইটেম</TableHead>

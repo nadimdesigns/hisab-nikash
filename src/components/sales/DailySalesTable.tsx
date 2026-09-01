@@ -88,7 +88,7 @@ export function DailySalesTable({ sales }: { sales: Sale[] }) {
     <Card className="shadow-soft min-w-0">
       <CardContent className="px-0 sm:px-2 pt-3">
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="table-global">
             <TableHeader>
               <TableRow>
                 <TableHead className="min-w-[120px]">Date</TableHead>

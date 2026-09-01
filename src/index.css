@@ -263,6 +263,17 @@
   .dark .form-surface {
     background-color: hsl(165 60% 7%) !important;
   }
+
+  /* Global table UI style — dark green header row (mirrors the accounting
+     page table). Add `.table-global` to any <Table> for the app-wide look. */
+  .table-global thead tr,
+  .table-global thead tr:hover {
+    background-color: hsl(160 84% 19%) !important;
+    border-color: transparent !important;
+  }
+  .table-global thead th {
+    color: #fff !important;
+  }
 }
 
 @layer base {

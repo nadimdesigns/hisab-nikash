@@ -516,7 +516,7 @@ export default function Analytics() {
 
 
           <div className="mt-3 overflow-x-auto">
-            <Table>
+            <Table className="table-global">
               <TableHeader>
                 <TableRow>
                   <TableHead><SortHeader label="ধরন" k="type" sortKey={sortKey} sortDir={sortDir} onClick={toggleSort} /></TableHead>

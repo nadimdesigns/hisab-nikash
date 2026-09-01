@@ -106,7 +106,7 @@ export default function SalesPanel() {
           </div>
 
           <div className="rounded-lg border">
-            <Table>
+            <Table className="table-global">
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-[44%] min-w-[160px]">Item</TableHead>
