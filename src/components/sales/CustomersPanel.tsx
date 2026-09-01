@@ -667,20 +667,20 @@ export default function CustomersPanel() {
                   : "কোনো কাস্টমার ফিল্টারের সাথে মিলছে না।"}
               </div>
             ) : (
-              <ul className="divide-y rounded-lg border">
+              <ul className="space-y-3">
                 {filteredCustomers.map((c) => (
                   <li key={c.name}>
                     <Link
                       to={`/customers/${encodeURIComponent(c.name)}`}
-                      className="flex w-full items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/40 sm:px-4"
+                      className="flex w-full items-center gap-3 rounded-2xl border-0 bg-white p-3 text-left shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:bg-white/5"
                     >
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
                         <UserCircle2 className="h-5 w-5" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
                           <span className={typography("body-strong", "truncate")}>{c.name}</span>
-                          <span className="shrink-0 font-semibold tabular-nums">
+                          <span className="shrink-0 font-semibold tabular-nums text-emerald-600 dark:text-emerald-400">
                             {fmtMoney(c.totalBilled)}
                           </span>
                         </div>
