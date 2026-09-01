@@ -6,7 +6,6 @@ import { MobileBottomNav } from "./MobileBottomNav";
 import { ThemeToggle } from "./ThemeToggle";
 
 import { Search } from "lucide-react";
-import { BrandLogo } from "./BrandLogo";
 import { useHeaderSlot } from "./HeaderSlot";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -34,9 +33,6 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
           <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-emerald-900/40 bg-emerald-950/80 text-sidebar-foreground px-4 pt-[5px] shadow-sm backdrop-blur-xl md:pt-0">
             <div className="hidden md:block">
               <SidebarTrigger />
-            </div>
-            <div className="flex items-center gap-2 md:hidden">
-              <BrandLogo className="h-8 w-8" />
             </div>
             <h1 className={typography("h3", "shrink-0 text-sidebar-foreground")}>{title}</h1>
             {headerSlot && (
