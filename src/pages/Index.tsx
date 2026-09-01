@@ -115,7 +115,7 @@ const Index = () => {
               className={cn(
                 "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 period === k
-                  ? "bg-[linear-gradient(140deg,#022c22_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#022c22_100%)] text-white shadow-md shadow-emerald-900/30"
+                  ? "bg-emerald-900 text-white"
                   : "border border-border bg-card text-muted-foreground hover:text-foreground"
               )}
             >

@@ -36,8 +36,7 @@ type ExpenseRow = {
 
 type Tab = "list" | "purchase";
 
-const TAB_GRADIENT =
-  "bg-[linear-gradient(140deg,#022c22_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#022c22_100%)] text-white shadow-md";
+const TAB_GRADIENT = "bg-emerald-900 text-white";
 
 export default function Expenses() {
   const { purchases, products, recordPurchase } = useShop();
@@ -135,7 +134,7 @@ export default function Expenses() {
       className={cn(
         "flex-1 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
         tab === v
-          ? cn("border-transparent shadow-md", TAB_GRADIENT)
+          ? cn("border-transparent", TAB_GRADIENT)
           : "border-border bg-card text-muted-foreground hover:bg-accent",
       )}
     >
