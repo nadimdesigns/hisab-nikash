@@ -105,7 +105,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
  */
 export const roundQty = (n: number): number => Math.round(n * 1000) / 1000;
 
-const seedProducts = (): Product[] => {
+export const seedProducts = (): Product[] => {
   const today = new Date();
   const inDays = (days: number) => {
     const d = new Date(today);
@@ -161,7 +161,7 @@ const seedProducts = (): Product[] => {
   ];
 };
 
-const seedSales = (products: Product[]): Sale[] => {
+export const seedSales = (products: Product[]): Sale[] => {
   const sales: Sale[] = [];
   const now = new Date();
   for (let i = 29; i >= 0; i--) {
@@ -195,7 +195,7 @@ const seedSales = (products: Product[]): Sale[] => {
   return sales;
 };
 
-const seedPurchases = (products: Product[]): Purchase[] => {
+export const seedPurchases = (products: Product[]): Purchase[] => {
   const purchases: Purchase[] = [];
   const now = new Date();
   const suppliers = ["সোনালী ট্রেডার্স", "ঢাকা কোম্পানি", "রহমান এন্টারপ্রাইজ", "গ্রামীণ সুপার শপ"];
