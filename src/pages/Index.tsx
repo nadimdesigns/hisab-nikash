@@ -5,7 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
-import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, ShoppingCart, UserPlus, Receipt, Share, Clock, ArrowDownLeft, ArrowUpRight, type LucideIcon } from "lucide-react";
+import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, ShoppingCart, UserPlus, Receipt, Clock, ArrowDownLeft, ArrowUpRight, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { subDays, startOfDay } from "date-fns";
@@ -334,7 +334,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
       type="button"
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
-      className="relative w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#022c22_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#022c22_100%)] p-5 text-left text-white transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#022c22_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#022c22_100%)] p-4 text-left text-white transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Glowing wave lines (50% reduced opacity) */}
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
@@ -356,7 +356,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
 
       <div className="relative flex items-start justify-between">
         {/* EMV-style chip */}
-        <span className="flex h-8 w-11 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40 ring-1 ring-amber-200/60">
+        <span className="flex h-7 w-10 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40 ring-1 ring-amber-200/60">
           <span className="flex flex-col gap-[3px]">
             <span className="h-px w-6 bg-amber-900/50" />
             <span className="h-px w-6 bg-amber-900/50" />
@@ -366,40 +366,29 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
         <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide backdrop-blur-sm">Active</span>
       </div>
 
-      <p className="relative mt-4 text-sm font-semibold tracking-wide [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">হিসাব নিকাশ</p>
-
-      <div className="relative mt-4">
-        <p className="text-[11px] uppercase tracking-wider text-white/70">Net Balance · Tap for Balance</p>
-        {/* Embossed 3D digits */}
-        <p className="mt-1.5 text-[34px] font-extrabold leading-none tracking-tight tabular-nums [text-shadow:0_1px_0_rgba(255,255,255,0.28),0_2px_2px_rgba(0,0,0,0.35),0_6px_16px_rgba(0,0,0,0.35)]">
-          {revealed ? currency(net) : "৳ ••••"}
-        </p>
+      <div className="relative mt-2 flex items-center justify-between">
+        <p className="text-[13px] font-semibold tracking-wide [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">হিসাব নিকাশ</p>
+        <p className="text-[10px] uppercase tracking-wider text-white/70">Net Balance · Tap</p>
       </div>
 
-      {/* Income / Expense split */}
-      <div className="relative mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-white/10 px-3.5 py-2.5 backdrop-blur-sm ring-1 ring-white/15">
+      <p className="relative mt-1 text-[26px] font-extrabold leading-none tracking-tight tabular-nums [text-shadow:0_1px_0_rgba(255,255,255,0.28),0_2px_2px_rgba(0,0,0,0.35),0_6px_16px_rgba(0,0,0,0.35)]">
+        {revealed ? currency(net) : "৳ ••••"}
+      </p>
+
+      {/* Income / Expense split — inline horizontal */}
+      <div className="relative mt-3 grid grid-cols-2 gap-2">
+        <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15">
           <p className="flex items-center gap-1 text-[11px] text-white/70">
             <ArrowUpRight className="h-3.5 w-3.5" /> আয়
           </p>
-          <p className="mt-0.5 text-base font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(income) : "৳ ••••"}</p>
+          <p className="text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(income) : "৳ ••••"}</p>
         </div>
-        <div className="rounded-2xl bg-white/10 px-3.5 py-2.5 backdrop-blur-sm ring-1 ring-white/15">
+        <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15">
           <p className="flex items-center gap-1 text-[11px] text-white/70">
             <ArrowDownLeft className="h-3.5 w-3.5" /> খরচ
           </p>
-          <p className="mt-0.5 text-base font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(expense) : "৳ ••••"}</p>
+          <p className="text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(expense) : "৳ ••••"}</p>
         </div>
-      </div>
-
-      <div className="relative mt-4 flex items-end justify-between">
-        <div>
-          <p className="text-[11px] text-white/70">নগদ ব্যালেন্স</p>
-          <p className="mt-0.5 text-xs font-medium text-white/90">মুদি দোকান · ********</p>
-        </div>
-        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm">
-          <Share className="h-4 w-4 text-white/90" />
-        </span>
       </div>
     </button>
   );
@@ -407,7 +396,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
 
 function BalanceCardSkeleton() {
   return (
-    <Skeleton aria-busy="true" aria-label="Loading" className="h-[260px] w-full rounded-[24px]" />
+    <Skeleton aria-busy="true" aria-label="Loading" className="aspect-[16/9] w-full rounded-[24px]" />
   );
 }
 
