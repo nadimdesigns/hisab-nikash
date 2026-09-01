@@ -168,7 +168,14 @@ export default function Accounting() {
                   </TableRow>
                 ) : (
                   filteredAllTransactions.map((t) => (
-                    <TableRow key={t.id}>
+                    <TableRow
+                      key={t.id}
+                      className={cn(
+                        "transition-colors",
+                        t.type === "Due Sale" && "bg-orange-50 dark:bg-orange-500/5",
+                        (t.type === "Purchase" || t.type === "Expense") && "bg-rose-50 dark:bg-rose-500/5",
+                      )}
+                    >
                       <TableCell className="max-w-[220px]">
                         <div className="truncate">{t.reference}</div>
                         <span className={cn(
@@ -186,9 +193,9 @@ export default function Accounting() {
                         <div className="text-muted-foreground">{t.summary}</div>
                         <span className={cn(
                           "mt-1 inline-flex items-center whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums",
-                          t.type === "Purchase" || t.type === "Expense"
-                            ? "bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300"
-                            : "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300",
+                          t.type === "Due Sale" && "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300",
+                          (t.type === "Purchase" || t.type === "Expense") && "bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300",
+                          t.type !== "Due Sale" && t.type !== "Purchase" && t.type !== "Expense" && "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300",
                         )}>
                           {t.type === "Purchase" || t.type === "Expense" ? "−" : ""}{currency(t.amount)}
                         </span>
