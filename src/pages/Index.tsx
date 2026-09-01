@@ -334,7 +334,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
       type="button"
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
-      className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#022c22_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#022c22_100%)] p-4 text-left text-white transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#00170c_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#00170c_100%)] p-4 text-left text-white transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Glowing wave lines (50% reduced opacity) */}
       <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
@@ -356,7 +356,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
 
       <div className="relative flex items-start justify-between">
         {/* EMV-style chip */}
-        <span className="flex h-7 w-10 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40 ring-1 ring-amber-200/60">
+        <span className="flex h-7 w-10 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40">
           <span className="flex flex-col gap-[3px]">
             <span className="h-px w-6 bg-amber-900/50" />
             <span className="h-px w-6 bg-amber-900/50" />
