@@ -443,7 +443,7 @@ export default function CustomersPanel() {
     <>
       <Card className="form-surface shadow-soft min-w-0 rounded-3xl border-0">
         <Sheet open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
-          <CardHeader className="px-4 pt-5 sm:px-6">
+          <CardHeader className="px-0 pt-5 sm:px-6">
             <div className="flex w-full items-center gap-2">
               {custFiltersActive && (
                 <Button variant="ghost" onClick={clearCustFilters} className="h-12 shrink-0 gap-1 rounded-xl md:h-10">
@@ -483,7 +483,7 @@ export default function CustomersPanel() {
               </SheetTrigger>
             </div>
           </CardHeader>
-          <CardContent className="px-4 sm:px-6">
+          <CardContent className="px-0 sm:px-6">
             <div className="mb-3 relative">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
