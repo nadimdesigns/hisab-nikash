@@ -23,7 +23,7 @@ const Account = () => {
   const displayName =
     (user?.user_metadata?.full_name as string | undefined) ||
     (user?.user_metadata?.name as string | undefined) ||
-    user?.email ||
+    (user?.email?.split("@")[0] ?? "") ||
     "ব্যবহারকারী";
   const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
   const initials = displayName.slice(0, 2).toUpperCase();
@@ -41,13 +41,15 @@ const Account = () => {
             </Avatar>
             <div>
               <CardTitle>{displayName}</CardTitle>
-              <CardDescription>PharmaSee অ্যাকাউন্ট</CardDescription>
+              <CardDescription>হিসাব নিকাশ অ্যাকাউন্ট</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1">
-              <p className={typography("body-muted")}>ইমেইল</p>
-              <p className={typography("body-strong")}>{user?.email ?? "—"}</p>
+              <p className={typography("body-muted")}>মোবাইল নম্বর</p>
+              <p className={typography("body-strong", "tabular-nums")}>
+                📱 {user?.email?.split("@")[0] ?? "—"}
+              </p>
             </div>
             <div className="pt-2">
               <Button variant="destructive" onClick={handleLogout}>

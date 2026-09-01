@@ -2,18 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -66,11 +57,6 @@ const Login = () => {
 
   const [errors, setErrors] = useState<FieldErrors>({});
 
-  const [forgotOpen, setForgotOpen] = useState(false);
-  const [forgotPhone, setForgotPhone] = useState("");
-  const [forgotError, setForgotError] = useState<string | undefined>(undefined);
-  const [forgotSent, setForgotSent] = useState(false);
-
   // Redirect when authenticated.
   useEffect(() => {
     if (!loading && session) {
@@ -78,31 +64,16 @@ const Login = () => {
     }
   }, [loading, session, from, navigate]);
 
-  const handleForgotSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const result = z.string().trim().regex(/^01[3-9]\d{8}$/, { message: "সঠিক মোবাইল নম্বর দিন" }).safeParse(forgotPhone);
-    if (!result.success) {
-      setForgotError(result.error.issues[0]?.message ?? "সঠিক মোবাইল নম্বর দিন");
-      return;
-    }
-    setForgotError(undefined);
-    const { error } = await supabase.auth.resetPasswordForEmail(authEmailFor(result.data), {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) {
-      setForgotError(error.message);
-      return;
-    }
-    setForgotSent(true);
-  };
-
-  const closeForgot = () => {
-    setForgotOpen(false);
-    setTimeout(() => {
-      setForgotPhone("");
-      setForgotError(undefined);
-      setForgotSent(false);
-    }, 150);
+  // Supabase errors are email-flavoured — surface them as phone/PIN messages.
+  const mapAuthError = (msg: string): string => {
+    const m = msg.toLowerCase();
+    if (m.includes("email address") || m.includes("invalid email"))
+      return "মোবাইল নম্বরটি সঠিক নয়।";
+    if (m.includes("not confirmed")) return "অ্যাকাউন্টটি নিশ্চিত করা হয়নি।";
+    if (m.includes("invalid login credentials"))
+      return "মোবাইল নম্বর বা পিন ভুল।";
+    if (m.includes("rate limit")) return "অনেকবার চেষ্টা হয়েছে, একটু পরে আবার চেষ্টা করুন।";
+    return msg;
   };
 
   /**
@@ -132,7 +103,7 @@ const Login = () => {
           password: authPasswordFor(parsed.data.pin),
         });
         if (error) {
-          setErrors({ form: error.message });
+          setErrors({ form: mapAuthError(error.message) });
         } else {
           toast({ title: "স্বাগতম", description: "লগইন সফল হয়েছে।" });
           navigate(from, { replace: true });
@@ -141,10 +112,9 @@ const Login = () => {
         const { error } = await supabase.auth.signUp({
           email: authEmailFor(parsed.data.phone),
           password: authPasswordFor(parsed.data.pin),
-          options: { emailRedirectTo: `${window.location.origin}/` },
         });
         if (error) {
-          setErrors({ form: error.message });
+          setErrors({ form: mapAuthError(error.message) });
         } else {
           toast({ title: "অ্যাকাউন্ট তৈরি হয়েছে", description: "আপনি এখন লগইন করা আছেন।" });
           navigate(from, { replace: true });
@@ -237,18 +207,6 @@ const Login = () => {
               )}
             </div>
 
-            {mode === "login" && (
-              <div className="flex items-center justify-center">
-                <button
-                  type="button"
-                  onClick={() => setForgotOpen(true)}
-                  className="text-sm font-medium text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-                >
-                  পিন ভুলে গেছেন?
-                </button>
-              </div>
-            )}
-
             {errors.form && (
               <p role="alert" className={typography("muted", "text-destructive text-center")}>
                 {errors.form}
@@ -277,59 +235,6 @@ const Login = () => {
           </form>
         </CardContent>
       </Card>
-
-      <Dialog open={forgotOpen} onOpenChange={(open) => (open ? setForgotOpen(true) : closeForgot())}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>পিন রিসেট</DialogTitle>
-            <DialogDescription>
-              {forgotSent
-                ? "ঐ ফোন নম্বরে অ্যাকাউন্ট থাকলে, পিন রিসেটের নির্দেশনা পাঠানো হয়েছে।"
-                : "আপনার ফোন নম্বরটি দিন — রিসেট নির্দেশনা পাঠানো হবে।"}
-            </DialogDescription>
-          </DialogHeader>
-          {forgotSent ? (
-            <DialogFooter>
-              <Button type="button" className="w-full" onClick={closeForgot}>
-                শেষ
-              </Button>
-            </DialogFooter>
-          ) : (
-            <form onSubmit={handleForgotSubmit} className="space-y-4" noValidate>
-              <div className="space-y-2">
-                <Label htmlFor="forgot-phone">মোবাইল নম্বর</Label>
-                <Input
-                  id="forgot-phone"
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel-national"
-                  maxLength={11}
-                  value={forgotPhone}
-                  onChange={(e) => {
-                    setForgotPhone(e.target.value.replace(/\D/g, "").slice(0, 11));
-                    if (forgotError) setForgotError(undefined);
-                  }}
-                  placeholder="01XXXXXXXXX"
-                  aria-invalid={!!forgotError}
-                  aria-describedby={forgotError ? "forgot-phone-error" : undefined}
-                  className={cn(forgotError && "border-destructive focus-visible:ring-destructive")}
-                />
-                {forgotError && (
-                  <p id="forgot-phone-error" className={typography("muted", "text-destructive")}>
-                    {forgotError}
-                  </p>
-                )}
-              </div>
-              <DialogFooter className="gap-2 sm:gap-2">
-                <Button type="button" variant="outline" onClick={closeForgot}>
-                  Cancel
-                </Button>
-                <Button type="submit">Send reset link</Button>
-              </DialogFooter>
-            </form>
-          )}
-        </DialogContent>
-      </Dialog>
     </main>
   );
 };

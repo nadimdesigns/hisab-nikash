@@ -31,6 +31,9 @@ const formatDate = (iso: string) => {
   }
 };
 
+/** Synthetic emails are `<phone>@hisabnikash.com` — surface only the phone. */
+const phoneOf = (email: string | null) => (email ? email.split("@")[0] : "");
+
 const formatDateTime = (iso: string | null) => {
   if (!iso) return "Never";
   try {
@@ -79,13 +82,13 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
           .eq("user_id", u.id)
           .eq("role", "admin");
         if (error) throw error;
-        toast({ title: "অ্যাডমিন সরানো হয়েছে", description: `${u.email ?? "ইউজার"} আর অ্যাডমিন নন।` });
+        toast({ title: "অ্যাডমিন সরানো হয়েছে", description: `${phoneOf(u.email) || "ইউজার"} আর অ্যাডমিন নন।` });
       } else {
         const { error } = await supabase
           .from("hisab_nikash_user_roles")
           .insert({ user_id: u.id, role: "admin" });
         if (error) throw error;
-        toast({ title: "অ্যাডমিন যোগ হয়েছে", description: `${u.email ?? "ইউজার"} এখন অ্যাডমিন।` });
+        toast({ title: "অ্যাডমিন যোগ হয়েছে", description: `${phoneOf(u.email) || "ইউজার"} এখন অ্যাডমিন।` });
       }
       await load();
     } catch (e) {
@@ -119,7 +122,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="নাম বা ইমেইল দিয়ে খুঁজুন"
+            placeholder="নাম বা মোবাইল নম্বর দিয়ে খুঁজুন"
             className="pl-9"
           />
         </div>
@@ -160,7 +163,9 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                       )}
                       {isSelf && <Badge variant="outline">আপনি</Badge>}
                     </div>
-                    <p className={typography("muted", "truncate")}>{u.email ?? "—"}</p>
+                    <p className={typography("muted", "truncate tabular-nums")}>
+                      📱 {phoneOf(u.email) || "—"}
+                    </p>
                     <p className={typography("muted")}>যোগদান {formatDate(u.created_at)}</p>
                     <p className={typography("muted")}>সর্বশেষ লগইন {formatDateTime(u.last_sign_in_at)}</p>
                   </div>

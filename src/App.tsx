@@ -22,7 +22,6 @@ import Analytics from "./pages/Analytics.tsx";
 import Account from "./pages/Account.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
-import ResetPassword from "./pages/ResetPassword.tsx";
 import RequireAuth from "./components/RequireAuth";
 import { ProductQuickSearch } from "./components/ProductQuickSearch";
 import { ScrollToTop } from "./components/ScrollToTop";
@@ -42,7 +41,6 @@ const App = () => (
             <ProductQuickSearch />
             <Routes>
               <Route path="/login" element={<Login />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
               <Route path="/stocks" element={<RequireAuth><Inventory /></RequireAuth>} />
               <Route path="/add-product" element={<RequireAuth><AddProduct /></RequireAuth>} />
