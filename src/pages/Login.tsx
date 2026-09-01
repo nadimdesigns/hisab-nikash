@@ -26,7 +26,9 @@ import { APP_NAME, APP_TAGLINE } from "@/lib/copy";
 // on the project), but the app's login/signup is a BD mobile number + a
 // 4-digit PIN per explicit owner instruction. Map the phone to a synthetic
 // email so the existing Supabase email/password flow keeps working.
-const PHONE_DOMAIN = "hisabnikash.app";
+// Supabase rejected the `.app` synthetic domain with "Email address is
+// invalid" (verified live Aug 2026) — switched to a plain `.com` domain.
+const PHONE_DOMAIN = "hisabnikash.com";
 const authEmailFor = (phone: string) => `${phone.replace(/\D/g, "")}@${PHONE_DOMAIN}`;
 // Supabase's default minimum password length is 6, so a bare 4-digit PIN
 // would be rejected at signup. Derive a stable 6-char secret ("H1" + PIN)
