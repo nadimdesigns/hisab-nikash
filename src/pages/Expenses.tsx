@@ -265,7 +265,7 @@ export default function Expenses() {
               </div>
 
               <div className="flex w-full items-start gap-2">
-                <div className="min-w-0 flex-1">
+                <div className="w-1/2 min-w-0">
                   <ProductPickerSheet
                     products={products}
                     value={pickId}
@@ -274,7 +274,7 @@ export default function Expenses() {
                     className="h-12 rounded-2xl bg-white hover:bg-white dark:bg-white/10 dark:hover:bg-white/10"
                   />
                 </div>
-                <div className="w-[120px] shrink-0">
+                <div className="w-1/2">
                   <QtyStepper value={qty} onChange={setQty} unit={pickedProduct?.unit} className="h-12 rounded-2xl bg-white dark:bg-white/10" />
                 </div>
               </div>

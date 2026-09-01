@@ -261,7 +261,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         </div>
 
         <div className="grid grid-cols-12 gap-3">
-          <div className="col-span-8 min-w-0">
+          <div className="col-span-6 min-w-0">
             <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
               পণ্যের নাম
             </label>
@@ -275,7 +275,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
               className={`h-[46px] rounded-xl bg-white hover:bg-white dark:bg-white/10 dark:hover:bg-white/10 ${tone.focus}`}
             />
           </div>
-          <div className="col-span-4">
+          <div className="col-span-6">
             <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
               পরিমাণ
             </label>
