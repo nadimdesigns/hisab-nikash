@@ -374,7 +374,7 @@ export default function Analytics() {
               value={String(sales.length)}
             />
             <AnalyticsStatCard
-              to="/purchases"
+              to="/expenses?tab=purchase"
               icon={Truck}
               iconColor="text-sky-500"
               iconBg="bg-sky-500/10"

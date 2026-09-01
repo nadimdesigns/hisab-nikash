@@ -11,7 +11,6 @@ import Inventory from "./pages/Inventory.tsx";
 import NewSale from "./pages/NewSale.tsx";
 import Customers from "./pages/Customers.tsx";
 import CustomerDetails from "./pages/CustomerDetails.tsx";
-import Purchases from "./pages/Purchases.tsx";
 import Expenses from "./pages/Expenses.tsx";
 import Accounting from "./pages/Accounting.tsx";
 import Analytics from "./pages/Analytics.tsx";
@@ -43,7 +42,6 @@ const App = () => (
               <Route path="/new-sale" element={<RequireAuth><NewSale /></RequireAuth>} />
               <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
               <Route path="/customers/:id" element={<RequireAuth><CustomerDetails /></RequireAuth>} />
-              <Route path="/purchases" element={<RequireAuth><Purchases /></RequireAuth>} />
               <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
               <Route path="/accounting" element={<RequireAuth><Accounting /></RequireAuth>} />
               <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />

@@ -21,7 +21,7 @@ const items = [
   { title: NAV.dashboard, url: "/", icon: LayoutDashboard, end: true },
   { title: NAV.stocks, url: "/stocks", icon: Package },
   { title: NAV.customers, url: "/customers", icon: Users },
-  { title: NAV.purchases, url: "/purchases", icon: Truck },
+  { title: NAV.purchases, url: "/expenses?tab=purchase", icon: Truck },
   { title: NAV.expenses, url: "/expenses", icon: Wallet },
   { title: NAV.accounting, url: "/accounting", icon: BarChart3 },
   { title: NAV.analytics, url: "/analytics", icon: LineChart },

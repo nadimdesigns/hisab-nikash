@@ -34,7 +34,7 @@ const OPTIONS: {
     surface: "bg-rose-50 dark:bg-rose-950/40",
     gradient: "from-rose-400 to-red-500",
     ring: "ring-rose-200/60 dark:ring-rose-500/20",
-    route: "/purchases",
+    route: "/expenses?action=new",
   },
 ];
 

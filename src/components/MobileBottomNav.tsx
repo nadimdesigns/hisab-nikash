@@ -30,7 +30,7 @@ const quickActions: QuickAction[] = [
   {
     title: ACTION.newPurchase,
     icon: PackagePlus,
-    url: "/purchases?action=new",
+    url: "/expenses?action=new",
     surface: "bg-rose-50 dark:bg-rose-950/40",
     gradient: "from-rose-400 to-red-500",
     iconColor: "text-white",
