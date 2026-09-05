@@ -87,7 +87,6 @@ export const NAV = {
   purchases: "ক্রয়",
   expenses: "খরচ",
   accounting: "হিসাব",
-  analytics: "রিপোর্ট",
   khata: "বাকি খাতা",
   settings: "সেটিংস",
   account: "অ্যাকাউন্ট",

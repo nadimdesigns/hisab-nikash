@@ -13,7 +13,7 @@ import Customers from "./pages/Customers.tsx";
 import CustomerDetails from "./pages/CustomerDetails.tsx";
 import Expenses from "./pages/Expenses.tsx";
 import Accounting from "./pages/Accounting.tsx";
-import Analytics from "./pages/Analytics.tsx";
+
 import Account from "./pages/Account.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
@@ -44,7 +44,7 @@ const App = () => (
               <Route path="/customers/:id" element={<RequireAuth><CustomerDetails /></RequireAuth>} />
               <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
               <Route path="/accounting" element={<RequireAuth><Accounting /></RequireAuth>} />
-              <Route path="/analytics" element={<RequireAuth><Analytics /></RequireAuth>} />
+
               <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

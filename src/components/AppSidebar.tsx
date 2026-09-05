@@ -1,5 +1,5 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, Truck, BarChart3, LineChart, Users, Wallet } from "lucide-react";
+import { LayoutDashboard, Package, Truck, BarChart3, Users, Wallet } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { APP_NAME, APP_TAGLINE, NAV } from "@/lib/copy";
 import {
@@ -24,7 +24,6 @@ const items = [
   { title: NAV.purchases, url: "/expenses?tab=purchase", icon: Truck },
   { title: NAV.expenses, url: "/expenses", icon: Wallet },
   { title: NAV.accounting, url: "/accounting", icon: BarChart3 },
-  { title: NAV.analytics, url: "/analytics", icon: LineChart },
 ];
 
 export function AppSidebar() {
