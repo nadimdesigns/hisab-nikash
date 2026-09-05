@@ -541,6 +541,7 @@ export default function CustomersPanel() {
 
             <SheetContent
               side="right"
+              style={{ fontFamily: "'Anek Bangla', 'Outfit', system-ui, sans-serif" }}
               className="flex w-full flex-col overflow-hidden p-0 sm:max-w-sm"
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
@@ -550,46 +551,46 @@ export default function CustomersPanel() {
 
               <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
                 <CustFilterRadioGroup
-                  title="Status"
+                  title="স্ট্যাটাস"
                   value={draftCustStatus}
                   onValueChange={(v) => setDraftCustStatus(v as typeof custStatus)}
                   options={[
-                    { value: "all", label: "All statuses" },
-                    { value: "due", label: "Has due" },
-                    { value: "cleared", label: "Cleared" },
+                    { value: "all", label: "সব স্ট্যাটাস" },
+                    { value: "due", label: "বাকি আছে" },
+                    { value: "cleared", label: "পরিশোধিত" },
                   ]}
                 />
 
                 <CustFilterRadioGroup
-                  title="Due amount"
+                  title="বাকির পরিমাণ"
                   value={draftCustDueRange}
                   onValueChange={(v) => setDraftCustDueRange(v as typeof custDueRange)}
                   options={[
-                    { value: "any", label: "Any due amount" },
-                    { value: "gt0", label: `Due > ${currency(0)}` },
-                    { value: "gt500", label: `Due > ${currency(500)}` },
-                    { value: "gt2000", label: `Due > ${currency(2000)}` },
+                    { value: "any", label: "যেকোনো বাকির পরিমাণ" },
+                    { value: "gt0", label: `বাকি > ${currency(0)}` },
+                    { value: "gt500", label: `বাকি > ${currency(500)}` },
+                    { value: "gt2000", label: `বাকি > ${currency(2000)}` },
                   ]}
                 />
 
                 <CustFilterRadioGroup
-                  title="Sort by"
+                  title="সাজান"
                   value={draftCustSort}
                   onValueChange={(v) => setDraftCustSort(v as CustSortKey)}
                   options={[
-                    { value: "billed-desc", label: "Total Billed · High to Low" },
-                    { value: "billed-asc", label: "Total Billed · Low to High" },
-                    { value: "due-desc", label: "Due · High to Low" },
-                    { value: "due-asc", label: "Due · Low to High" },
-                    { value: "name-asc", label: "Name · A → Z" },
-                    { value: "name-desc", label: "Name · Z → A" },
-                    { value: "purchases-desc", label: "Most purchases" },
-                    { value: "recent", label: "Most recent activity" },
+                    { value: "billed-desc", label: "মোট বিল · বেশি থেকে কম" },
+                    { value: "billed-asc", label: "মোট বিল · কম থেকে বেশি" },
+                    { value: "due-desc", label: "বাকি · বেশি থেকে কম" },
+                    { value: "due-asc", label: "বাকি · কম থেকে বেশি" },
+                    { value: "name-asc", label: "নাম · A → Z" },
+                    { value: "name-desc", label: "নাম · Z → A" },
+                    { value: "purchases-desc", label: "সবচেয়ে বেশি কেনাকাটা" },
+                    { value: "recent", label: "সবচেয়ে সাম্প্রতিক কার্যকলাপ" },
                   ]}
                 />
 
                 <div className="space-y-3">
-                  <p className="font-semibold text-foreground">Activity date range</p>
+                  <p className="font-semibold text-foreground">লেনদেনের তারিখের সীমা</p>
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -628,12 +629,12 @@ export default function CustomersPanel() {
                       {draftCustDateRange?.from && (
                         <div className="flex items-center justify-end border-t p-2">
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             onClick={() => setDraftCustDateRange(undefined)}
-                            className="gap-1"
+                            className="gap-1 rounded-md bg-white hover:bg-white"
                           >
-                            <X className="h-3.5 w-3.5" /> Clear dates
+                            <X className="h-3.5 w-3.5" /> তারিখ মুছুন
                           </Button>
                         </div>
                       )}
@@ -644,11 +645,18 @@ export default function CustomersPanel() {
 
               <div className="flex flex-col gap-2 border-t bg-background px-6 py-4">
                 {draftCustAdvancedFilterCount > 0 && (
-                  <Button variant="ghost" onClick={resetCustDraftFilters} className="w-full gap-2">
-                    <X className="h-4 w-4" /> Reset filters
+                  <Button
+                    variant="outline"
+                    onClick={resetCustDraftFilters}
+                    className="h-12 w-full gap-2 rounded-xl bg-white hover:bg-white md:h-11"
+                  >
+                    <X className="h-4 w-4" /> ফিল্টার রিসেট করুন
                   </Button>
                 )}
-                <Button onClick={applyCustDraftFilters} className="w-full">
+                <Button
+                  onClick={applyCustDraftFilters}
+                  className="h-12 w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-11"
+                >
                   ফিল্টার প্রয়োগ করুন
                 </Button>
               </div>

@@ -271,6 +271,7 @@ export default function Inventory() {
             </SheetTrigger>
             <SheetContent
               side="right"
+              style={{ fontFamily: "'Anek Bangla', 'Outfit', system-ui, sans-serif" }}
               className="flex w-full flex-col overflow-hidden p-0 sm:max-w-sm"
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
@@ -298,9 +299,9 @@ export default function Inventory() {
                     type="button"
                     size="sm"
                     onClick={() => setFilterSheetOpen(false)}
-                    className="absolute right-1 top-1/2 h-10 -translate-y-1/2 gap-1.5 px-3 md:h-8"
+                    className="absolute right-1 top-1/2 h-10 -translate-y-1/2 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 px-3 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-8"
                   >
-                    <Search className="h-4 w-4 text-white" />
+                    <Search className="h-4 w-4" />
                     খুঁজুন
                   </Button>
                 </div>
@@ -353,14 +354,17 @@ export default function Inventory() {
               <div className="flex flex-col gap-2 border-t bg-background px-6 py-4">
                 {draftAdvancedFilterCount > 0 && (
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     onClick={resetDraftFilters}
-                    className="w-full gap-2"
+                    className="h-12 w-full gap-2 rounded-xl bg-white hover:bg-white md:h-11"
                   >
                     <X className="h-4 w-4" /> ফিল্টার রিসেট করুন
                   </Button>
                 )}
-                <Button onClick={applyDraftFilters} className="w-full">
+                <Button
+                  onClick={applyDraftFilters}
+                  className="h-12 w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-11"
+                >
                   ফিল্টার প্রয়োগ করুন
                 </Button>
               </div>
