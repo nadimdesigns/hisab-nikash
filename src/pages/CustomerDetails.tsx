@@ -314,7 +314,10 @@ export default function CustomerDetails() {
 
   return (
     <AppLayout title="কাস্টমার">
-      <div className="mx-auto max-w-3xl space-y-6">
+      <div
+        className="mx-auto max-w-3xl space-y-6"
+        style={{ fontFamily: "'Anek Bangla', 'Outfit', system-ui, sans-serif" }}
+      >
         {/* Top nav */}
         <div className="flex items-center justify-between gap-2">
           <Button variant="ghost" size="sm" className="gap-1 -ml-2" onClick={() => navigate(-1)}>
@@ -346,7 +349,7 @@ export default function CustomerDetails() {
             type="button"
             variant="outline"
             size="sm"
-            className="shrink-0 gap-1.5"
+            className="shrink-0 gap-1.5 rounded-xl bg-white hover:bg-white"
             onClick={exportCSV}
             disabled={history.length === 0}
           >
@@ -356,7 +359,7 @@ export default function CustomerDetails() {
         </div>
 
         {/* Customer details / edit */}
-        <Card className="shadow-soft">
+        <Card className="rounded-2xl border-0 bg-white shadow-soft dark:bg-white/5">
           <CardContent className="p-4 sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
               <h3 className={typography("body-strong")}>কাস্টমারের বিস্তারিত</h3>
@@ -387,6 +390,7 @@ export default function CustomerDetails() {
                     type="tel"
                     inputMode="tel"
                     maxLength={20}
+                    className="h-[46px] rounded-xl bg-white dark:bg-white/10"
                     placeholder="+880 1XXX XXXXXX"
                     value={draft.phone ?? ""}
                     onChange={(e) => updateDraft("phone", e.target.value)}
@@ -398,6 +402,7 @@ export default function CustomerDetails() {
                     id="cust-email"
                     type="email"
                     maxLength={255}
+                    className="h-[46px] rounded-xl bg-white dark:bg-white/10"
                     placeholder="name@example.com"
                     value={draft.email ?? ""}
                     onChange={(e) => updateDraft("email", e.target.value)}
@@ -408,6 +413,7 @@ export default function CustomerDetails() {
                   <Input
                     id="cust-address"
                     maxLength={200}
+                    className="h-[46px] rounded-xl bg-white dark:bg-white/10"
                     placeholder="রাস্তা, শহর"
                     value={draft.address ?? ""}
                     onChange={(e) => updateDraft("address", e.target.value)}
@@ -419,6 +425,7 @@ export default function CustomerDetails() {
                     id="cust-notes"
                     maxLength={500}
                     rows={3}
+                    className="rounded-xl bg-white dark:bg-white/10"
                     placeholder="পছন্দ, অ্যালার্জি, রিমাইন্ডার…"
                     value={draft.notes ?? ""}
                     onChange={(e) => updateDraft("notes", e.target.value)}
@@ -426,10 +433,19 @@ export default function CustomerDetails() {
                   />
                 </FieldRow>
                 <div className="flex justify-end gap-2 pt-1">
-                  <Button type="button" variant="outline" onClick={cancelEdit}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={cancelEdit}
+                    className="rounded-xl bg-white hover:bg-white"
+                  >
                     বাতিল
                   </Button>
-                  <Button type="button" onClick={saveEdit}>
+                  <Button
+                    type="button"
+                    onClick={saveEdit}
+                    className="rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
+                  >
                     সংরক্ষণ
                   </Button>
                 </div>
@@ -451,7 +467,7 @@ export default function CustomerDetails() {
 
         {/* Payment — only when due exists */}
         {hasDue && (
-          <Card className="shadow-soft">
+          <Card className="rounded-2xl border-0 bg-white shadow-soft dark:bg-white/5">
             <CardContent className="p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between gap-2">
                 <h3 className={typography("body-strong")}>টাকা গ্রহণ</h3>
@@ -468,19 +484,20 @@ export default function CustomerDetails() {
                   placeholder="টাকার পরিমাণ"
                   value={paymentInput}
                   onChange={(e) => setPaymentInput(e.target.value)}
-                  className="sm:flex-1"
+                  className="h-11 rounded-xl bg-white dark:bg-white/10 sm:flex-1"
                 />
                 <div className="flex gap-2">
                   <Button
                     type="button"
                     variant="outline"
                     onClick={() => setPaymentInput(String(stats.due))}
+                    className="rounded-xl bg-white hover:bg-white"
                   >
                     পুরো
                   </Button>
                   <Button
                     type="button"
-                    className="gap-1"
+                    className="gap-1 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
                     onClick={() => {
                       const amount = parseFloat(paymentInput);
                       if (!Number.isFinite(amount) || amount <= 0) {
@@ -543,7 +560,7 @@ export default function CustomerDetails() {
                   h.kind === "due" ? "বাকি" : h.kind === "payment" ? "পেমেন্ট" : "নগদ";
                 return (
                   <li key={`${h.kind}-${h.id}`}>
-                    <Card className="shadow-none border transition-colors hover:bg-muted/40">
+                    <Card className="rounded-2xl border-0 bg-white shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] dark:bg-white/5">
                       <CardContent className="flex items-center gap-3 p-3 sm:p-4">
                         <Badge variant={badgeVariant} className="shrink-0">
                           {badgeLabel}
@@ -602,7 +619,7 @@ function StatTile({
           ? "text-muted-foreground"
           : "text-foreground";
   return (
-    <div className="min-w-0 rounded-xl bg-card p-4 shadow-soft">
+    <div className="min-w-0 rounded-2xl border-0 bg-white p-4 shadow-soft dark:bg-white/5">
       <p className={typography("body-muted", "truncate")}>{label}</p>
       <p className={cn(typography("h3", "mt-1 truncate"), valueClass)}>{value}</p>
     </div>
