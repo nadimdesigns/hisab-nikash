@@ -439,10 +439,10 @@ export default function InventoryPanel({
           <Table className="table-global table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[38%]">পণ্য</TableHead>
-                <TableHead className="w-[28%]">ক্যাটাগরি</TableHead>
-                <TableHead className="w-[22%] text-right">স্টক / দাম</TableHead>
-                <TableHead className="w-[12%]" />
+                <TableHead className="w-[37%]">পণ্য</TableHead>
+                <TableHead className="w-[22%]">ক্যাটাগরি</TableHead>
+                <TableHead className="w-[24%] text-right">স্টক / দাম</TableHead>
+                <TableHead className="w-[17%]" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -493,7 +493,7 @@ export default function InventoryPanel({
                         )}
                       >
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-1.5">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
                               {m.imageUrl ? (
                                 <img
@@ -506,10 +506,10 @@ export default function InventoryPanel({
                                 <ShoppingBasket className="h-4 w-4 text-muted-foreground" aria-hidden />
                               )}
                             </div>
-                            <span className="min-w-0 flex-1">
+                            <div className="flex min-w-0 items-center gap-1">
                               <span className="item-name-cell">{m.name}</span>
-                              <span className="block truncate text-xs text-muted-foreground">{m.sku}</span>
-                            </span>
+                              <span className="shrink-0 text-[11px] text-muted-foreground">· {m.sku}</span>
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -519,23 +519,24 @@ export default function InventoryPanel({
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Badge variant={low ? "destructive" : "secondary"}>{bnNumber(m.stock)} {unitLabel(m.unit)}</Badge>
+                          <Badge variant={low ? "destructive" : "secondary"} className="whitespace-nowrap">{bnNumber(m.stock)} {unitLabel(m.unit)}</Badge>
                           <div className="mt-1 whitespace-nowrap text-xs tabular-nums text-muted-foreground">
                             {currency(m.costPrice)} / {currency(m.sellPrice)}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" onClick={() => openEdit(m)}>
-                              <Pencil className="h-4 w-4" />
+                          <div className="flex justify-end gap-0.5">
+                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(m)}>
+                              <Pencil className="h-3.5 w-3.5" />
                             </Button>
                             <Button
                               size="icon"
                               variant="ghost"
+                              className="h-7 w-7"
                               onClick={() => setPendingDelete(m)}
                               aria-label={`Delete ${m.name}`}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
                         </TableCell>
