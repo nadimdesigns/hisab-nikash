@@ -436,13 +436,13 @@ export default function InventoryPanel({
 
       <Card className="shadow-soft overflow-hidden rounded-[15px]">
         <CardContent className="p-0">
-          <Table className="table-global">
+          <Table className="table-global table-fixed">
             <TableHeader>
               <TableRow>
-                <TableHead>পণ্য</TableHead>
-                <TableHead>ক্যাটাগরি</TableHead>
-                <TableHead className="text-right">স্টক / দাম</TableHead>
-                <TableHead className="w-24" />
+                <TableHead className="w-[38%]">পণ্য</TableHead>
+                <TableHead className="w-[28%]">ক্যাটাগরি</TableHead>
+                <TableHead className="w-[22%] text-right">স্টক / দাম</TableHead>
+                <TableHead className="w-[12%]" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -506,21 +506,21 @@ export default function InventoryPanel({
                                 <ShoppingBasket className="h-4 w-4 text-muted-foreground" aria-hidden />
                               )}
                             </div>
-                            <span className="min-w-0">
+                            <span className="min-w-0 flex-1">
                               <span className="item-name-cell">{m.name}</span>
-                              <span className="block text-xs text-muted-foreground">{m.sku}</span>
+                              <span className="block truncate text-xs text-muted-foreground">{m.sku}</span>
                             </span>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="line-clamp-1">{m.category || "—"}</div>
-                          <div className={cn("line-clamp-1 text-xs text-muted-foreground", days <= 60 && "text-warning")}>
+                          <div className="truncate">{m.category || "—"}</div>
+                          <div className={cn("truncate text-xs text-muted-foreground", days <= 60 && "text-warning")}>
                             {m.batch ? `${m.batch} · ` : ""}{m.expiry} {days >= 0 ? `(${days}d)` : "(expired)"}
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
                           <Badge variant={low ? "destructive" : "secondary"}>{bnNumber(m.stock)} {unitLabel(m.unit)}</Badge>
-                          <div className="mt-1 text-xs tabular-nums text-muted-foreground">
+                          <div className="mt-1 whitespace-nowrap text-xs tabular-nums text-muted-foreground">
                             {currency(m.costPrice)} / {currency(m.sellPrice)}
                           </div>
                         </TableCell>
