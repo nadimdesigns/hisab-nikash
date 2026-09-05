@@ -29,15 +29,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Pencil, Trash2, CalendarIcon, Camera, ImagePlus, X, ShoppingBasket } from "lucide-react";
+import { Pencil, Trash2, Camera, ImagePlus, X, ShoppingBasket } from "lucide-react";
 import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
-import { bnNumber, currency, daysUntil, formatDate } from "@/lib/format";
+import { bnNumber, currency, daysUntil } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
-import { format, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
 import { DEFAULT_UNIT, UNITS, unitLabel, type UnitCode } from "@/lib/copy";
 import CrossTabSyncBanner from "./CrossTabSyncBanner";
@@ -52,7 +49,7 @@ const empty: Omit<Product, "id"> = {
   category: "",
   unit: DEFAULT_UNIT,
   batch: "",
-  expiry: new Date().toISOString().slice(0, 10),
+  expiry: "",
   stock: 0,
   reorderLevel: 10,
   costPrice: 0,
@@ -206,6 +203,22 @@ export default function InventoryPanel({
     [products, query, batchQuery, category, stockFilter, expiryFilter, sort],
   );
 
+  // Category dropdown options — unique categories already in use across the
+  // product list, plus the currently selected value so an existing product's
+  // category is never lost while editing.
+  const categoryOptions = useMemo(() => {
+    const cats = Array.from(
+      new Set(
+        products
+          .map((p) => p.category?.trim())
+          .filter((c): c is string => !!c),
+      ),
+    ).sort((a, b) => a.localeCompare(b, "bn"));
+    const current = form.category?.trim();
+    if (current && !cats.includes(current)) cats.push(current);
+    return cats;
+  }, [products, form.category]);
+
   // Reset form to "new" mode whenever the dialog is opened from outside (e.g. header CTA)
   // and we don't have an editing target.
   useEffect(() => {
@@ -325,7 +338,6 @@ export default function InventoryPanel({
               <ImageUploadField
                 value={form.imageUrl}
                 onChange={(url) => setForm({ ...form, imageUrl: url })}
-                productName={form.name}
               />
             </Field>
             <Field label="পণ্যের নাম" className="col-span-2">
@@ -335,7 +347,27 @@ export default function InventoryPanel({
               <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
             </Field>
             <Field label="ক্যাটাগরি">
-              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+              <Select
+                value={form.category}
+                onValueChange={(v) => setForm({ ...form, category: v })}
+              >
+                <SelectTrigger aria-label="ক্যাটাগরি" className="h-[46px] rounded-xl bg-white dark:bg-white/10">
+                  <SelectValue placeholder="ক্যাটাগরি নির্বাচন করুন" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categoryOptions.length === 0 ? (
+                    <SelectItem value="__none__" disabled>
+                      কোনো ক্যাটাগরি নেই
+                    </SelectItem>
+                  ) : (
+                    categoryOptions.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </Field>
             <Field label="একক">
               <Select
@@ -354,40 +386,11 @@ export default function InventoryPanel({
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="মেয়াদ">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                      "h-[46px] w-full justify-start rounded-xl bg-white text-left font-normal hover:bg-white dark:bg-white/10 dark:hover:bg-white/10",
-                      !form.expiry && "text-muted-foreground",
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4 opacity-70" />
-                    {form.expiry ? formatDate(parseISO(form.expiry), "PPP") : "Pick a date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={form.expiry ? parseISO(form.expiry) : undefined}
-                    onSelect={(d) =>
-                      setForm({ ...form, expiry: d ? format(d, "yyyy-MM-dd") : "" })
-                    }
-                    initialFocus
-                    className={cn("p-3 pointer-events-auto")}
-                  />
-                </PopoverContent>
-              </Popover>
-            </Field>
+
             <Field label="স্টক পরিমাণ">
               <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" type="number" min={0} value={form.stock} onChange={(e) => setForm({ ...form, stock: +e.target.value })} />
             </Field>
-            <Field label="পুনরায় অর্ডার স্তর">
-              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" type="number" min={0} value={form.reorderLevel} onChange={(e) => setForm({ ...form, reorderLevel: +e.target.value })} />
-            </Field>
+
             <Field label="মূল্য (ক্রয়)">
               <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" type="number" min={0} step="0.01" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: +e.target.value })} />
             </Field>
@@ -490,8 +493,9 @@ export default function InventoryPanel({
                         </TableCell>
                         <TableCell>
                           <div className="truncate text-sm font-medium">{m.category || "—"}</div>
-                          <div className={cn("mt-0.5 truncate text-xs text-muted-foreground", days <= 60 && "text-warning")}>
-                            {m.batch ? `${m.batch} · ` : ""}{m.expiry} {days >= 0 ? `(${days}d)` : "(expired)"}
+                          <div className={cn("mt-0.5 truncate text-xs text-muted-foreground", !!m.expiry && days <= 60 && "text-warning")}>
+                            {m.batch ? `${m.batch}${m.expiry ? " · " : ""}` : ""}
+                            {m.expiry ? `${m.expiry} ${days >= 0 ? `(${days}d)` : "(expired)"}` : !m.batch ? "—" : ""}
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
@@ -666,11 +670,9 @@ export function Field({ label, className, children }: { label: string; className
 export function ImageUploadField({
   value,
   onChange,
-  productName,
 }: {
   value?: string;
   onChange: (url: string | undefined) => void;
-  productName?: string;
 }) {
   const [busy, setBusy] = useState(false);
   // Two hidden file inputs: one plain picker (gallery / choose file) and one
@@ -702,10 +704,6 @@ export function ImageUploadField({
     }
   };
 
-  // Fallback label shown beside the box when the product hasn't been named
-  // yet — keeps the layout balanced instead of leaving an empty column.
-  const titleText = productName?.trim() || "Untitled product";
-
   return (
     <div className="flex items-start gap-3 rounded-xl bg-white p-3 dark:bg-white/10">
       {value ? (
@@ -721,7 +719,6 @@ export function ImageUploadField({
             <img src={value} alt="Product preview" className="h-full w-full object-cover" />
           </button>
           <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <p className="truncate font-medium text-foreground">{titleText}</p>
             <p className="text-muted-foreground">
               PNG or JPG, up to 2 MB. Resized automatically for fast loading.
             </p>
@@ -776,7 +773,6 @@ export function ImageUploadField({
             </button>
           </div>
           <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <p className="truncate font-medium text-foreground">{titleText}</p>
             <p className="text-muted-foreground">
               ছবি তুলে আপলোড করুন অথবা গ্যালারি থেকে যোগ করুন
             </p>
