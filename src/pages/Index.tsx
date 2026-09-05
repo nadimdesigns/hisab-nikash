@@ -298,22 +298,32 @@ const Index = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+            <ul className="space-y-2">
               {stats.lowStock.map((m) => (
-                <Link
-                  key={m.id}
-                  to={`/edit-product/${m.id}`}
-                  className="flex items-center justify-between rounded-lg border bg-card p-3 transition-colors hover:bg-accent hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  aria-label={`${m.name} এর স্টক দেখুন`}
-                >
-                  <div>
-                    <p className={typography("body-strong")}>{m.name}</p>
-                    <p className={typography("body-muted")}>{m.sku}</p>
-                  </div>
-                  <Badge variant="destructive">{bnNumber(m.stock)} {unitLabel(m.unit)} বাকি</Badge>
-                </Link>
+                <li key={m.id}>
+                  <Link
+                    to={`/edit-product/${m.id}`}
+                    className="flex w-full items-center gap-3 rounded-2xl border-0 bg-white p-3 text-left shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:bg-white/5"
+                    aria-label={`${m.name} এর স্টক দেখুন`}
+                  >
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
+                      {m.imageUrl ? (
+                        <img src={m.imageUrl} alt={m.name} className="h-full w-full object-cover" loading="lazy" />
+                      ) : (
+                        <Package className="h-5 w-5" aria-hidden />
+                      )}
+                    </div>
+                    <span className="min-w-0 flex-1">
+                      <span className={typography("body-strong", "block truncate")}>{m.name}</span>
+                      <span className={typography("body-muted", "block truncate")}>{m.sku || "—"}</span>
+                    </span>
+                    <Badge variant="destructive" className="shrink-0">
+                      {bnNumber(m.stock)} {unitLabel(m.unit)} বাকি
+                    </Badge>
+                  </Link>
+                </li>
               ))}
-            </div>
+            </ul>
           </CardContent>
         </Card>
       )}
