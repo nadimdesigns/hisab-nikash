@@ -485,7 +485,7 @@ export default function InventoryPanel({
                             </div>
                             <span className="min-w-0 flex-1">
                               <span className="block truncate text-sm font-semibold">{m.name}</span>
-                              <span className="mt-0.5 inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                              <span className="mt-0.5 inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
                                 {m.sku}
                               </span>
                             </span>
