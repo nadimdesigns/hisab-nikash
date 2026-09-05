@@ -316,7 +316,7 @@ export default function InventoryPanel({
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="form-surface max-w-lg overflow-hidden rounded-3xl border-0">
           <DialogHeader>
             <DialogTitle>{editing ? "পণ্য সম্পাদনা" : "পণ্য যোগ করুন"}</DialogTitle>
           </DialogHeader>
@@ -328,21 +328,21 @@ export default function InventoryPanel({
                 productName={form.name}
               />
             </Field>
-            <Field label="নাম" className="col-span-2">
-              <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+            <Field label="পণ্যের নাম" className="col-span-2">
+              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </Field>
             <Field label="SKU">
-              <Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
+              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} />
             </Field>
             <Field label="ক্যাটাগরি">
-              <Input value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
+              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} />
             </Field>
             <Field label="একক">
               <Select
                 value={form.unit}
                 onValueChange={(v) => setForm({ ...form, unit: v as UnitCode })}
               >
-                <SelectTrigger aria-label="একক">
+                <SelectTrigger aria-label="একক" className="h-[46px] rounded-xl bg-white dark:bg-white/10">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -354,10 +354,10 @@ export default function InventoryPanel({
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Batch">
-              <Input value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />
+            <Field label="ব্যাচ / লট">
+              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />
             </Field>
-            <Field label="Barcode / UPN" className="col-span-2">
+            <Field label="বারকোড / UPN" className="col-span-2">
               <Input
                 value={form.barcode ?? ""}
                 onChange={(e) => setForm({ ...form, barcode: e.target.value })}
@@ -367,7 +367,7 @@ export default function InventoryPanel({
                 pattern="[0-9]*"
               />
             </Field>
-            <Field label="Aliases / ingredients" className="col-span-2">
+            <Field label="বিকল্প নাম" className="col-span-2">
               <Input
                 value={(form.aliases ?? []).join(", ")}
                 onChange={(e) =>
@@ -383,14 +383,14 @@ export default function InventoryPanel({
                 autoComplete="off"
               />
             </Field>
-            <Field label="Expiry">
+            <Field label="মেয়াদ">
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     type="button"
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "h-[46px] w-full justify-start rounded-xl bg-white text-left font-normal hover:bg-white dark:bg-white/10 dark:hover:bg-white/10",
                       !form.expiry && "text-muted-foreground",
                     )}
                   >
@@ -411,22 +411,26 @@ export default function InventoryPanel({
                 </PopoverContent>
               </Popover>
             </Field>
-            <Field label="Stock">
-              <Input type="number" min={0} value={form.stock} onChange={(e) => setForm({ ...form, stock: +e.target.value })} />
+            <Field label="স্টক পরিমাণ">
+              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" type="number" min={0} value={form.stock} onChange={(e) => setForm({ ...form, stock: +e.target.value })} />
             </Field>
-            <Field label="Reorder level">
-              <Input type="number" min={0} value={form.reorderLevel} onChange={(e) => setForm({ ...form, reorderLevel: +e.target.value })} />
+            <Field label="পুনরায় অর্ডার স্তর">
+              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" type="number" min={0} value={form.reorderLevel} onChange={(e) => setForm({ ...form, reorderLevel: +e.target.value })} />
             </Field>
-            <Field label="Cost price">
-              <Input type="number" min={0} step="0.01" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: +e.target.value })} />
+            <Field label="মূল্য (ক্রয়)">
+              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" type="number" min={0} step="0.01" value={form.costPrice} onChange={(e) => setForm({ ...form, costPrice: +e.target.value })} />
             </Field>
-            <Field label="Sell price">
-              <Input type="number" min={0} step="0.01" value={form.sellPrice} onChange={(e) => setForm({ ...form, sellPrice: +e.target.value })} />
+            <Field label="বিক্রয় মূল্য">
+              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" type="number" min={0} step="0.01" value={form.sellPrice} onChange={(e) => setForm({ ...form, sellPrice: +e.target.value })} />
             </Field>
           </div>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setOpen(false)}>বাতিল</Button>
-            <Button onClick={submit}>{editing ? "সংরক্ষণ" : "যোগ করুন"}</Button>
+          <DialogFooter className="mt-2 grid grid-cols-2 gap-3 sm:gap-3">
+            <Button variant="outline" onClick={() => setOpen(false)} className="h-12 rounded-xl bg-white hover:bg-white md:h-11">
+              বাতিল
+            </Button>
+            <Button onClick={submit} className="h-12 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-11">
+              {editing ? "সংরক্ষণ করুন" : "যোগ করুন"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -681,8 +685,8 @@ export default function InventoryPanel({
 
 export function Field({ label, className, children }: { label: string; className?: string; children: React.ReactNode }) {
   return (
-    <div className={"space-y-1.5 " + (className ?? "")}>
-      <Label>{label}</Label>
+    <div className={className ?? ""}>
+      <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">{label}</label>
       {children}
     </div>
   );
@@ -730,7 +734,7 @@ export function ImageUploadField({
   const titleText = productName?.trim() || "Untitled product";
 
   return (
-    <div className="flex items-start gap-3">
+    <div className="flex items-start gap-3 rounded-xl bg-white p-3 dark:bg-white/10">
       {/* Click-to-upload thumbnail. When empty, it shows the upload icon and
           acts as the primary affordance for picking a file. When populated,
           it previews the image but stays clickable so users can swap by
