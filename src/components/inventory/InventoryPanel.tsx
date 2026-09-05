@@ -98,6 +98,7 @@ export default function InventoryPanel({
   setAddOpen,
   focusId,
   onFocusHandled,
+  editOnFocus,
 }: {
   query?: string;
   batchQuery?: string;
@@ -109,6 +110,7 @@ export default function InventoryPanel({
   setAddOpen?: (v: boolean) => void;
   focusId?: string | null;
   onFocusHandled?: () => void;
+  editOnFocus?: boolean;
 }) {
   const { products, sales, purchases, addProduct, updateProduct, deleteProduct, restoreProduct } = useShop();
   const hydrated = useShopHydrated();
@@ -244,10 +246,14 @@ export default function InventoryPanel({
       el.scrollIntoView({ behavior: "smooth", block: "center" });
     }
     onFocusHandled?.();
+    if (editOnFocus) {
+      const target = products.find((p) => p.id === focusId);
+      if (target) openEdit(target);
+    }
     const t = window.setTimeout(() => setHighlightId(null), 2200);
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusId]);
+  }, [focusId, editOnFocus]);
 
   const openEdit = (m: Product) => {
     // Edit lives in the same dialog as add — dialog re-mounts per target via

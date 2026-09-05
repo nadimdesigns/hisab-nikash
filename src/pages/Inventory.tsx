@@ -100,10 +100,12 @@ export default function Inventory() {
   };
   const [searchParams, setSearchParams] = useSearchParams();
   const focusId = searchParams.get("focus");
+  const editOnFocus = searchParams.get("edit") === "1";
   const handleFocusHandled = () => {
-    if (!searchParams.has("focus")) return;
+    if (!searchParams.has("focus") && !searchParams.has("edit")) return;
     const next = new URLSearchParams(searchParams);
     next.delete("focus");
+    next.delete("edit");
     setSearchParams(next, { replace: true });
   };
   const { products } = useShop();
@@ -395,6 +397,7 @@ export default function Inventory() {
         addOpen={addOpen}
         setAddOpen={setAddOpen}
         focusId={focusId}
+        editOnFocus={editOnFocus}
         onFocusHandled={handleFocusHandled}
       />
 

@@ -302,7 +302,7 @@ const Index = () => {
               {stats.lowStock.map((m) => (
                 <li key={m.id}>
                   <Link
-                    to={`/edit-product/${m.id}`}
+                    to={`/stocks?focus=${encodeURIComponent(m.id)}&edit=1`}
                     className="flex w-full items-center gap-3 rounded-2xl border-0 bg-white p-3 text-left shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:bg-white/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
