@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Pencil, Trash2, CalendarIcon, ImagePlus, Upload, X, ShoppingBasket } from "lucide-react";
+import { Pencil, Trash2, CalendarIcon, Camera, ImagePlus, X, ShoppingBasket } from "lucide-react";
 import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
 import { bnNumber, currency, daysUntil, formatDate } from "@/lib/format";
@@ -316,11 +316,11 @@ export default function InventoryPanel({
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="form-surface max-w-lg overflow-hidden rounded-3xl border-0">
-          <DialogHeader>
+        <DialogContent className="form-surface max-w-lg flex-col gap-0 overflow-hidden rounded-3xl border-0 p-0">
+          <DialogHeader className="shrink-0 px-6 pb-2 pt-6">
             <DialogTitle>{editing ? "পণ্য সম্পাদনা" : "পণ্য যোগ করুন"}</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 overflow-y-auto overscroll-contain px-6 pb-4">
             <Field label="পণ্যের ছবি" className="col-span-2">
               <ImageUploadField
                 value={form.imageUrl}
@@ -424,7 +424,7 @@ export default function InventoryPanel({
               <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" type="number" min={0} step="0.01" value={form.sellPrice} onChange={(e) => setForm({ ...form, sellPrice: +e.target.value })} />
             </Field>
           </div>
-          <DialogFooter className="mt-2 grid grid-cols-2 gap-3 sm:gap-3">
+          <DialogFooter className="grid shrink-0 grid-cols-2 gap-3 px-6 pb-6 pt-3 sm:gap-3">
             <Button variant="outline" onClick={() => setOpen(false)} className="h-12 rounded-xl bg-white hover:bg-white md:h-11">
               বাতিল
             </Button>
@@ -702,11 +702,13 @@ export function ImageUploadField({
   productName?: string;
 }) {
   const [busy, setBusy] = useState(false);
-  // The hidden <input type="file"> is shared by both the click-to-upload
-  // image box and the "Replace image" button so we only have one DOM node
-  // managing the file picker.
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const openPicker = () => fileInputRef.current?.click();
+  // Two hidden file inputs: one plain picker (gallery / choose file) and one
+  // with capture="environment" that opens the phone camera directly. The
+  // thumbnail preview and the "Replace image" button share the gallery input.
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const openGallery = () => galleryRef.current?.click();
+  const openCamera = () => cameraRef.current?.click();
 
   const handleFile = async (file?: File | null) => {
     if (!file) return;
@@ -735,58 +737,100 @@ export function ImageUploadField({
 
   return (
     <div className="flex items-start gap-3 rounded-xl bg-white p-3 dark:bg-white/10">
-      {/* Click-to-upload thumbnail. When empty, it shows the upload icon and
-          acts as the primary affordance for picking a file. When populated,
-          it previews the image but stays clickable so users can swap by
-          tapping the thumbnail directly too. */}
-      <button
-        type="button"
-        onClick={openPicker}
-        disabled={busy}
-        aria-label={value ? "Replace product image" : "Upload product image"}
-        className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted transition-colors hover:border-primary hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {value ? (
-          <img src={value} alt="Product preview" className="h-full w-full object-cover" />
-        ) : (
-          <Upload className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
-        )}
-      </button>
-
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className="truncate font-medium text-foreground">{titleText}</p>
-        <p className="text-muted-foreground">
-          PNG or JPG, up to 2 MB. Resized automatically for fast loading.
-        </p>
-        {value && (
-          <div className="flex flex-wrap gap-2 pt-1">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={openPicker}
-              disabled={busy}
-            >
-              <ImagePlus className="mr-2 h-4 w-4" />
-              Replace image
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={() => onChange(undefined)}
-            >
-              <X className="mr-2 h-4 w-4" />
-              Remove
-            </Button>
+      {value ? (
+        <>
+          {/* Preview thumbnail — tap to swap from gallery/files. */}
+          <button
+            type="button"
+            onClick={openGallery}
+            disabled={busy}
+            aria-label="Replace product image"
+            className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted transition-colors hover:border-primary hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <img src={value} alt="Product preview" className="h-full w-full object-cover" />
+          </button>
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <p className="truncate font-medium text-foreground">{titleText}</p>
+            <p className="text-muted-foreground">
+              PNG or JPG, up to 2 MB. Resized automatically for fast loading.
+            </p>
+            <div className="flex flex-wrap gap-2 pt-1">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={openGallery}
+                disabled={busy}
+              >
+                <ImagePlus className="mr-2 h-4 w-4" />
+                Replace image
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onChange(undefined)}
+              >
+                <X className="mr-2 h-4 w-4" />
+                Remove
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <>
+          {/* Camera capture + gallery upload side by side. */}
+          <div className="flex shrink-0 items-center gap-2">
+            <button
+              type="button"
+              onClick={openCamera}
+              disabled={busy}
+              aria-label="Take photo with camera"
+              title="ক্যামেরা দিয়ে ছবি তুলুন"
+              className="group flex h-16 w-16 shrink-0 flex-col items-center justify-center gap-1 rounded-md border bg-muted transition-colors hover:border-primary hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Camera className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
+              <span className="text-[10px] font-semibold text-muted-foreground transition-colors group-hover:text-primary">ক্যামেরা</span>
+            </button>
+            <button
+              type="button"
+              onClick={openGallery}
+              disabled={busy}
+              aria-label="Choose image from gallery"
+              title="গ্যালারি থেকে ছবি বাছুন"
+              className="group flex h-16 w-16 shrink-0 flex-col items-center justify-center gap-1 rounded-md border bg-muted transition-colors hover:border-primary hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <ImagePlus className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
+              <span className="text-[10px] font-semibold text-muted-foreground transition-colors group-hover:text-primary">গ্যালারি</span>
+            </button>
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-1">
+            <p className="truncate font-medium text-foreground">{titleText}</p>
+            <p className="text-muted-foreground">
+              PNG or JPG, up to 2 MB. Resized automatically for fast loading.
+            </p>
+          </div>
+        </>
+      )}
 
+      {/* Gallery / file picker */}
       <input
-        ref={fileInputRef}
+        ref={galleryRef}
         type="file"
         accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          handleFile(e.target.files?.[0]);
+          e.target.value = "";
+        }}
+      />
+      {/* Direct camera capture (mobile). Desktop browsers ignore capture and
+          fall back to a normal file dialog. */}
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
         className="hidden"
         onChange={(e) => {
           handleFile(e.target.files?.[0]);
