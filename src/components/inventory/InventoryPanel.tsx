@@ -436,13 +436,13 @@ export default function InventoryPanel({
 
       <Card className="shadow-soft overflow-hidden rounded-[15px]">
         <CardContent className="p-0">
-          <Table className="table-global table-fixed">
+          <Table className="table-global">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[37%]">পণ্য</TableHead>
-                <TableHead className="w-[22%]">ক্যাটাগরি</TableHead>
-                <TableHead className="w-[24%] text-right">স্টক / দাম</TableHead>
-                <TableHead className="w-[17%]" />
+                <TableHead className="min-w-[200px] md:min-w-0">পণ্য</TableHead>
+                <TableHead className="min-w-[150px] md:min-w-0">ক্যাটাগরি</TableHead>
+                <TableHead className="min-w-[130px] text-right md:min-w-0">স্টক / দাম</TableHead>
+                <TableHead className="w-[76px]" />
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -493,7 +493,7 @@ export default function InventoryPanel({
                         )}
                       >
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
                               {m.imageUrl ? (
                                 <img
@@ -506,10 +506,10 @@ export default function InventoryPanel({
                                 <ShoppingBasket className="h-4 w-4 text-muted-foreground" aria-hidden />
                               )}
                             </div>
-                            <div className="flex min-w-0 items-center gap-1">
+                            <span className="min-w-0 flex-1">
                               <span className="item-name-cell">{m.name}</span>
-                              <span className="shrink-0 text-[11px] text-muted-foreground">· {m.sku}</span>
-                            </div>
+                              <span className="block text-xs text-muted-foreground">{m.sku}</span>
+                            </span>
                           </div>
                         </TableCell>
                         <TableCell>
@@ -525,18 +525,17 @@ export default function InventoryPanel({
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex justify-end gap-0.5">
-                            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => openEdit(m)}>
-                              <Pencil className="h-3.5 w-3.5" />
+                          <div className="flex justify-end gap-1">
+                            <Button size="icon" variant="ghost" onClick={() => openEdit(m)}>
+                              <Pencil className="h-4 w-4" />
                             </Button>
                             <Button
                               size="icon"
                               variant="ghost"
-                              className="h-7 w-7"
                               onClick={() => setPendingDelete(m)}
                               aria-label={`Delete ${m.name}`}
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </TableCell>
