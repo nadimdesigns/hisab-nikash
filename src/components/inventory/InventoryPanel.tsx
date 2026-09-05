@@ -354,35 +354,6 @@ export default function InventoryPanel({
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="ব্যাচ / লট">
-              <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" value={form.batch} onChange={(e) => setForm({ ...form, batch: e.target.value })} />
-            </Field>
-            <Field label="বারকোড / UPN" className="col-span-2">
-              <Input
-                value={form.barcode ?? ""}
-                onChange={(e) => setForm({ ...form, barcode: e.target.value })}
-                placeholder="বারকোড স্ক্যান বা পেস্ট করুন (ঐচ্ছিক)"
-                autoComplete="off"
-                inputMode="numeric"
-                pattern="[0-9]*"
-              />
-            </Field>
-            <Field label="বিকল্প নাম" className="col-span-2">
-              <Input
-                value={(form.aliases ?? []).join(", ")}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    aliases: e.target.value
-                      .split(",")
-                      .map((s) => s.trim())
-                      .filter(Boolean),
-                  })
-                }
-                placeholder="যেমন: মিনিকেট, চাল, rice"
-                autoComplete="off"
-              />
-            </Field>
             <Field label="মেয়াদ">
               <Popover>
                 <PopoverTrigger asChild>
