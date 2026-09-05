@@ -316,7 +316,7 @@ export default function InventoryPanel({
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="form-surface max-w-lg flex-col gap-0 overflow-hidden rounded-3xl border-0 p-0">
+        <DialogContent className="form-surface max-w-lg flex-col gap-0 overflow-hidden rounded-none border-0 p-0">
           <DialogHeader className="shrink-0 px-6 pb-2 pt-6">
             <DialogTitle>{editing ? "পণ্য সম্পাদনা" : "পণ্য যোগ করুন"}</DialogTitle>
           </DialogHeader>
@@ -778,7 +778,7 @@ export function ImageUploadField({
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             <p className="truncate font-medium text-foreground">{titleText}</p>
             <p className="text-muted-foreground">
-              PNG or JPG, up to 2 MB. Resized automatically for fast loading.
+              ছবি তুলে আপলোড করুন অথবা গ্যালারি থেকে যোগ করুন
             </p>
           </div>
         </>
