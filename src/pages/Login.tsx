@@ -244,7 +244,7 @@ const Login = () => {
                   </span>
                   <Input
                     id="phone"
-                    type="tel"
+                    type="number"
                     inputMode="numeric"
                     autoComplete="tel-national"
                     autoFocus
@@ -256,9 +256,17 @@ const Login = () => {
                       setPhone(v);
                       if (errors.phone || errors.form) setErrors((prev) => ({ ...prev, phone: undefined, form: undefined }));
                     }}
+                    onKeyDown={(e) => {
+                      // Number inputs otherwise accept -, +, e/E (scientific
+                      // notation) and . -- block everything but digits.
+                      if (["-", "+", "e", "E", "."].includes(e.key)) e.preventDefault();
+                    }}
                     aria-invalid={!!(errors.phone || errors.form)}
                     aria-describedby={errors.phone ? "phone-error" : undefined}
-                    className={cn("h-12 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10", (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive")}
+                    className={cn(
+                      "h-12 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+                      (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive"
+                    )}
                   />
                 </div>
                 {errors.phone && (
