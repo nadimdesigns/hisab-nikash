@@ -124,15 +124,31 @@ const Login = () => {
           navigate(from, { replace: true });
         }
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: authEmailFor(parsed.data.phone),
           password: authPasswordFor(parsed.data.pin),
         });
         if (error) {
           setErrors({ form: mapAuthError(error.message) });
-        } else {
+        } else if (data.session) {
           toast({ title: "অ্যাকাউন্ট তৈরি হয়েছে", description: "আপনি এখন লগইন করা আছেন।" });
           navigate(from, { replace: true });
+        } else {
+          // Supabase returns a "successful" signup with no session and no
+          // error when the phone is already registered (anti-enumeration
+          // behavior) -- try logging in with the same credentials instead
+          // of leaving the user stranded on a fake "account created" state.
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: authEmailFor(parsed.data.phone),
+            password: authPasswordFor(parsed.data.pin),
+          });
+          if (signInError) {
+            setMode("login");
+            setErrors({ form: "এই নম্বরে ইতিমধ্যে অ্যাকাউন্ট আছে। সঠিক পিন দিয়ে লগইন করুন।" });
+          } else {
+            toast({ title: "স্বাগতম", description: "এই নম্বরে অ্যাকাউন্ট আগে থেকেই আছে, লগইন করা হয়েছে।" });
+            navigate(from, { replace: true });
+          }
         }
       }
     } finally {
