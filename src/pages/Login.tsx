@@ -244,27 +244,29 @@ const Login = () => {
                   </span>
                   <Input
                     id="phone"
-                    type="number"
+                    type="text"
                     inputMode="numeric"
+                    pattern="[0-9]*"
                     autoComplete="tel-national"
                     autoFocus
                     maxLength={11}
                     placeholder="01XXXXXXXXX"
                     value={phone}
                     onChange={(e) => {
-                      const v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                      let v = e.target.value.replace(/\D/g, "");
+                      // Autofill (browser/keyboard) sometimes drops the
+                      // leading 0, e.g. a saved contact stored as
+                      // "1712345678" -- restore it so the number always
+                      // starts with 0 and is exactly 11 digits.
+                      if (v.length === 10 && v[0] !== "0") v = `0${v}`;
+                      v = v.slice(0, 11);
                       setPhone(v);
                       if (errors.phone || errors.form) setErrors((prev) => ({ ...prev, phone: undefined, form: undefined }));
-                    }}
-                    onKeyDown={(e) => {
-                      // Number inputs otherwise accept -, +, e/E (scientific
-                      // notation) and . -- block everything but digits.
-                      if (["-", "+", "e", "E", "."].includes(e.key)) e.preventDefault();
                     }}
                     aria-invalid={!!(errors.phone || errors.form)}
                     aria-describedby={errors.phone ? "phone-error" : undefined}
                     className={cn(
-                      "h-12 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+                      "h-12 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10",
                       (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive"
                     )}
                   />
