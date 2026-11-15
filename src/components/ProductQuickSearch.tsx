@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Fuse from "fuse.js";
-import { Search, ShoppingBasket, UserRound, X, Plus } from "lucide-react";
+import { Search, X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -212,18 +212,6 @@ export function ProductQuickSearch() {
                             aria-label={`${m.name} এর বিবরণ খুলুন`}
                             className="flex min-w-0 flex-1 items-center gap-3 text-left focus:outline-none"
                           >
-                            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
-                              {m.imageUrl ? (
-                                <img
-                                  src={m.imageUrl}
-                                  alt={m.name}
-                                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                                  loading="lazy"
-                                />
-                              ) : (
-                                <ShoppingBasket className="h-6 w-6 text-muted-foreground" aria-hidden />
-                              )}
-                            </div>
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-2">
                                 <p className={cn(BODY_TEXT, "truncate font-medium")}>{m.name}</p>
@@ -284,9 +272,6 @@ export function ProductQuickSearch() {
                         aria-label={`${c.name} এর বিবরণ খুলুন`}
                         className="flex w-full items-center gap-3 rounded-md border bg-card p-2 text-left transition-colors hover:border-primary hover:bg-accent"
                       >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
-                          <UserRound className="h-5 w-5" aria-hidden />
-                        </div>
                         <span className="min-w-0 flex-1">
                           <span className={cn(BODY_TEXT, "block truncate font-medium")}>{c.name}</span>
                           <span className={typography("body-muted", "block truncate")}>

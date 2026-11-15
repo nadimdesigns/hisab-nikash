@@ -29,7 +29,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Trash2, Camera, ImagePlus, X, ShoppingBasket } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
 import { bnNumber, currency, daysUntil } from "@/lib/format";
@@ -54,37 +54,9 @@ const empty: Omit<Product, "id"> = {
   reorderLevel: 10,
   costPrice: 0,
   sellPrice: 0,
-  imageUrl: undefined,
   barcode: "",
   aliases: [],
 };
-
-const MAX_IMAGE_BYTES = 2 * 1024 * 1024; // 2MB
-
-async function fileToCompressedDataUrl(file: File, maxDim = 480, quality = 0.8): Promise<string> {
-  const dataUrl = await new Promise<string>((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(String(r.result));
-    r.onerror = () => reject(r.error);
-    r.readAsDataURL(file);
-  });
-  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
-    const i = new Image();
-    i.onload = () => resolve(i);
-    i.onerror = () => reject(new Error("Could not load image"));
-    i.src = dataUrl;
-  });
-  const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-  const w = Math.round(img.width * scale);
-  const h = Math.round(img.height * scale);
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return dataUrl;
-  ctx.drawImage(img, 0, 0, w, h);
-  return canvas.toDataURL("image/jpeg", quality);
-}
 
 
 export default function InventoryPanel({
@@ -269,7 +241,6 @@ export default function InventoryPanel({
       unit: m.unit,
       expiry: m.expiry,
       reorderLevel: m.reorderLevel,
-      imageUrl: m.imageUrl,
       barcode: m.barcode ?? "",
       aliases: m.aliases ?? [],
       batch: m.batch ?? "",
@@ -340,12 +311,6 @@ export default function InventoryPanel({
             <DialogTitle>{editing ? "পণ্য সম্পাদনা" : "পণ্য যোগ করুন"}</DialogTitle>
           </DialogHeader>
           <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 overflow-y-auto overscroll-contain px-6 pb-4">
-            <Field label="পণ্যের ছবি" className="col-span-2">
-              <ImageUploadField
-                value={form.imageUrl}
-                onChange={(url) => setForm({ ...form, imageUrl: url })}
-              />
-            </Field>
             <Field label="পণ্যের নাম" className="col-span-2">
               <Input className="h-[46px] rounded-xl bg-white dark:bg-white/10" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </Field>
@@ -433,12 +398,9 @@ export default function InventoryPanel({
                 Array.from({ length: 8 }).map((_, i) => (
                   <TableRow key={`sk-${i}`} aria-busy="true">
                     <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Skeleton className="h-10 w-10 shrink-0 rounded-md" />
-                        <div className="min-w-0 flex-1 space-y-1.5">
-                          <Skeleton className="h-4 w-32" />
-                          <Skeleton className="h-3 w-16" />
-                        </div>
+                      <div className="min-w-0 space-y-1.5">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-16" />
                       </div>
                     </TableCell>
                     <TableCell>
@@ -476,26 +438,12 @@ export default function InventoryPanel({
                         )}
                       >
                         <TableCell className="font-medium">
-                          <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
-                              {m.imageUrl ? (
-                                <img
-                                  src={m.imageUrl}
-                                  alt={m.name}
-                                  className="h-full w-full object-cover"
-                                  loading="lazy"
-                                />
-                              ) : (
-                                <ShoppingBasket className="h-4 w-4 text-muted-foreground" aria-hidden />
-                              )}
-                            </div>
-                            <span className="min-w-0 flex-1">
-                              <span className="block truncate text-sm font-semibold">{m.name}</span>
-                              <span className="mt-0.5 inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
-                                {m.sku}
-                              </span>
+                          <span className="block min-w-0">
+                            <span className="block truncate text-sm font-semibold">{m.name}</span>
+                            <span className="mt-0.5 inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
+                              {m.sku}
                             </span>
-                          </div>
+                          </span>
                         </TableCell>
                         <TableCell>
                           <div className="truncate text-sm font-medium">{m.category || "—"}</div>
@@ -672,145 +620,3 @@ export function Field({ label, className, children }: { label: string; className
     </div>
   );
 }
-
-export function ImageUploadField({
-  value,
-  onChange,
-}: {
-  value?: string;
-  onChange: (url: string | undefined) => void;
-}) {
-  const [busy, setBusy] = useState(false);
-  // Two hidden file inputs: one plain picker (gallery / choose file) and one
-  // with capture="environment" that opens the phone camera directly. The
-  // thumbnail preview and the "Replace image" button share the gallery input.
-  const galleryRef = useRef<HTMLInputElement>(null);
-  const cameraRef = useRef<HTMLInputElement>(null);
-  const openGallery = () => galleryRef.current?.click();
-  const openCamera = () => cameraRef.current?.click();
-
-  const handleFile = async (file?: File | null) => {
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      toast({ title: "Unsupported file", description: "Please choose an image file.", variant: "destructive" });
-      return;
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      toast({ title: "Image too large", description: "Maximum size is 2 MB.", variant: "destructive" });
-      return;
-    }
-    try {
-      setBusy(true);
-      const url = await fileToCompressedDataUrl(file);
-      onChange(url);
-    } catch {
-      toast({ title: "Could not read image", variant: "destructive" });
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="flex items-start gap-3 rounded-xl bg-white p-3 dark:bg-white/10">
-      {value ? (
-        <>
-          {/* Preview thumbnail — tap to swap from gallery/files. */}
-          <button
-            type="button"
-            onClick={openGallery}
-            disabled={busy}
-            aria-label="Replace product image"
-            className="group relative flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted transition-colors hover:border-primary hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <img src={value} alt="Product preview" className="h-full w-full object-cover" />
-          </button>
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <p className="text-muted-foreground">
-              PNG or JPG, up to 2 MB. Resized automatically for fast loading.
-            </p>
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={openGallery}
-                disabled={busy}
-              >
-                <ImagePlus className="mr-2 h-4 w-4" />
-                Replace image
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => onChange(undefined)}
-              >
-                <X className="mr-2 h-4 w-4" />
-                Remove
-              </Button>
-            </div>
-          </div>
-        </>
-      ) : (
-        <>
-          {/* Camera capture + gallery upload side by side. */}
-          <div className="flex shrink-0 items-center gap-2">
-            <button
-              type="button"
-              onClick={openCamera}
-              disabled={busy}
-              aria-label="Take photo with camera"
-              title="ক্যামেরা দিয়ে ছবি তুলুন"
-              className="group flex h-16 w-16 shrink-0 flex-col items-center justify-center gap-1 rounded-md border bg-muted transition-colors hover:border-primary hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <Camera className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
-              <span className="text-[10px] font-semibold text-muted-foreground transition-colors group-hover:text-primary">ক্যামেরা</span>
-            </button>
-            <button
-              type="button"
-              onClick={openGallery}
-              disabled={busy}
-              aria-label="Choose image from gallery"
-              title="গ্যালারি থেকে ছবি বাছুন"
-              className="group flex h-16 w-16 shrink-0 flex-col items-center justify-center gap-1 rounded-md border bg-muted transition-colors hover:border-primary hover:bg-muted/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <ImagePlus className="h-6 w-6 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
-              <span className="text-[10px] font-semibold text-muted-foreground transition-colors group-hover:text-primary">গ্যালারি</span>
-            </button>
-          </div>
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <p className="text-muted-foreground">
-              ছবি তুলে আপলোড করুন অথবা গ্যালারি থেকে যোগ করুন
-            </p>
-          </div>
-        </>
-      )}
-
-      {/* Gallery / file picker */}
-      <input
-        ref={galleryRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(e) => {
-          handleFile(e.target.files?.[0]);
-          e.target.value = "";
-        }}
-      />
-      {/* Direct camera capture (mobile). Desktop browsers ignore capture and
-          fall back to a normal file dialog. */}
-      <input
-        ref={cameraRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        className="hidden"
-        onChange={(e) => {
-          handleFile(e.target.files?.[0]);
-          e.target.value = "";
-        }}
-      />
-    </div>
-  );
-}
-

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { ArrowLeft, Download, Mail, MapPin, Pencil, Phone, StickyNote, UserCircle2, Wallet } from "lucide-react";
+import { ArrowLeft, Download, Mail, MapPin, Pencil, Phone, StickyNote, Wallet } from "lucide-react";
 import { z } from "zod";
 
 import AppLayout from "@/components/AppLayout";
@@ -310,9 +310,6 @@ export default function CustomerDetails() {
 
         {/* Identity */}
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-            <UserCircle2 className="h-7 w-7" />
-          </div>
           <div className="min-w-0 flex-1">
             <h1 className={typography("h2", "truncate")}>{customerName || "কাস্টমার"}</h1>
             <p className={typography("body-muted")}>

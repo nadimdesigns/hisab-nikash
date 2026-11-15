@@ -306,13 +306,6 @@ const Index = () => {
                     className="flex w-full items-center gap-3 rounded-2xl border-0 bg-white p-3 text-left shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:bg-white/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300">
-                      {m.imageUrl ? (
-                        <img src={m.imageUrl} alt={m.name} className="h-full w-full object-cover" loading="lazy" />
-                      ) : (
-                        <Package className="h-5 w-5" aria-hidden />
-                      )}
-                    </div>
                     <span className="min-w-0 flex-1">
                       <span className={typography("body-strong", "block truncate")}>{m.name}</span>
                       <span className={typography("body-muted", "block truncate")}>{m.sku || "—"}</span>

@@ -19,7 +19,6 @@ export type Product = {
   reorderLevel: number;
   costPrice: number;
   sellPrice: number;
-  imageUrl?: string;
   /** Optional product barcode / UPN — supports paste or barcode-scanner input. */
   barcode?: string;
   /** Optional alternate names or brand variants used for fuzzy search. */
