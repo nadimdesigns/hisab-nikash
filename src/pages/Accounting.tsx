@@ -678,9 +678,21 @@ export default function Accounting() {
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="truncate text-sm font-semibold text-foreground">
-                              {t.reference}
-                            </span>
+                            <div className="flex min-w-0 items-center gap-[6px]">
+                              <span className="truncate text-sm font-semibold text-foreground">
+                                {t.reference}
+                              </span>
+                              <span
+                                className={cn(
+                                  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10",
+                                  isRevenue
+                                    ? "text-emerald-700 dark:text-emerald-300"
+                                    : "text-rose-700 dark:text-rose-300",
+                                )}
+                              >
+                                {TXN_TYPE_LABEL[t.type]}
+                              </span>
+                            </div>
                             <span
                               className={cn(
                                 "shrink-0 text-sm font-bold tabular-nums",
@@ -694,22 +706,10 @@ export default function Accounting() {
                             </span>
                           </div>
 
-                          <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-                            <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                              <span
-                                className={cn(
-                                  "inline-flex items-center whitespace-nowrap rounded-md bg-white px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10",
-                                  isRevenue
-                                    ? "text-emerald-700 dark:text-emerald-300"
-                                    : "text-rose-700 dark:text-rose-300",
-                                )}
-                              >
-                                {TXN_TYPE_LABEL[t.type]}
-                              </span>
-                              <span className="truncate">
-                                {t.summary} · {format(new Date(t.date), "MMM d, yyyy")}
-                              </span>
-                            </div>
+                          <div className="mt-1 flex items-center text-xs text-muted-foreground">
+                            <span className="truncate">
+                              {t.summary} · {format(new Date(t.date), "MMM d, yyyy")}
+                            </span>
                           </div>
                         </div>
                       </li>
