@@ -4,8 +4,7 @@ import AppLayout from "@/components/AppLayout";
 import InventoryPanel from "@/components/inventory/InventoryPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Plus, X, Search, Download, FileText, FileSpreadsheet, SlidersHorizontal, ChevronDown, Check } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, X, Search, Download, FileText, FileSpreadsheet, SlidersHorizontal } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -71,7 +70,6 @@ export default function Inventory() {
   // when the user presses "ফিল্টার প্রয়োগ করুন". Drafts are seeded from the
   // current values whenever the sheet opens.
   const [filterSheetOpen, setFilterSheetOpen] = useState(false);
-  const [categorySheetOpen, setCategorySheetOpen] = useState(false);
   const [draftStock, setDraftStock] = useState<StockFilter>(stockFilter);
   const [draftExpiry, setDraftExpiry] = useState<ExpiryFilter>(expiryFilter);
   const [draftSort, setDraftSort] = useState<SortKey>(sort);
@@ -193,71 +191,26 @@ export default function Inventory() {
   return (
     <AppLayout title="স্টক">
       <div className="mb-4 space-y-3">
-        <div className="flex items-center gap-2">
-          <Dialog open={categorySheetOpen} onOpenChange={setCategorySheetOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="flex-1 justify-between gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 sm:w-48 sm:flex-none"
-                aria-label="ক্যাটাগরি নির্বাচন করুন"
-              >
-                <span className="truncate">
-                  {category === "all" ? "সব ক্যাটাগরি" : category}
-                </span>
-                <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="flex max-h-[80svh] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:border-emerald-500/25 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-sm">
-              <DialogHeader className="border-b border-emerald-200/60 px-6 py-4 text-left dark:border-white/10">
-                <DialogTitle>ক্যাটাগরি</DialogTitle>
-              </DialogHeader>
-              <ul className="flex-1 overflow-y-auto py-2">
-                {[
-                  { value: "all", label: "সব ক্যাটাগরি" },
-                  ...categories.map((c) => ({ value: c, label: c })),
-                ].map((opt) => {
-                  const active = category === opt.value;
-                  return (
-                    <li key={opt.value}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCategory(opt.value);
-                          setCategorySheetOpen(false);
-                        }}
-                        className={cn(
-                          "flex w-full items-center justify-between gap-3 px-6 py-3 text-left transition-colors hover:bg-white/40 dark:hover:bg-white/10",
-                          active && "bg-white/50 dark:bg-white/15",
-                        )}
-                        aria-pressed={active}
-                      >
-                        <span className="truncate">{opt.label}</span>
-                        {active && <Check className="h-4 w-4 text-primary shrink-0" />}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </DialogContent>
-          </Dialog>
-
+        {/* Top 50% / 50% inline row: পণ্য যোগ করুন + ফিল্টার */}
+        <div className="grid grid-cols-2 gap-2">
           <Button
             type="button"
             onClick={() => setAddOpen(true)}
-            className="hidden shrink-0 gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 sm:ml-auto sm:inline-flex"
+            className="w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
           >
-            <Plus className="h-4 w-4" /> পণ্য যোগ করুন
+            <Plus className="h-4 w-4 shrink-0" />
+            <span className="truncate">পণ্য যোগ করুন</span>
           </Button>
 
           <Dialog open={filterSheetOpen} onOpenChange={handleSheetOpenChange}>
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="relative flex-1 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-[26px] hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 sm:flex-none sm:shrink-0"
+                className="relative w-full gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                 aria-label="ফিল্টার খুলুন"
               >
-                <SlidersHorizontal className="h-4 w-4" />
-                ফিল্টার
+                <SlidersHorizontal className="h-4 w-4 shrink-0" />
+                <span className="truncate">ফিল্টার</span>
                 {advancedFilterCount > 0 && (
                   <Badge
                     variant="default"
@@ -368,21 +321,38 @@ export default function Inventory() {
               </div>
             </DialogContent>
           </Dialog>
-
-          {filtersActive && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className={cn("gap-1", BODY_TEXT)}>
-              <X className="h-3.5 w-3.5" /> মুছুন
-            </Button>
-          )}
         </div>
 
-        <Button
-          type="button"
-          onClick={() => setAddOpen(true)}
-          className="w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 sm:hidden"
+        {/* Horizontal Scrolling Pill Tab Bar for Categories */}
+        <div
+          role="tablist"
+          aria-label="ক্যাটাগরি"
+          className="flex items-center gap-1.5 overflow-x-auto rounded-full border border-emerald-200 bg-emerald-100/60 p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:border-emerald-500/25 dark:bg-emerald-500/15"
         >
-          <Plus className="h-4 w-4" /> পণ্য যোগ করুন
-        </Button>
+          {[
+            { value: "all", label: "সব ক্যাটাগরি" },
+            ...categories.map((c) => ({ value: c, label: c })),
+          ].map((opt) => {
+            const active = category === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setCategory(opt.value)}
+                className={cn(
+                  "shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition-colors sm:text-sm",
+                  active
+                    ? "bg-emerald-900 text-white"
+                    : "text-foreground/75 hover:text-foreground",
+                )}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
       </div>
       <InventoryPanel
         query={query}
