@@ -20,42 +20,42 @@ const quickActions: QuickAction[] = [
     icon: Banknote,
     url: "/new-sale?mode=cash",
     surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
-    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
+    iconBox: "bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
     title: ACTION.dueSale,
     icon: Clock,
     url: "/new-sale?mode=credit",
     surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
-    iconBox: "bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300",
+    iconBox: "bg-white/25 text-rose-600 dark:bg-white/10 dark:text-rose-300",
   },
   {
     title: "টাকা জমা",
     icon: Wallet,
     url: "/accounting?tab=payment",
     surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
-    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
+    iconBox: "bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
     title: ACTION.newPurchase,
     icon: PackagePlus,
     url: "/expenses?tab=purchase",
     surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
-    iconBox: "bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300",
+    iconBox: "bg-white/25 text-rose-600 dark:bg-white/10 dark:text-rose-300",
   },
   {
     title: ACTION.newCustomer,
     icon: UserPlus,
     url: "/customers?tab=new",
     surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
-    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
+    iconBox: "bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
     title: `${NAV.stocks} ${ACTION.add}`,
     icon: Package,
     url: "/stocks?new=1",
     surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
-    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
+    iconBox: "bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
 ];
 
@@ -169,7 +169,7 @@ export function MobileBottomNav() {
                 >
                   <span
                     className={cn(
-                      "relative flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-active:scale-95",
+                      "relative flex h-12 w-12 items-center justify-center rounded-[100px] transition-transform group-active:scale-95",
                       action.iconBox,
                     )}
                   >

@@ -238,11 +238,11 @@
     @apply bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5;
   }
   .tint-icon-revenue {
-    @apply bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300;
+    @apply rounded-[100px] bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300;
   }
   .tint-icon-expense,
   .tint-icon-due {
-    @apply bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300;
+    @apply rounded-[100px] bg-white/25 text-rose-600 dark:bg-white/10 dark:text-rose-300;
   }
 }
 

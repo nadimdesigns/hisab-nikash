@@ -478,7 +478,7 @@ export default function InventoryPanel({
                     size="icon"
                     variant="ghost"
                     onClick={() => openEdit(m)}
-                    className="h-9 w-9 rounded-xl bg-white hover:bg-white/90 dark:bg-white/10"
+                    className="h-9 w-9 rounded-[100px] bg-white/25 hover:bg-white/40 dark:bg-white/10"
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
@@ -487,7 +487,7 @@ export default function InventoryPanel({
                     variant="ghost"
                     onClick={() => setPendingDelete(m)}
                     aria-label={`Delete ${m.name}`}
-                    className="h-9 w-9 rounded-xl bg-white text-rose-600 hover:bg-white/90 hover:text-rose-700 dark:bg-white/10 dark:text-rose-300"
+                    className="h-9 w-9 rounded-[100px] bg-white/25 text-rose-600 hover:bg-white/40 hover:text-rose-700 dark:bg-white/10 dark:text-rose-300"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

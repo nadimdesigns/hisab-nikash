@@ -623,7 +623,7 @@ function InfoRow({
   if (!value) return null;
   return (
     <div className={cn("flex items-start gap-2.5", wide && "sm:col-span-2")}>
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300">{icon}</span>
+      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[100px] bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300">{icon}</span>
       <div className="min-w-0 flex-1">
         <p className={typography("body-muted", "text-xs uppercase tracking-wide")}>{label}</p>
         <p className={typography("body", "break-words")}>{value}</p>

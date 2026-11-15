@@ -529,7 +529,7 @@ export default function Expenses() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-8 w-8 shrink-0 rounded-xl bg-white text-rose-600 hover:bg-rose-50 dark:bg-white/10 dark:text-rose-300"
+                        className="h-8 w-8 shrink-0 rounded-[100px] bg-white/25 text-rose-600 hover:bg-rose-50 dark:bg-white/10 dark:text-rose-300"
                         onClick={() => setItems(items.filter((_, j) => j !== idx))}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -596,7 +596,7 @@ export default function Expenses() {
                       key={i}
                       className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 p-3 dark:from-rose-500/15 dark:to-rose-500/5"
                     >
-                      <Skeleton className="h-11 w-11 shrink-0 rounded-xl bg-white/80" />
+                      <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/25" />
                       <div className="min-w-0 flex-1 space-y-1.5">
                         <Skeleton className="h-4 w-32" />
                         <Skeleton className="h-3 w-24" />
@@ -621,7 +621,7 @@ export default function Expenses() {
                       key={r.id}
                       className="flex items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-rose-100 to-rose-50 p-3 sm:p-4 dark:from-rose-500/15 dark:to-rose-500/5"
                     >
-                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/25 text-rose-600 dark:bg-white/10 dark:text-rose-300">
                         <ArrowUpRight className="h-5 w-5" />
                       </span>
                       <div className="min-w-0 flex-1">
