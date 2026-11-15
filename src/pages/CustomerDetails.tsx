@@ -19,32 +19,12 @@ import { dataKey, isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
 import { useShop, type SaleItem } from "@/store/shop";
 import { applyCustomerPayment } from "@/lib/customerPayments";
 import { loadPayments, PAYMENTS_KEY, type PaymentEntry } from "@/lib/customerPaymentsLog";
-
-type CustomerProfile = {
-  phone?: string;
-  email?: string;
-  address?: string;
-  notes?: string;
-};
-
-const PROFILES_KEY = dataKey("medishop-customer-profiles-v1");
-
-const loadProfiles = (): Record<string, CustomerProfile> => {
-  try {
-    const raw = localStorage.getItem(PROFILES_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, CustomerProfile>) : {};
-  } catch {
-    return {};
-  }
-};
-
-const saveProfiles = (profiles: Record<string, CustomerProfile>) => {
-  try {
-    localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
-  } catch {
-    // ignore
-  }
-};
+import {
+  loadProfiles,
+  PROFILES_KEY,
+  saveProfiles,
+  type CustomerProfile,
+} from "@/lib/customerProfiles";
 
 const profileSchema = z.object({
   phone: z

@@ -6,7 +6,6 @@ import { MobileBottomNav } from "./MobileBottomNav";
 import { ThemeToggle } from "./ThemeToggle";
 
 import { Search } from "lucide-react";
-import { useHeaderSlot } from "./HeaderSlot";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -15,7 +14,6 @@ import { typography } from "@/lib/typography";
 import { useAuth } from "@/lib/auth";
 
 export default function AppLayout({ children, title }: { children: ReactNode; title: string }) {
-  const { content: headerSlot } = useHeaderSlot();
   const { user } = useAuth();
   const initialsSource =
     (user?.user_metadata?.full_name as string | undefined) ||
@@ -35,12 +33,7 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
               <SidebarTrigger />
             </div>
             <h1 className={typography("h3", "shrink-0 text-sidebar-foreground")}>{title}</h1>
-            {headerSlot && (
-              <div className="hidden flex-1 justify-center md:flex">
-                <div className="w-full max-w-md">{headerSlot}</div>
-              </div>
-            )}
-            <div className={headerSlot ? "ml-auto flex shrink-0 items-center gap-1 md:ml-0" : "ml-auto flex items-center gap-1"}>
+            <div className="ml-auto flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"

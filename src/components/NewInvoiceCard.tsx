@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -18,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Trash2, Receipt, Save } from "lucide-react";
+import { Trash2, Save } from "lucide-react";
 import { useShop, SaleItem } from "@/store/shop";
 import { currency, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
@@ -27,7 +25,6 @@ import { useDraftsListener } from "@/hooks/use-drafts-listener";
 import { typography } from "@/lib/typography";
 import { ProductPickerSheet } from "@/components/ProductPickerSheet";
 import { QtyStepper } from "@/components/QtyStepper";
-import { PaymentStatusBadge } from "@/components/sales/PaymentStatusBadge";
 import { loadProfiles, PROFILES_KEY } from "@/lib/customerProfiles";
 
 export default function NewInvoiceCard({ className, title = "Cash Sale" }: { className?: string; title?: string }) {
@@ -40,7 +37,6 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
   // Drives the quantity stepper's increment: কেজি moves in quarters, পিস in ones.
   const pickedProduct = products.find((m) => m.id === pickId);
   const [qty, setQty] = useState<number>(1);
-  const [saleType, setSaleType] = useState<string>("");
   const [now, setNow] = useState<Date>(() => new Date());
 
   useEffect(() => {

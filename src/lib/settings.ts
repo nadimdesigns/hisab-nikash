@@ -1,5 +1,3 @@
-import { usePersistentState } from "@/hooks/use-persistent-state";
-
 /**
  * Persistent UI preference: whether route navigations should animate the
  * scroll-to-top with smooth scrolling, or jump instantly (the default).
@@ -8,12 +6,6 @@ import { usePersistentState } from "@/hooks/use-persistent-state";
  * and is shared across tabs (the storage event will repaint dependent UI).
  */
 const SMOOTH_SCROLL_KEY = "medishop-smooth-scroll";
-
-const isBoolean = (v: unknown): v is boolean => typeof v === "boolean";
-
-export function useSmoothScroll() {
-  return usePersistentState<boolean>(SMOOTH_SCROLL_KEY, false, isBoolean);
-}
 
 /**
  * Synchronous read of the smooth-scroll preference for use outside of
