@@ -19,16 +19,6 @@ import { loadProfiles, PROFILES_KEY } from "@/lib/customerProfiles";
 import { isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
 import { currency, formatDate } from "@/lib/format";
 import { format } from "date-fns";
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  Clock,
-  ListFilter,
-  PackagePlus,
-  Save,
-  Trash2,
-  Wallet,
-} from "lucide-react";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
@@ -479,7 +469,7 @@ export default function Accounting() {
                 size="lg"
                 className="w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
               >
-                <Save className="h-4 w-4" />
+                <span aria-hidden="true" className="text-base leading-none select-none">💾</span>
                 টাকা জমা সংরক্ষণ করুন
               </Button>
             </div>
@@ -586,7 +576,7 @@ export default function Accounting() {
                         className="h-8 w-8 shrink-0 rounded-[100px] bg-white/60 text-rose-600 hover:bg-rose-50 dark:bg-white/10 dark:text-rose-300"
                         onClick={() => setItems(items.filter((_, j) => j !== idx))}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <span aria-hidden="true" className="text-sm leading-none select-none">🗑️</span>
                       </Button>
                     </li>
                   ))}
@@ -604,7 +594,7 @@ export default function Accounting() {
                 size="lg"
                 disabled={items.length === 0}
               >
-                <Save className="h-4 w-4" />
+                <span aria-hidden="true" className="text-base leading-none select-none">💾</span>
                 ক্রয় সংরক্ষণ করুন
               </Button>
             </div>
@@ -664,14 +654,14 @@ export default function Accounting() {
                   {filteredAllTransactions.map((t, idx) => {
                     const isRevenue = t.type === "Cash Sale" || t.type === "New Payment";
                     const isOutflow = t.type === "Purchase" || t.type === "Expense";
-                    const Icon =
+                    const emoji =
                       t.type === "Cash Sale"
-                        ? ArrowDownLeft
+                        ? "💵"
                         : t.type === "New Payment"
-                          ? Wallet
+                          ? "💰"
                           : t.type === "Due Sale"
-                            ? Clock
-                            : ArrowUpRight;
+                            ? "⏳"
+                            : "🧾";
 
                     return (
                       <li
@@ -685,14 +675,10 @@ export default function Accounting() {
                         )}
                       >
                         <span
-                          className={cn(
-                            "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10",
-                            isRevenue
-                              ? "text-emerald-600 dark:text-emerald-300"
-                              : "text-rose-600 dark:text-rose-300",
-                          )}
+                          aria-hidden="true"
+                          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10"
                         >
-                          <Icon className="h-5 w-5" />
+                          {emoji}
                         </span>
 
                         <div className="min-w-0 flex-1">

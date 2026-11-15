@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Fuse from "fuse.js";
-import { Search, X, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -165,7 +164,7 @@ export function ProductQuickSearch() {
         <DialogHeader className="border-b p-4 text-left">
           <DialogTitle className={BODY_TEXT}>পণ্য ও কাস্টমার খুঁজুন</DialogTitle>
           <div className="relative mt-2">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm leading-none select-none">🔍</span>
             <Input
               autoFocus
               value={query}
@@ -180,7 +179,7 @@ export function ProductQuickSearch() {
                 className="absolute right-2 top-1/2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground hover:text-foreground"
                 aria-label="খোঁজ মুছুন"
               >
-                <X className="h-3.5 w-3.5" />
+                <span aria-hidden="true" className="text-xs leading-none select-none">✖️</span>
               </button>
             )}
           </div>
@@ -256,7 +255,7 @@ export function ProductQuickSearch() {
                             className="shrink-0 gap-1 rounded-lg bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
                             aria-label={`${m.name} বিক্রিতে যোগ করুন`}
                           >
-                            <Plus className="h-4 w-4" />
+                            <span aria-hidden="true" className="text-xs leading-none select-none">➕</span>
                             বিক্রিতে যোগ
                           </Button>
                         </div>

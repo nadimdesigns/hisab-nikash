@@ -8,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Trash2, Save } from "lucide-react";
 import { useShop, SaleItem } from "@/store/shop";
 import { currency, formatDate } from "@/lib/format";
 import { toast } from "@/hooks/use-toast";
@@ -191,14 +190,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
 
       {/* Time */}
       <div className="mb-5 flex items-center gap-2 px-5 text-muted-foreground sm:px-6">
-        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+        <span aria-hidden="true" className="text-xs leading-none select-none">🕒</span>
         <span className="text-xs font-medium tabular-nums">{formatDate(now, "h:mm:ss a")}</span>
       </div>
 
@@ -266,9 +258,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             className={`flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-white/70 p-8 transition-colors ${tone.emptyHover}`}
           >
             <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10">
-              <svg className={`h-5 w-5 ${tone.label}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-              </svg>
+              <span aria-hidden="true" className="text-xl leading-none select-none">➕</span>
             </div>
             <p className="text-xs font-medium text-muted-foreground">এখনো কোনো আইটেম যোগ হয়নি</p>
           </div>
@@ -300,7 +290,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
                   className="h-8 w-8 shrink-0 rounded-[100px] bg-white/60 text-rose-600 hover:bg-rose-50 dark:bg-white/10 dark:text-rose-300"
                   onClick={() => removeItem(i.productId)}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <span aria-hidden="true" className="text-sm leading-none select-none">🗑️</span>
                 </Button>
               </li>
             ))}
@@ -321,7 +311,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           size="lg"
           className={`w-full rounded-2xl bg-gradient-to-r ${tone.gradient} ${tone.gradientHover} py-4 font-bold tracking-wide text-white transition-all active:scale-[0.98]`}
         >
-          <Save className="h-4 w-4" />
+          <span aria-hidden="true" className="text-base leading-none select-none">💾</span>
           {isCredit ? "বাকি বিক্রি সংরক্ষণ" : "নগদ বিক্রি সংরক্ষণ"}
         </Button>
       </div>

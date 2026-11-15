@@ -8,7 +8,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { currency } from "@/lib/format";
 import type { Product } from "@/store/shop";
@@ -68,7 +67,7 @@ export function ProductPickerSheet({
           <span className="truncate">
             {selected ? selected.name : placeholder}
           </span>
-          <ChevronDown className="h-4 w-4 shrink-0 text-[#bbbbbb]" />
+          <span aria-hidden="true" className="shrink-0 text-xs leading-none text-[#bbbbbb] select-none">▾</span>
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -81,7 +80,7 @@ export function ProductPickerSheet({
 
         <div className="px-6 pt-2">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm leading-none select-none">🔍</span>
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}

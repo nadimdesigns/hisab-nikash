@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { RefreshCw } from "lucide-react";
 import { typography } from "@/lib/typography";
 
 /**
@@ -54,7 +53,7 @@ export default function CrossTabSyncBanner({
         (className ? " " + className : "")
       }
     >
-      <RefreshCw className="h-4 w-4 animate-spin text-primary" aria-hidden />
+      <span aria-hidden="true" className="text-base leading-none select-none">🔄</span>
       <span className={typography("body-strong")}>
         Refreshing inventory — updates from another tab.
       </span>

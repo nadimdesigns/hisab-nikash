@@ -2,16 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import type { DateRange } from "react-day-picker";
 import { z } from "zod";
-import {
-  CalendarIcon,
-  Save,
-  Search,
-  SlidersHorizontal,
-  UserPlus,
-  Users,
-  X,
-} from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -451,7 +441,7 @@ export default function CustomersPanel() {
               className="relative h-11 shrink-0 gap-2 rounded-full border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
               aria-label="কাস্টমার ফিল্টার খুলুন"
             >
-              <SlidersHorizontal className="h-4 w-4 shrink-0" />
+              <span aria-hidden="true" className="text-sm leading-none select-none">⚙️</span>
               <span className="text-xs font-semibold sm:text-sm">ফিল্টার</span>
               {custAdvancedFilterCount > 0 && (
                 <Badge
@@ -596,7 +586,7 @@ export default function CustomersPanel() {
                 size="lg"
                 className="w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
               >
-                <Save className="h-4 w-4" />
+                <span aria-hidden="true" className="text-base leading-none select-none">💾</span>
                 কাস্টমার সংরক্ষণ করুন
               </Button>
             </form>
@@ -701,7 +691,7 @@ export default function CustomersPanel() {
                             !draftCustDateRange?.from && "text-muted-foreground",
                           )}
                         >
-                          <CalendarIcon className="h-4 w-4 shrink-0" />
+                          <span aria-hidden="true" className="text-sm leading-none select-none">📅</span>
                           {draftCustDateRange?.from ? (
                             draftCustDateRange.to ? (
                               <span className="truncate">
@@ -735,7 +725,7 @@ export default function CustomersPanel() {
                               onClick={() => setDraftCustDateRange(undefined)}
                               className="gap-1 rounded-md bg-white hover:bg-white"
                             >
-                              <X className="h-3.5 w-3.5" /> তারিখ মুছুন
+                              <span aria-hidden="true" className="text-xs leading-none select-none">✖️</span> তারিখ মুছুন
                             </Button>
                           </div>
                         )}
@@ -751,7 +741,7 @@ export default function CustomersPanel() {
                       onClick={resetCustDraftFilters}
                       className="h-12 w-full gap-2 rounded-xl bg-white hover:bg-white md:h-11"
                     >
-                      <X className="h-4 w-4" /> ফিল্টার রিসেট করুন
+                      <span aria-hidden="true" className="text-xs leading-none select-none">✖️</span> ফিল্টার রিসেট করুন
                     </Button>
                   )}
                   <Button

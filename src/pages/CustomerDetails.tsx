@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { ArrowDownLeft, ArrowLeft, Clock, Download, Mail, MapPin, Pencil, Phone, StickyNote, Wallet } from "lucide-react";
 import { z } from "zod";
 
 import AppLayout from "@/components/AppLayout";
@@ -306,7 +305,7 @@ export default function CustomerDetails() {
             onClick={() => navigate("/customers")}
             className="h-10 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 font-semibold hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <span aria-hidden="true" className="text-sm leading-none select-none">⬅️</span>
             <span>সকল কাস্টমার</span>
           </Button>
 
@@ -319,7 +318,7 @@ export default function CustomerDetails() {
                 onClick={startEdit}
                 className="h-10 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 font-semibold hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
               >
-                <Pencil className="h-3.5 w-3.5" />
+                <span aria-hidden="true" className="text-xs leading-none select-none">✏️</span>
                 <span>{hasProfileInfo ? "সম্পাদনা" : "তথ্য যোগ"}</span>
               </Button>
             )}
@@ -331,7 +330,7 @@ export default function CustomerDetails() {
               onClick={exportCSV}
               disabled={history.length === 0}
             >
-              <Download className="h-3.5 w-3.5" />
+              <span aria-hidden="true" className="text-xs leading-none select-none">📥</span>
               <span>এক্সপোর্ট</span>
             </Button>
           </div>
@@ -387,10 +386,10 @@ export default function CustomerDetails() {
             {!isEditing ? (
               hasProfileInfo && (
                 <dl className="mt-4 grid grid-cols-1 gap-2.5 border-t border-black/5 pt-4 dark:border-white/10 sm:grid-cols-2">
-                  <InfoRow icon={<Phone className="h-4 w-4" />} label="ফোন" value={profile.phone} hasDue={hasDue} />
-                  <InfoRow icon={<Mail className="h-4 w-4" />} label="ইমেইল" value={profile.email} hasDue={hasDue} />
-                  <InfoRow icon={<MapPin className="h-4 w-4" />} label="ঠিকানা" value={profile.address} hasDue={hasDue} />
-                  <InfoRow icon={<StickyNote className="h-4 w-4" />} label="নোট" value={profile.notes} wide hasDue={hasDue} />
+                  <InfoRow icon="📞" label="ফোন" value={profile.phone} hasDue={hasDue} />
+                  <InfoRow icon="✉️" label="ইমেইল" value={profile.email} hasDue={hasDue} />
+                  <InfoRow icon="📍" label="ঠিকানা" value={profile.address} hasDue={hasDue} />
+                  <InfoRow icon="📝" label="নোট" value={profile.notes} wide hasDue={hasDue} />
                 </dl>
               )
             ) : (
@@ -532,7 +531,7 @@ export default function CustomerDetails() {
                     });
                   }}
                 >
-                  <Wallet className="h-4 w-4" /> পরিশোধ
+                  <span aria-hidden="true" className="text-sm leading-none select-none">💰</span> পরিশোধ
                 </Button>
               </div>
             </CardContent>
@@ -570,7 +569,7 @@ export default function CustomerDetails() {
                   ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                   : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
 
-                const TxnIcon = isDue ? Clock : isPayment ? Wallet : ArrowDownLeft;
+                const emoji = isDue ? "⏳" : isPayment ? "💰" : "💵";
 
                 return (
                   <li
@@ -582,14 +581,10 @@ export default function CustomerDetails() {
                     )}
                   >
                     <span
-                      className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10",
-                        isDue
-                          ? "text-rose-600 dark:text-rose-300"
-                          : "text-emerald-600 dark:text-emerald-300",
-                      )}
+                      aria-hidden="true"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10"
                     >
-                      <TxnIcon className="h-5 w-5" />
+                      {emoji}
                     </span>
 
                     <div className="min-w-0 flex-1">
@@ -679,7 +674,7 @@ function InfoRow({
   wide = false,
   hasDue = false,
 }: {
-  icon: React.ReactNode;
+  icon: string;
   label: string;
   value?: string;
   wide?: boolean;
@@ -689,10 +684,8 @@ function InfoRow({
   return (
     <div className={cn("flex items-center gap-2.5 rounded-2xl bg-white/50 px-3 py-2 dark:bg-white/5", wide && "sm:col-span-2")}>
       <span
-        className={cn(
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10",
-          hasDue ? "text-rose-600 dark:text-rose-300" : "text-emerald-600 dark:text-emerald-300",
-        )}
+        aria-hidden="true"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-sm leading-none select-none dark:bg-white/10"
       >
         {icon}
       </span>

@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { typography } from "@/lib/typography";
 import { toast } from "@/hooks/use-toast";
-import { Search, ShieldCheck, Shield, Loader2 } from "lucide-react";
 
 type AdminUser = {
   id: string;
@@ -118,7 +117,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
       </CardHeader>
       <CardContent className="space-y-4 px-0">
         <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <span aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm leading-none select-none">🔍</span>
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -129,7 +128,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
 
         {loading ? (
           <div className="flex items-center justify-center py-10 text-muted-foreground">
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <span aria-hidden="true" className="mr-2 text-base leading-none select-none">⏳</span>
             ইউজার লোড হচ্ছে…
           </div>
         ) : error ? (
@@ -157,7 +156,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                       </p>
                       {isAdmin && (
                         <Badge variant="secondary" className="gap-1 bg-white text-emerald-700 dark:bg-white/10 dark:text-emerald-300">
-                          <ShieldCheck className="h-3 w-3" />
+                          <span aria-hidden="true" className="text-xs leading-none select-none">🛡️</span>
                           অ্যাডমিন
                         </Badge>
                       )}
@@ -176,13 +175,9 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                     disabled={isSelf || busyId === u.id}
                     className="shrink-0 gap-1"
                   >
-                    {busyId === u.id ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : isAdmin ? (
-                      <Shield className="h-4 w-4" />
-                    ) : (
-                      <ShieldCheck className="h-4 w-4" />
-                    )}
+                    <span aria-hidden="true" className="text-sm leading-none select-none">
+                      {busyId === u.id ? "⏳" : "🛡️"}
+                    </span>
                     <span className="hidden sm:inline">
                       {isAdmin ? "অ্যাডমিন সরান" : "অ্যাডমিন করুন"}
                     </span>

@@ -13,7 +13,6 @@ import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { APP_NAME, APP_TAGLINE } from "@/lib/copy";
-import { ArrowLeft, PlayCircle } from "lucide-react";
 import { enableDemoMode, setCachedRole } from "@/lib/demoMode";
 import { seedDemoCustomers } from "@/lib/demoSeed";
 
@@ -304,7 +303,7 @@ const Login = () => {
                   className="w-full gap-2"
                   onClick={loginAsDemo}
                 >
-                  <PlayCircle className="h-4 w-4" />
+                  <span aria-hidden="true" className="text-sm leading-none select-none">▶️</span>
                   ডেমো অ্যাকাউন্ট দিয়ে দেখুন
                 </Button>
               </div>
@@ -314,9 +313,9 @@ const Login = () => {
               <button
                 type="button"
                 onClick={goBackToPhone}
-                className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <span aria-hidden="true" className="text-sm leading-none select-none">⬅️</span>
                 +88{phone}
               </button>
 
@@ -365,9 +364,9 @@ const Login = () => {
               <button
                 type="button"
                 onClick={goBackToPhone}
-                className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <span aria-hidden="true" className="text-sm leading-none select-none">⬅️</span>
                 +88{phone}
               </button>
 

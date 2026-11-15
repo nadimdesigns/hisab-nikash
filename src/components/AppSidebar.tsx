@@ -1,5 +1,4 @@
 import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, Truck, BarChart3, Users, Wallet } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { APP_NAME, APP_TAGLINE, NAV } from "@/lib/copy";
 import {
@@ -18,12 +17,12 @@ import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 
 const items = [
-  { title: NAV.dashboard, url: "/", icon: LayoutDashboard, end: true },
-  { title: NAV.stocks, url: "/stocks", icon: Package },
-  { title: NAV.customers, url: "/customers", icon: Users },
-  { title: NAV.purchases, url: "/accounting?tab=purchase", icon: Truck },
-  { title: NAV.expenses, url: "/accounting?tab=payment", icon: Wallet },
-  { title: NAV.accounting, url: "/accounting", icon: BarChart3 },
+  { title: NAV.dashboard, url: "/", emoji: "🏠", end: true },
+  { title: NAV.stocks, url: "/stocks", emoji: "📦" },
+  { title: NAV.customers, url: "/customers", emoji: "👥" },
+  { title: NAV.purchases, url: "/accounting?tab=purchase", emoji: "🚚" },
+  { title: NAV.expenses, url: "/accounting?tab=payment", emoji: "💰" },
+  { title: NAV.accounting, url: "/accounting", emoji: "📊" },
 ];
 
 export function AppSidebar() {
@@ -65,7 +64,9 @@ export function AppSidebar() {
                       className={cn("h-12", navBodyClass, "!text-sidebar-foreground", "group-data-[collapsible=icon]:mx-auto")}
                     >
                       <RouterNavLink to={item.url} end={item.end}>
-                        <item.icon className="h-5 w-5 text-sidebar-foreground" />
+                        <span aria-hidden="true" className="text-lg leading-none select-none">
+                          {item.emoji}
+                        </span>
                         {!collapsed && (
                           <span className={cn(navBodyClass, "!text-sidebar-foreground")}>{item.title}</span>
                         )}

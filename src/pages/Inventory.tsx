@@ -3,7 +3,6 @@ import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import InventoryPanel from "@/components/inventory/InventoryPanel";
 import { Button } from "@/components/ui/button";
-import { Plus, X, Download, FileText, FileSpreadsheet, SlidersHorizontal } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -208,7 +207,7 @@ export default function Inventory() {
                 className="relative w-full gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                 aria-label="ফিল্টার খুলুন"
               >
-                <SlidersHorizontal className="h-4 w-4 shrink-0" />
+                <span aria-hidden="true" className="text-sm leading-none select-none">⚙️</span>
                 <span className="truncate">ফিল্টার</span>
                 {advancedFilterCount > 0 && (
                   <Badge
@@ -280,7 +279,7 @@ export default function Inventory() {
                     onClick={resetDraftFilters}
                     className="h-12 w-full gap-2 rounded-xl bg-white hover:bg-white md:h-11"
                   >
-                    <X className="h-4 w-4" /> ফিল্টার রিসেট করুন
+                    <span aria-hidden="true" className="text-xs leading-none select-none">✖️</span> ফিল্টার রিসেট করুন
                   </Button>
                 )}
                 <Button
@@ -350,7 +349,7 @@ export default function Inventory() {
                 variant="outline"
                 className="gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
               >
-                <Download className="h-4 w-4" /> এক্সপোর্ট
+                <span aria-hidden="true" className="text-sm leading-none select-none">📥</span> এক্সপোর্ট
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -364,10 +363,10 @@ export default function Inventory() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => handleExport("csv")} className={cn("gap-2", BODY_TEXT)}>
-                <FileSpreadsheet className="h-4 w-4" /> CSV ডাউনলোড
+                <span aria-hidden="true" className="text-sm leading-none select-none">📊</span> CSV ডাউনলোড
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleExport("pdf")} className={cn("gap-2", BODY_TEXT)}>
-                <FileText className="h-4 w-4" /> PDF ডাউনলোড
+                <span aria-hidden="true" className="text-sm leading-none select-none">📄</span> PDF ডাউনলোড
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -379,7 +378,7 @@ export default function Inventory() {
           onClick={() => setAddOpen(true)}
           className="home-card-appear h-12 w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-all hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
         >
-          <Plus className="h-4 w-4 shrink-0" />
+          <span aria-hidden="true" className="text-base leading-none select-none">➕</span>
           <span className="truncate">পণ্য যোগ করুন</span>
         </Button>
       </div>

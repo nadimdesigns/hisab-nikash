@@ -1,18 +1,17 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Home, ShoppingCart, Package, BarChart3, Users, type LucideIcon } from "lucide-react";
 import { NAV } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 
-type NavItem = { title: string; url: string; icon: LucideIcon; end?: boolean };
+type NavItem = { title: string; url: string; emoji: string; end?: boolean };
 
 const leftItems: NavItem[] = [
-  { title: "বিক্রয়", url: "/new-sale", icon: ShoppingCart },
-  { title: NAV.stocks, url: "/stocks", icon: Package },
+  { title: "বিক্রয়", url: "/new-sale", emoji: "🛒" },
+  { title: NAV.stocks, url: "/stocks", emoji: "📦" },
 ];
 
 const rightItems: NavItem[] = [
-  { title: NAV.accounting, url: "/accounting", icon: BarChart3 },
-  { title: NAV.customers, url: "/customers", icon: Users },
+  { title: NAV.accounting, url: "/accounting", emoji: "📊" },
+  { title: NAV.customers, url: "/customers", emoji: "👥" },
 ];
 
 export function MobileBottomNav() {
@@ -33,30 +32,24 @@ export function MobileBottomNav() {
             "group relative flex w-full flex-col items-center justify-center gap-1 py-2 transition-all duration-200 active:scale-95",
           )}
         >
-          {/* Top active glowing bar */}
-          <span
-            className={cn(
-              "absolute top-0 h-0.5 rounded-full bg-emerald-300 transition-all duration-300",
-              active ? "w-5 opacity-100" : "w-0 opacity-0",
-            )}
-          />
-
           {/* Icon capsule */}
           <div
             className={cn(
               "flex h-8 w-12 items-center justify-center rounded-full transition-all duration-200",
               active
-                ? "bg-emerald-400/20 text-emerald-200 ring-1 ring-emerald-300/30"
-                : "text-emerald-100/60 group-hover:bg-white/5 group-hover:text-emerald-100/90",
+                ? "bg-emerald-400/20 ring-1 ring-emerald-300/30"
+                : "group-hover:bg-white/5",
             )}
           >
-            <item.icon
+            <span
+              aria-hidden="true"
               className={cn(
-                "h-[19px] w-[19px] transition-transform duration-200",
-                active ? "scale-110" : "group-hover:scale-105",
+                "text-[18px] leading-none select-none transition-transform duration-200",
+                active ? "scale-110" : "opacity-80 group-hover:scale-105 group-hover:opacity-100",
               )}
-              strokeWidth={2}
-            />
+            >
+              {item.emoji}
+            </span>
           </div>
 
           <span
@@ -100,13 +93,15 @@ export function MobileBottomNav() {
                   : "bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400",
               )}
             >
-              <Home
+              <span
+                aria-hidden="true"
                 className={cn(
-                  "relative z-10 h-5 w-5 transition-transform duration-200",
+                  "relative z-10 text-xl leading-none select-none transition-transform duration-200",
                   isHome ? "scale-110" : "group-hover:scale-105",
                 )}
-                strokeWidth={2}
-              />
+              >
+                🏠
+              </span>
               <span className="shimmer-streak" aria-hidden="true" />
             </button>
             <span

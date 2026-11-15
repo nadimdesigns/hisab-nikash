@@ -20,7 +20,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Pencil, Trash2 } from "lucide-react";
 import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
 import { bnNumber, currency, daysUntil } from "@/lib/format";
@@ -469,7 +468,7 @@ export default function InventoryPanel({
                     onClick={() => openEdit(m)}
                     className="h-9 w-9 rounded-[100px] bg-white/60 hover:bg-white/40 dark:bg-white/10"
                   >
-                    <Pencil className="h-4 w-4" />
+                    <span aria-hidden="true" className="text-sm leading-none select-none">✏️</span>
                   </Button>
                   <Button
                     size="icon"
@@ -478,7 +477,7 @@ export default function InventoryPanel({
                     aria-label={`Delete ${m.name}`}
                     className="h-9 w-9 rounded-[100px] bg-white/60 text-rose-600 hover:bg-white/40 hover:text-rose-700 dark:bg-white/10 dark:text-rose-300"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <span aria-hidden="true" className="text-sm leading-none select-none">🗑️</span>
                   </Button>
                 </div>
               </li>

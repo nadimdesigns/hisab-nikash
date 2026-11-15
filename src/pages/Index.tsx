@@ -5,7 +5,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
-import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, Clock, ArrowDownLeft, ArrowUpRight, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { subDays, startOfDay } from "date-fns";
@@ -147,7 +146,7 @@ const Index = () => {
             <ul className="space-y-2">
               {stats.recent.map((s, idx) => {
                 const isDue = s.saleType === "credit";
-                const Icon = isDue ? Clock : ArrowDownLeft;
+                const emoji = isDue ? "⏳" : "💵";
                 return (
                   <li
                     key={s.id}
@@ -160,14 +159,10 @@ const Index = () => {
                     )}
                   >
                     <span
-                      className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10",
-                        isDue
-                          ? "text-rose-600 dark:text-rose-300"
-                          : "text-emerald-600 dark:text-emerald-300",
-                      )}
+                      aria-hidden="true"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10"
                     >
-                      <Icon className="h-5 w-5" />
+                      {emoji}
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{s.customer || "নগদ বিক্রি"}</p>
@@ -193,10 +188,10 @@ const Index = () => {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           {hydrated ? (
             <>
-              <StatCard icon={Wallet} gradient="emerald" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} delay={340} />
-              <StatCard icon={LineChart} gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} delay={400} />
-              <StatCard icon={Package} gradient="emerald" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} delay={460} />
-              <StatCard icon={AlertTriangle} gradient="rose" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} delay={520} />
+              <StatCard emoji="💵" gradient="emerald" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} delay={340} />
+              <StatCard emoji="📈" gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} delay={400} />
+              <StatCard emoji="📦" gradient="emerald" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} delay={460} />
+              <StatCard emoji="⚠️" gradient="rose" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} delay={520} />
             </>
           ) : (
             Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
@@ -306,8 +301,8 @@ const Index = () => {
                     className="home-card-appear group flex w-full items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-[18px] text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-5 sm:py-[22px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-rose-600 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 dark:text-rose-300">
-                      <AlertTriangle className="h-5 w-5" />
+                    <span aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10">
+                      ⚠️
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className={typography("body-strong", "block truncate")}>{m.name}</span>
@@ -389,13 +384,13 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
       <div className="relative mt-3 grid grid-cols-2 gap-2">
         <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
           <p className="flex items-center gap-1 text-[11px] text-white/70">
-            <ArrowUpRight className="h-3.5 w-3.5" /> আয়
+            <span aria-hidden="true" className="text-xs leading-none select-none">↗️</span> আয়
           </p>
           <p className="text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(income) : "৳ ••••"}</p>
         </div>
         <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
           <p className="flex items-center gap-1 text-[11px] text-white/70">
-            <ArrowDownLeft className="h-3.5 w-3.5" /> খরচ
+            <span aria-hidden="true" className="text-xs leading-none select-none">↙️</span> খরচ
           </p>
           <p className="text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(expense) : "৳ ••••"}</p>
         </div>
@@ -463,7 +458,7 @@ function StatCardSkeleton() {
 }
 
 function StatCard({
-  icon: Icon,
+  emoji,
   gradient,
   label,
   value,
@@ -471,7 +466,7 @@ function StatCard({
   tone,
   delay = 0,
 }: {
-  icon: LucideIcon;
+  emoji: string;
   gradient: "emerald" | "rose";
   label: string;
   value: string;
@@ -482,8 +477,8 @@ function StatCard({
   // Permanent Branding Rule:
   // Revenue / Healthy = emerald tint, Expense / Due / Low Stock = rose tint.
   const STYLE = {
-    emerald: { card: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5", icon: "text-emerald-600 dark:text-emerald-300" },
-    rose: { card: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5", icon: "text-rose-600 dark:text-rose-300" },
+    emerald: { card: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" },
+    rose: { card: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5" },
   } as const;
   const s = STYLE[gradient];
 
@@ -494,8 +489,8 @@ function StatCard({
     >
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 md:h-14 md:w-14">
-            <Icon className={`h-6 w-6 md:h-7 md:w-7 ${s.icon}`} strokeWidth={2} aria-hidden />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-2xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 md:h-14 md:w-14">
+            <span aria-hidden="true">{emoji}</span>
           </div>
           <div className="flex min-w-0 flex-1 flex-col">
             <p className={typography("stat-label", "truncate")}>{label}</p>
@@ -505,7 +500,7 @@ function StatCard({
         </div>
         {tone === "warn" && (
           <span className="sr-only">
-            <AlertTriangle aria-hidden /> warning
+            warning
           </span>
         )}
       </CardContent>

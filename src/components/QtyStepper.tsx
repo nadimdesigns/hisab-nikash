@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { unitDef, type UnitCode } from "@/lib/copy";
 import { roundQty } from "@/store/shop";
@@ -64,7 +63,7 @@ export function QtyStepper({
         aria-label="পরিমাণ কমান"
         className="h-full w-12 shrink-0 rounded-r-none rounded-l-md md:w-10"
       >
-        <Minus className="h-4 w-4" />
+        <span aria-hidden="true" className="text-xs leading-none select-none">➖</span>
       </Button>
       <Input
         type="number"
@@ -93,7 +92,7 @@ export function QtyStepper({
         aria-label="পরিমাণ বাড়ান"
         className="h-full w-12 shrink-0 rounded-l-none rounded-r-md md:w-10"
       >
-        <Plus className="h-4 w-4" />
+        <span aria-hidden="true" className="text-xs leading-none select-none">➕</span>
       </Button>
     </div>
   );
