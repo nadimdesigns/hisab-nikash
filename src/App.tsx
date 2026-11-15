@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +9,6 @@ import Inventory from "./pages/Inventory.tsx";
 import NewSale from "./pages/NewSale.tsx";
 import Customers from "./pages/Customers.tsx";
 import CustomerDetails from "./pages/CustomerDetails.tsx";
-import Expenses from "./pages/Expenses.tsx";
 import Accounting from "./pages/Accounting.tsx";
 
 import Account from "./pages/Account.tsx";
@@ -37,7 +36,7 @@ const App = () => (
             <Route path="/new-sale" element={<RequireAuth><NewSale /></RequireAuth>} />
             <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
             <Route path="/customers/:id" element={<RequireAuth><CustomerDetails /></RequireAuth>} />
-            <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
+            <Route path="/expenses" element={<Navigate to="/accounting" replace />} />
             <Route path="/accounting" element={<RequireAuth><Accounting /></RequireAuth>} />
             <Route path="/reports" element={<RequireAuth><Accounting /></RequireAuth>} />
 

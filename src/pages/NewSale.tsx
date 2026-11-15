@@ -1,7 +1,6 @@
 import AppLayout from "@/components/AppLayout";
 import NewInvoiceCard from "@/components/NewInvoiceCard";
 import { useSearchParams } from "react-router-dom";
-import { Banknote, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function NewSale() {
