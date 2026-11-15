@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { MobileBottomNav } from "./MobileBottomNav";
-import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -41,7 +40,6 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
               >
                 <span aria-hidden="true" className="text-base leading-none select-none">🔍</span>
               </Button>
-              <ThemeToggle />
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button asChild variant="ghost" size="icon" aria-label="Open account">

@@ -7,12 +7,15 @@ import { typography } from "@/lib/typography";
 import { signOut, useAuth } from "@/lib/auth";
 import { toast } from "@/hooks/use-toast";
 import { useIsAdmin } from "@/lib/useIsAdmin";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 import UserManagement from "@/components/account/UserManagement";
 
 const Account = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { theme, setTheme } = useTheme();
 
   const handleLogout = async () => {
     await signOut();
@@ -51,6 +54,42 @@ const Account = () => {
                 📱 {user?.email?.split("@")[0] ?? "—"}
               </p>
             </div>
+
+            <div className="space-y-2 pt-1">
+              <p className={typography("body-muted")}>অ্যাপ থিম</p>
+              <div
+                role="tablist"
+                aria-label="অ্যাপ থিম"
+                className="flex items-center gap-1.5 rounded-full bg-emerald-100/60 p-1 dark:bg-emerald-500/15"
+              >
+                {[
+                  { value: "light", label: "লাইট", icon: "☀️" },
+                  { value: "dark", label: "ডার্ক", icon: "🌙" },
+                  { value: "system", label: "সিস্টেম", icon: "💻" },
+                ].map((opt) => {
+                  const active = theme === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setTheme(opt.value)}
+                      className={cn(
+                        "flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-xs font-semibold transition-colors sm:text-sm",
+                        active
+                          ? "bg-emerald-900 text-white"
+                          : "text-foreground/75 hover:text-foreground",
+                      )}
+                    >
+                      <span aria-hidden="true">{opt.icon}</span>
+                      <span>{opt.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="pt-2">
               <Button variant="destructive" onClick={handleLogout}>
                 লগ আউট
