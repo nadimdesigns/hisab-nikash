@@ -261,7 +261,12 @@ export default function Expenses() {
         <div
           role="tablist"
           aria-label="জমা ও খরচ ট্যাব"
-          className="grid grid-cols-3 gap-1.5 rounded-full bg-emerald-100/60 p-1.5 dark:bg-white/5"
+          className={cn(
+            "grid grid-cols-3 gap-1.5 rounded-full border p-1.5 transition-colors",
+            tab === "payment"
+              ? "border-emerald-200 bg-emerald-100/60 dark:border-emerald-500/25 dark:bg-emerald-500/15"
+              : "border-rose-200 bg-rose-100/70 dark:border-rose-500/25 dark:bg-rose-500/15",
+          )}
         >
           <button
             type="button"

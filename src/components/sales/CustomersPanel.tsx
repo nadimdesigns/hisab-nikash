@@ -411,7 +411,7 @@ export default function CustomersPanel() {
       <div
         role="tablist"
         aria-label="কাস্টমার ট্যাব"
-        className="grid grid-cols-2 gap-2 rounded-full bg-emerald-100/60 p-1.5 dark:bg-white/5"
+        className="grid grid-cols-2 gap-2 rounded-full border border-emerald-200 bg-emerald-100/60 p-1.5 dark:border-emerald-500/25 dark:bg-emerald-500/15"
       >
         <button
           type="button"
