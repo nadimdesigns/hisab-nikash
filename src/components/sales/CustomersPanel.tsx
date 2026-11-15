@@ -438,11 +438,11 @@ export default function CustomersPanel() {
           <DialogTrigger asChild>
             <Button
               variant="outline"
-              className="relative h-11 shrink-0 gap-2 rounded-full border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              size="icon"
+              className="relative h-11 w-11 shrink-0 rounded-full border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
               aria-label="কাস্টমার ফিল্টার খুলুন"
             >
-              <span aria-hidden="true" className="text-sm leading-none select-none">⚙️</span>
-              <span className="text-xs font-semibold sm:text-sm">ফিল্টার</span>
+              <span aria-hidden="true" className="text-base leading-none select-none">⚙️</span>
               {custAdvancedFilterCount > 0 && (
                 <Badge
                   variant="default"
