@@ -79,7 +79,7 @@ export function MobileBottomNav() {
             className="shimmer-overlay relative -mt-[85px] flex h-14 w-14 items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white ring-4 transition-transform active:scale-95"
             style={{ ["--tw-ring-color" as string]: NAV_BG }}
           >
-            <Home className="relative z-10 h-6 w-6" strokeWidth={2.2} />
+            <Home className="relative z-10 h-6 w-6" strokeWidth={2} />
             <span className="shimmer-streak" aria-hidden="true" />
           </button>
         </li>

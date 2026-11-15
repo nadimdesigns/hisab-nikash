@@ -406,227 +406,202 @@ export default function CustomersPanel() {
   };
 
   return (
-    <div className="space-y-4">
-      {/* Pill Tab Switcher: সকল কাস্টমার | নতুন কাস্টমার */}
-      <div
-        role="tablist"
-        aria-label="কাস্টমার ট্যাব"
-        className="grid grid-cols-2 gap-2 rounded-full bg-emerald-100/60 p-1 dark:bg-emerald-500/15"
-      >
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "list"}
-          onClick={() => setTab("list")}
-          className={cn(
-            "flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
-            tab === "list"
-              ? "bg-emerald-900 text-white"
-              : "text-foreground/75 hover:text-foreground",
-          )}
-        >
-          <span>সকল কাস্টমার</span>
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "new"}
-          onClick={() => setTab("new")}
-          className={cn(
-            "flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
-            tab === "new"
-              ? "bg-emerald-900 text-white"
-              : "text-foreground/75 hover:text-foreground",
-          )}
-        >
-          <span>নতুন কাস্টমার</span>
-        </button>
-      </div>
+    <Dialog open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
+      <div className="space-y-4">
+        {/* Top Row: Pill Tab Switcher (left) + Filter Button (right) */}
+        <div className="flex items-center gap-2">
+          <div
+            role="tablist"
+            aria-label="কাস্টমার ট্যাব"
+            className="grid min-w-0 flex-1 grid-cols-2 gap-1.5 rounded-full bg-emerald-100/60 p-1 dark:bg-emerald-500/15"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "list"}
+              onClick={() => setTab("list")}
+              className={cn(
+                "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm",
+                tab === "list"
+                  ? "bg-emerald-900 text-white"
+                  : "text-foreground/75 hover:text-foreground",
+              )}
+            >
+              <span className="truncate">সকল কাস্টমার</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "new"}
+              onClick={() => setTab("new")}
+              className={cn(
+                "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm",
+                tab === "new"
+                  ? "bg-emerald-900 text-white"
+                  : "text-foreground/75 hover:text-foreground",
+              )}
+            >
+              <span className="truncate">নতুন কাস্টমার</span>
+            </button>
+          </div>
 
-      {tab === "new" ? (
-        /* ===== Inline নতুন কাস্টমার Form (Tint Green) ===== */
-        <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
-          <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
-            <div>
-              <h2 className={typography("h4", "m-0 leading-tight")}>
-                {formatDate(now, "MMMM d, yyyy")}
-              </h2>
+          <DialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="relative h-11 shrink-0 gap-2 rounded-full border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              aria-label="কাস্টমার ফিল্টার খুলুন"
+            >
+              <SlidersHorizontal className="h-4 w-4 shrink-0" />
+              <span className="text-xs font-semibold sm:text-sm">ফিল্টার</span>
+              {custAdvancedFilterCount > 0 && (
+                <Badge
+                  variant="default"
+                  className={typography(
+                    "small",
+                    "absolute -right-1 -top-1 h-5 min-w-5 justify-center rounded-full px-1 leading-none text-primary-foreground",
+                  )}
+                >
+                  {custAdvancedFilterCount}
+                </Badge>
+              )}
+            </Button>
+          </DialogTrigger>
+        </div>
+
+        {tab === "new" ? (
+          /* ===== Inline নতুন কাস্টমার Form (Tint Green) ===== */
+          <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+            <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
+              <div>
+                <h2 className={typography("h4", "m-0 leading-tight")}>
+                  {formatDate(now, "MMMM d, yyyy")}
+                </h2>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 dark:border-emerald-500/20 dark:bg-white/10">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                <span className="text-xs font-bold uppercase tracking-tight text-emerald-700 dark:text-emerald-300">
+                  নতুন কাস্টমার
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 dark:border-emerald-500/20 dark:bg-white/10">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-              <span className="text-xs font-bold uppercase tracking-tight text-emerald-700 dark:text-emerald-300">
-                নতুন কাস্টমার
+
+            <div className="mb-4 flex items-center gap-2 px-5 text-muted-foreground sm:px-6">
+              <span className="text-xs font-medium tabular-nums">
+                {formatDate(now, "h:mm:ss a")}
               </span>
             </div>
-          </div>
 
-          <div className="mb-4 flex items-center gap-2 px-5 text-muted-foreground sm:px-6">
-            <span className="text-xs font-medium tabular-nums">
-              {formatDate(now, "h:mm:ss a")}
-            </span>
-          </div>
-
-          <form onSubmit={handleCreateCustomer} className="space-y-4 px-5 pb-6 sm:px-6">
-            <div>
-              <Label htmlFor="new-cust-name" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-                নাম <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="new-cust-name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="কাস্টমারের নাম"
-                maxLength={100}
-                aria-invalid={Boolean(errors.name)}
-                className="h-12 rounded-2xl bg-white dark:bg-white/10"
-              />
-              {errors.name && (
-                <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.name}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <form onSubmit={handleCreateCustomer} className="space-y-4 px-5 pb-6 sm:px-6">
               <div>
-                <Label htmlFor="new-cust-phone" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-                  ফোন নম্বর
+                <Label htmlFor="new-cust-name" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                  নাম <span className="text-destructive">*</span>
                 </Label>
                 <Input
-                  id="new-cust-phone"
-                  type="tel"
-                  inputMode="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="+880 1XXX XXXXXX"
-                  maxLength={20}
-                  aria-invalid={Boolean(errors.phone)}
+                  id="new-cust-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="কাস্টমারের নাম"
+                  maxLength={100}
+                  aria-invalid={Boolean(errors.name)}
                   className="h-12 rounded-2xl bg-white dark:bg-white/10"
                 />
-                {errors.phone && (
-                  <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.phone}</p>
+                {errors.name && (
+                  <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.name}</p>
                 )}
               </div>
 
-              <div>
-                <Label htmlFor="new-cust-email" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-                  ইমেইল
-                </Label>
-                <Input
-                  id="new-cust-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@example.com"
-                  maxLength={255}
-                  aria-invalid={Boolean(errors.email)}
-                  className="h-12 rounded-2xl bg-white dark:bg-white/10"
-                />
-                {errors.email && (
-                  <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.email}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="new-cust-address" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-                ঠিকানা
-              </Label>
-              <Input
-                id="new-cust-address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                placeholder="রাস্তা, শহর"
-                maxLength={200}
-                aria-invalid={Boolean(errors.address)}
-                className="h-12 rounded-2xl bg-white dark:bg-white/10"
-              />
-              {errors.address && (
-                <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.address}</p>
-              )}
-            </div>
-
-            <div>
-              <Label htmlFor="new-cust-notes" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-                নোট
-              </Label>
-              <Textarea
-                id="new-cust-notes"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="পছন্দ, রিমাইন্ডার বা অতিরিক্ত তথ্য…"
-                maxLength={500}
-                rows={3}
-                aria-invalid={Boolean(errors.notes)}
-                className="rounded-2xl bg-white dark:bg-white/10"
-              />
-              {errors.notes && (
-                <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.notes}</p>
-              )}
-            </div>
-
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
-            >
-              <Save className="h-4 w-4" />
-              কাস্টমার সংরক্ষণ করুন
-            </Button>
-          </form>
-        </div>
-      ) : (
-        /* ===== সকল কাস্টমার তালিকা ===== */
-        <Card className="min-w-0 rounded-3xl border-0 bg-transparent">
-          <Dialog open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
-            <CardContent className="px-0 pt-0 sm:px-6">
-              <div className="mb-3 flex w-full items-center gap-2">
-                <div className="relative flex-1">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="new-cust-phone" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                    ফোন নম্বর
+                  </Label>
                   <Input
-                    value={custQuery}
-                    onChange={(e) => setCustQuery(e.target.value)}
-                    placeholder="নাম, নম্বর বা আইডি দিয়ে খুঁজুন"
-                    className="h-12 rounded-xl bg-white pl-9 pr-9 dark:bg-white/5 md:h-10"
-                    aria-label="কাস্টমার খুঁজুন"
+                    id="new-cust-phone"
+                    type="tel"
+                    inputMode="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+880 1XXX XXXXXX"
+                    maxLength={20}
+                    aria-invalid={Boolean(errors.phone)}
+                    className="h-12 rounded-2xl bg-white dark:bg-white/10"
                   />
-                  {custQuery && (
-                    <button
-                      type="button"
-                      onClick={() => setCustQuery("")}
-                      aria-label="Clear search"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-muted"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
+                  {errors.phone && (
+                    <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.phone}</p>
                   )}
                 </div>
-                {custFiltersActive && (
-                  <Button variant="ghost" onClick={clearCustFilters} className="h-12 shrink-0 gap-1 rounded-xl md:h-10">
-                    <X className="h-3.5 w-3.5" /> মুছুন
-                  </Button>
-                )}
-                <DialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="relative h-12 shrink-0 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 md:h-10"
-                    aria-label="কাস্টমার ফিল্টার খুলুন"
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                    <span className="hidden sm:inline">ফিল্টার</span>
-                    {custAdvancedFilterCount > 0 && (
-                      <Badge
-                        variant="default"
-                        className={typography(
-                          "small",
-                          "absolute -right-1.5 -top-1.5 h-5 min-w-5 justify-center rounded-full px-1 leading-none text-primary-foreground",
-                        )}
-                      >
-                        {custAdvancedFilterCount}
-                      </Badge>
-                    )}
-                  </Button>
-                </DialogTrigger>
+
+                <div>
+                  <Label htmlFor="new-cust-email" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                    ইমেইল
+                  </Label>
+                  <Input
+                    id="new-cust-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="name@example.com"
+                    maxLength={255}
+                    aria-invalid={Boolean(errors.email)}
+                    className="h-12 rounded-2xl bg-white dark:bg-white/10"
+                  />
+                  {errors.email && (
+                    <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.email}</p>
+                  )}
+                </div>
               </div>
 
+              <div>
+                <Label htmlFor="new-cust-address" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                  ঠিকানা
+                </Label>
+                <Input
+                  id="new-cust-address"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="রাস্তা, শহর"
+                  maxLength={200}
+                  aria-invalid={Boolean(errors.address)}
+                  className="h-12 rounded-2xl bg-white dark:bg-white/10"
+                />
+                {errors.address && (
+                  <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.address}</p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="new-cust-notes" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                  নোট
+                </Label>
+                <Textarea
+                  id="new-cust-notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="পছন্দ, রিমাইন্ডার বা অতিরিক্ত তথ্য…"
+                  maxLength={500}
+                  rows={3}
+                  aria-invalid={Boolean(errors.notes)}
+                  className="rounded-2xl bg-white dark:bg-white/10"
+                />
+                {errors.notes && (
+                  <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.notes}</p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+              >
+                <Save className="h-4 w-4" />
+                কাস্টমার সংরক্ষণ করুন
+              </Button>
+            </form>
+          </div>
+        ) : (
+          /* ===== সকল কাস্টমার তালিকা ===== */
+          <Card className="min-w-0 rounded-3xl border-0 bg-transparent">
+            <CardContent className="px-0 pt-0 sm:px-6">
               <div
                 className="mb-4 grid w-full grid-cols-2 gap-1.5 overflow-hidden sm:gap-3"
                 role="group"
@@ -837,10 +812,10 @@ export default function CustomersPanel() {
                 </ul>
               )}
             </CardContent>
-          </Dialog>
-        </Card>
-      )}
-    </div>
+          </Card>
+        )}
+      </div>
+    </Dialog>
   );
 }
 

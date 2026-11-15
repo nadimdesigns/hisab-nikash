@@ -100,6 +100,10 @@
     @apply border-border;
     font-family: 'Anek Bangla', sans-serif !important;
   }
+  svg.lucide,
+  svg.lucide * {
+    stroke-width: 2px;
+  }
   /* Responsive global typography scaling.
      The root (html) font-size drives every rem-based Tailwind token —
      headings, spacing helpers, etc. — so it acts as the "primary"
