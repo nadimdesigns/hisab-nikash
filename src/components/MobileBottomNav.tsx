@@ -79,14 +79,11 @@ export function MobileBottomNav() {
     >
       <nav
         aria-label="প্রধান নেভিগেশন"
-        className="pointer-events-auto relative mx-auto max-w-md rounded-[26px] border border-emerald-400/25 bg-gradient-to-b from-[#073524]/95 to-[#031c12]/98 px-1.5 py-1 backdrop-blur-2xl"
+        className="pointer-events-auto relative mx-auto max-w-md rounded-[26px] border border-emerald-800/60 px-1.5 py-1 backdrop-blur-2xl"
+        style={{
+          background: "linear-gradient(180deg, rgba(6, 44, 30, 0.98) 0%, rgba(2, 20, 13, 0.99) 100%)",
+        }}
       >
-        {/* Subtle top specular highlight */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/40 to-transparent"
-        />
-
         <ul className="grid grid-cols-5 items-end">
           {leftItems.map(renderItem)}
 
@@ -97,10 +94,10 @@ export function MobileBottomNav() {
               onClick={() => navigate("/")}
               aria-label={NAV.dashboard}
               className={cn(
-                "shimmer-overlay group relative -mt-7 flex h-13 w-13 items-center justify-center overflow-hidden rounded-full border text-white ring-4 ring-[#052619] transition-all duration-200 hover:-translate-y-0.5 active:scale-95",
+                "shimmer-overlay group relative -mt-7 flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-95",
                 isHome
-                  ? "h-[52px] w-[52px] border-emerald-200/50 bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600"
-                  : "h-[52px] w-[52px] border-white/20 bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400",
+                  ? "bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600"
+                  : "bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400",
               )}
             >
               <Home
