@@ -49,15 +49,6 @@ const Index = () => {
     const cashSpent = purchases.reduce((s, p) => s + p.total, 0);
     const cashBalance = cashReceived - cashSpent;
 
-    // Upcoming: sales with money still owed (unpaid / partial).
-    const dues = sales
-      .filter((s) => {
-        const paid = s.amountPaid ?? (s.saleType === "credit" ? 0 : s.total);
-        return paid < s.total;
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(0, 3);
-
     // Recent activity: latest sales first.
     const recent = [...sales]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
@@ -78,7 +69,7 @@ const Index = () => {
       .sort((a, b) => b.qty - a.qty)
       .slice(0, 5);
 
-    return { inventoryValue, lowStock, bestSelling, todayRevenue, monthRevenue, monthProfit, cashBalance, periodIncome, periodExpense, periodNet, dues, recent };
+    return { inventoryValue, lowStock, bestSelling, todayRevenue, monthRevenue, monthProfit, cashBalance, periodIncome, periodExpense, periodNet, recent };
   }, [products, sales, purchases, period]);
 
   const chartData = useMemo(() => {
@@ -135,41 +126,6 @@ const Index = () => {
           <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" />
           <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" />
         </div>
-
-        {/* Upcoming dues (Hisab-Kitab "Upcoming" section) */}
-        <section>
-          <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-base font-bold">বাকি জমা</h2>
-            <Link to="/customers" className="text-[13px] font-medium text-emerald-600 hover:underline">সব দেখুন</Link>
-          </div>
-          {!hydrated ? (
-            <Skeleton className="h-[76px] w-full rounded-2xl" />
-          ) : stats.dues.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
-              কোনো বাকি নেই — সব জমা হয়ে গেছে 🎉
-            </div>
-          ) : (
-            <ul className="space-y-2">
-              {stats.dues.map((d) => {
-                const paid = d.amountPaid ?? (d.saleType === "credit" ? 0 : d.total);
-                return (
-                  <li key={d.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 p-3 dark:from-rose-500/15 dark:to-rose-500/5">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300">
-                      <Clock className="h-5 w-5" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold">{d.customer || "বিক্রি"}</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(new Date(d.date), "MMM d")} · বাকি {currency(d.total - paid)}</p>
-                    </div>
-                    <span className="shrink-0 text-sm font-bold tabular-nums text-rose-600 dark:text-rose-400">
-                      {currency(d.total - paid)}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
 
         {/* Recent activity (Hisab-Kitab "Recent activity" section) */}
         <section>
