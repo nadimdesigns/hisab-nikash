@@ -3,8 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import InventoryPanel from "@/components/inventory/InventoryPanel";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Plus, X, Search, Download, FileText, FileSpreadsheet, SlidersHorizontal } from "lucide-react";
+import { Plus, X, Download, FileText, FileSpreadsheet, SlidersHorizontal } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -200,17 +199,8 @@ export default function Inventory() {
   return (
     <AppLayout title="স্টক">
       <div className="mb-4 space-y-3">
-        {/* Top 50% / 50% inline row: পণ্য যোগ করুন + ফিল্টার */}
-        <div className="home-card-appear grid grid-cols-2 gap-2">
-          <Button
-            type="button"
-            onClick={() => setAddOpen(true)}
-            className="w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
-          >
-            <Plus className="h-4 w-4 shrink-0" />
-            <span className="truncate">পণ্য যোগ করুন</span>
-          </Button>
-
+        {/* Top Filter Button */}
+        <div className="home-card-appear">
           <Dialog open={filterSheetOpen} onOpenChange={handleSheetOpenChange}>
             <DialogTrigger asChild>
               <Button
@@ -237,34 +227,6 @@ export default function Inventory() {
             >
               <DialogHeader className="px-6 pt-6 text-left">
                 <DialogTitle>স্টক আইটেম ফিল্টার করুন</DialogTitle>
-                <div className="relative mt-3">
-                  <Input
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="পণ্য খুঁজুন"
-                    className={cn("bg-white dark:bg-background", query ? "pr-[6.5rem]" : "pr-[4.5rem]")}
-                    aria-label="পণ্য খুঁজুন"
-                  />
-                  {query && (
-                    <button
-                      type="button"
-                      onClick={() => setQuery("")}
-                      className="absolute right-[4.25rem] top-1/2 -translate-y-1/2 rounded-sm p-1 text-muted-foreground hover:text-foreground"
-                      aria-label="খোঁজ মুছুন"
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </button>
-                  )}
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={() => setFilterSheetOpen(false)}
-                    className="absolute right-1 top-1/2 h-10 -translate-y-1/2 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 px-3 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-8"
-                  >
-                    <Search className="h-4 w-4" />
-                    খুঁজুন
-                  </Button>
-                </div>
               </DialogHeader>
 
               <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
@@ -380,34 +342,46 @@ export default function Inventory() {
         onFocusHandled={handleFocusHandled}
       />
 
-      <div className="mt-4 flex justify-end">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="outline"
-              className="gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
-            >
-              <Download className="h-4 w-4" /> এক্সপোর্ট
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel className={BODY_TEXT}>
-              এক্সপোর্ট {filteredForExport.length}টি আইটেম
-              {filtersActive && (
-                <span className={typography("body-muted", "block font-normal")}>
-                  বর্তমান ফিল্টারের ভিত্তিতে
-                </span>
-              )}
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleExport("csv")} className={cn("gap-2", BODY_TEXT)}>
-              <FileSpreadsheet className="h-4 w-4" /> CSV ডাউনলোড
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleExport("pdf")} className={cn("gap-2", BODY_TEXT)}>
-              <FileText className="h-4 w-4" /> PDF ডাউনলোড
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="mt-4 space-y-3">
+        <div className="flex justify-end">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              >
+                <Download className="h-4 w-4" /> এক্সপোর্ট
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className={BODY_TEXT}>
+                এক্সপোর্ট {filteredForExport.length}টি আইটেম
+                {filtersActive && (
+                  <span className={typography("body-muted", "block font-normal")}>
+                    বর্তমান ফিল্টারের ভিত্তিতে
+                  </span>
+                )}
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleExport("csv")} className={cn("gap-2", BODY_TEXT)}>
+                <FileSpreadsheet className="h-4 w-4" /> CSV ডাউনলোড
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExport("pdf")} className={cn("gap-2", BODY_TEXT)}>
+                <FileText className="h-4 w-4" /> PDF ডাউনলোড
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <Button
+          type="button"
+          size="lg"
+          onClick={() => setAddOpen(true)}
+          className="home-card-appear h-12 w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-all hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+        >
+          <Plus className="h-4 w-4 shrink-0" />
+          <span className="truncate">পণ্য যোগ করুন</span>
+        </Button>
       </div>
     </AppLayout>
   );
