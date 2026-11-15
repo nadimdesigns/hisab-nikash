@@ -146,7 +146,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                 <li key={u.id} className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 sm:p-4 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
                   <Avatar className="h-10 w-10 shrink-0 rounded-[100px]">
                     {u.avatar_url && <AvatarImage src={u.avatar_url} alt={u.display_name ?? ""} />}
-                    <AvatarFallback className="rounded-[100px] bg-white/25 text-emerald-600 text-xs font-semibold dark:bg-white/10 dark:text-emerald-300">
+                    <AvatarFallback className="rounded-[100px] bg-white/60 text-emerald-600 text-xs font-semibold dark:bg-white/10 dark:text-emerald-300">
                       {initials}
                     </AvatarFallback>
                   </Avatar>

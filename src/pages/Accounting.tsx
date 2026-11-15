@@ -577,7 +577,7 @@ export default function Accounting() {
                       <Button
                         size="icon"
                         variant="ghost"
-                        className="h-8 w-8 shrink-0 rounded-[100px] bg-white/25 text-rose-600 hover:bg-rose-50 dark:bg-white/10 dark:text-rose-300"
+                        className="h-8 w-8 shrink-0 rounded-[100px] bg-white/60 text-rose-600 hover:bg-rose-50 dark:bg-white/10 dark:text-rose-300"
                         onClick={() => setItems(items.filter((_, j) => j !== idx))}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -630,7 +630,7 @@ export default function Accounting() {
                       key={`all-sk-${i}`}
                       className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                     >
-                      <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/25" />
+                      <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/60" />
                       <div className="min-w-0 flex-1 space-y-1.5">
                         <Skeleton className="h-4 w-32" />
                         <Skeleton className="h-3 w-24" />
@@ -676,7 +676,7 @@ export default function Accounting() {
                       >
                         <span
                           className={cn(
-                            "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/25 dark:bg-white/10",
+                            "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10",
                             isRevenue
                               ? "text-emerald-600 dark:text-emerald-300"
                               : "text-rose-600 dark:text-rose-300",

@@ -156,7 +156,7 @@ const Index = () => {
                   >
                     <span
                       className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/25 dark:bg-white/10",
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10",
                         isDue
                           ? "text-rose-600 dark:text-rose-300"
                           : "text-emerald-600 dark:text-emerald-300",
@@ -261,7 +261,7 @@ const Index = () => {
               <ul className="space-y-2">
                 {stats.bestSelling.map((p, idx) => (
                   <li key={p.id} className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
-                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/25 font-semibold text-emerald-600 dark:bg-white/10 dark:text-emerald-300")}>
+                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 font-semibold text-emerald-600 dark:bg-white/10 dark:text-emerald-300")}>
                       {idx + 1}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -293,7 +293,7 @@ const Index = () => {
                     className="flex w-full items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/25 text-rose-600 dark:bg-white/10 dark:text-rose-300">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-rose-600 dark:bg-white/10 dark:text-rose-300">
                       <AlertTriangle className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -415,7 +415,7 @@ function QuickAction({
       to={to}
       className={`flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-transform active:scale-[0.97] ${t.bg}`}
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-[100px] bg-white/25 dark:bg-white/10">
+      <span className="flex h-11 w-11 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10">
         <Icon className={`h-5 w-5 ${t.icon}`} strokeWidth={2.2} />
       </span>
       <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
@@ -466,7 +466,7 @@ function StatCard({
     <Card className={`rounded-2xl ${s.card}`}>
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[100px] bg-white/25 dark:bg-white/10 md:h-14 md:w-14">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10 md:h-14 md:w-14">
             <Icon className={`h-6 w-6 md:h-7 md:w-7 ${s.icon}`} strokeWidth={2} aria-hidden />
           </div>
           <div className="flex min-w-0 flex-1 flex-col">
