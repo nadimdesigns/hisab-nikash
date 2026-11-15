@@ -422,13 +422,25 @@ export default function InventoryPanel({
                 )}
               >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="truncate text-sm font-semibold text-foreground">
                       {m.name}
                     </span>
+                    {m.sku && (
+                      <span
+                        className={cn(
+                          "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-[11px] font-medium dark:bg-white/10",
+                          low
+                            ? "text-rose-800 dark:text-rose-300"
+                            : "text-emerald-800 dark:text-emerald-300",
+                        )}
+                      >
+                        {m.sku}
+                      </span>
+                    )}
                     <span
                       className={cn(
-                        "inline-flex shrink-0 items-center whitespace-nowrap rounded-md bg-white px-2 py-0.5 text-xs font-semibold tabular-nums dark:bg-white/10",
+                        "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold tabular-nums dark:bg-white/10",
                         low
                           ? "text-rose-700 dark:text-rose-300"
                           : "text-emerald-700 dark:text-emerald-300",
@@ -438,19 +450,9 @@ export default function InventoryPanel({
                     </span>
                   </div>
 
-                  <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                      <span
-                        className={cn(
-                          "inline-flex items-center rounded-md bg-white px-2 py-0.5 text-[11px] font-medium dark:bg-white/10",
-                          low
-                            ? "text-rose-800 dark:text-rose-300"
-                            : "text-emerald-800 dark:text-emerald-300",
-                        )}
-                      >
-                        {m.sku}
-                      </span>
-                      {m.category && <span className="truncate">· {m.category}</span>}
+                  {(m.category || m.batch || m.expiry) && (
+                    <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                      {m.category && <span className="truncate">{m.category}</span>}
                       {(m.batch || m.expiry) && (
                         <span
                           className={cn(
@@ -458,15 +460,16 @@ export default function InventoryPanel({
                             !!m.expiry && days <= 60 && "font-medium text-rose-600 dark:text-rose-400",
                           )}
                         >
-                          · {m.batch ? `${m.batch}${m.expiry ? " · " : ""}` : ""}
+                          {m.category ? "· " : ""}
+                          {m.batch ? `${m.batch}${m.expiry ? " · " : ""}` : ""}
                           {m.expiry ? `${m.expiry} ${days >= 0 ? `(${days}d)` : "(expired)"}` : ""}
                         </span>
                       )}
                     </div>
+                  )}
 
-                    <div className="whitespace-nowrap text-xs font-medium tabular-nums text-muted-foreground">
-                      {currency(m.costPrice)} / {currency(m.sellPrice)}
-                    </div>
+                  <div className="mt-1 whitespace-nowrap text-xs font-medium tabular-nums text-muted-foreground">
+                    {currency(m.costPrice)} / {currency(m.sellPrice)}
                   </div>
                 </div>
 
