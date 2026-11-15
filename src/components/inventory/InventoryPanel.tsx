@@ -426,18 +426,6 @@ export default function InventoryPanel({
                     <span className="truncate text-sm font-semibold text-foreground">
                       {m.name}
                     </span>
-                    {m.sku && (
-                      <span
-                        className={cn(
-                          "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-[11px] font-medium dark:bg-white/10",
-                          low
-                            ? "text-rose-800 dark:text-rose-300"
-                            : "text-emerald-800 dark:text-emerald-300",
-                        )}
-                      >
-                        {m.sku}
-                      </span>
-                    )}
                     <span
                       className={cn(
                         "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold tabular-nums dark:bg-white/10",
