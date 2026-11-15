@@ -93,7 +93,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       return;
     }
     const sale = recordSale({
-      customer: customer.trim() || "অজানা",
+      customer: invoiceSaleType === "credit" ? customer.trim() || "অজানা" : "অজানা",
       items,
       saleType: invoiceSaleType,
     });
@@ -206,11 +206,11 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
 
       {/* Inputs */}
       <div className="space-y-4 px-5 sm:px-6">
-        <div>
-          <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-            কাস্টমারের নাম
-          </label>
-          {isCredit ? (
+        {isCredit && (
+          <div>
+            <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+              কাস্টমারের নাম
+            </label>
             <Select value={customer} onValueChange={setCustomer}>
               <SelectTrigger className={`h-[46px] rounded-xl bg-white dark:bg-white/10 ${tone.focus}`}>
                 <SelectValue placeholder="কাস্টমার বাছাই করুন..." />
@@ -229,22 +229,8 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
                 )}
               </SelectContent>
             </Select>
-          ) : (
-            <Input
-              placeholder="খুঁজুন বা কাস্টমার যোগ করুন..."
-              value={customer}
-              onChange={(e) => {
-                const words = e.target.value.split(/\s+/).filter(Boolean);
-                if (words.length > 3) {
-                  setCustomer(words.slice(0, 3).join(" "));
-                } else {
-                  setCustomer(e.target.value);
-                }
-              }}
-              className={`h-[46px] rounded-xl bg-white dark:bg-white/10 ${tone.focus}`}
-            />
-          )}
-        </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-12 gap-3">
           <div className="col-span-6 min-w-0">
