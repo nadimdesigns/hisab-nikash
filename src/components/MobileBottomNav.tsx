@@ -66,22 +66,20 @@ export function MobileBottomNav() {
   };
 
   return (
-    <div
-      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 px-3 pb-2.5 pt-2 md:hidden"
-      style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 10px)" }}
+    <nav
+      aria-label="প্রধান নেভিগেশন"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-emerald-800/60 px-2 pt-1.5 backdrop-blur-2xl md:hidden"
+      style={{
+        background: "linear-gradient(180deg, rgba(6, 44, 30, 0.98) 0%, rgba(2, 20, 13, 0.99) 100%)",
+        paddingBottom: "max(env(safe-area-inset-bottom), 6px)",
+      }}
     >
-      <nav
-        aria-label="প্রধান নেভিগেশন"
-        className="pointer-events-auto relative mx-auto max-w-md rounded-[26px] border border-emerald-800/60 px-1.5 py-1 backdrop-blur-2xl"
-        style={{
-          background: "linear-gradient(180deg, rgba(6, 44, 30, 0.98) 0%, rgba(2, 20, 13, 0.99) 100%)",
-        }}
-      >
+      <div className="mx-auto max-w-md">
         <ul className="grid grid-cols-5 items-end">
           {leftItems.map(renderItem)}
 
           {/* Center Elevated Home Button */}
-          <li className="flex flex-col items-center justify-center pb-2">
+          <li className="flex flex-col items-center justify-center pb-1">
             <button
               type="button"
               onClick={() => navigate("/")}
@@ -116,8 +114,8 @@ export function MobileBottomNav() {
 
           {rightItems.map(renderItem)}
         </ul>
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 }
 
