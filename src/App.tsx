@@ -39,6 +39,7 @@ const App = () => (
             <Route path="/customers/:id" element={<RequireAuth><CustomerDetails /></RequireAuth>} />
             <Route path="/expenses" element={<RequireAuth><Expenses /></RequireAuth>} />
             <Route path="/accounting" element={<RequireAuth><Accounting /></RequireAuth>} />
+            <Route path="/reports" element={<RequireAuth><Accounting /></RequireAuth>} />
 
             <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
