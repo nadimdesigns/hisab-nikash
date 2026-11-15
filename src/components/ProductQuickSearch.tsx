@@ -15,7 +15,7 @@ import { loadDrafts, saveDraft } from "@/lib/drafts";
 import { loadProfiles } from "@/lib/customerProfiles";
 
 const OPEN_EVENT = "medishop-open-quick-search";
-const ANEK_FONT = { fontFamily: "'Anek Bangla', 'Outfit', system-ui, sans-serif" };
+const ANEK_FONT = { fontFamily: "'Anek Bangla', sans-serif" };
 
 /** Programmatically open the global product/customer quick-search dialog. */
 export function openProductQuickSearch() {

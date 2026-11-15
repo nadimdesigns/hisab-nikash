@@ -45,11 +45,9 @@ export type PrintReport = {
 
 const styles = `
   @page { size: A4 landscape; margin: 14mm; }
-  * { box-sizing: border-box; }
-  /* Outfit first so Latin (SKUs, dates) matches the app, Hind Siliguri
-     behind it for every Bengali glyph — the same stack the screen uses. */
+  * { box-sizing: border-box; font-family: 'Anek Bangla', sans-serif !important; }
   html, body {
-    font-family: 'Outfit', 'Hind Siliguri', system-ui, sans-serif;
+    font-family: 'Anek Bangla', sans-serif !important;
     color: #111827;
     background: #fff;
     margin: 0;

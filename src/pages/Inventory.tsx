@@ -273,7 +273,7 @@ export default function Inventory() {
             </SheetTrigger>
             <SheetContent
               side="right"
-              style={{ fontFamily: "'Anek Bangla', 'Outfit', system-ui, sans-serif" }}
+              style={{ fontFamily: "'Anek Bangla', sans-serif" }}
               className="flex w-full flex-col overflow-hidden p-0 sm:max-w-sm"
               onOpenAutoFocus={(e) => e.preventDefault()}
             >

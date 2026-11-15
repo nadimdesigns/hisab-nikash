@@ -296,7 +296,7 @@ export default function CustomerDetails() {
     <AppLayout title="কাস্টমার">
       <div
         className="mx-auto max-w-3xl space-y-6"
-        style={{ fontFamily: "'Anek Bangla', 'Outfit', system-ui, sans-serif" }}
+        style={{ fontFamily: "'Anek Bangla', sans-serif" }}
       >
         {/* Top nav */}
         <div className="flex items-center justify-between gap-2">

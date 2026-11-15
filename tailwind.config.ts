@@ -81,9 +81,9 @@ export default {
         elevated: "var(--shadow-elevated)",
       },
       fontFamily: {
-        sans: ["Anek Bangla", "Outfit", "system-ui", "sans-serif"],
-        mono: ["Anek Bangla", "Outfit", "system-ui", "sans-serif"],
-        serif: ["Anek Bangla", "Outfit", "system-ui", "sans-serif"],
+        sans: ["Anek Bangla", "sans-serif"],
+        mono: ["Anek Bangla", "sans-serif"],
+        serif: ["Anek Bangla", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
@@ -195,8 +195,8 @@ export default {
       ];
 
       const components: Record<string, Record<string, unknown>> = {};
-      const baseFamily = "'Outfit', 'Hind Siliguri', system-ui, sans-serif";
-      const monoFamily = "'Outfit', 'Hind Siliguri', system-ui, sans-serif";
+      const baseFamily = "'Anek Bangla', sans-serif";
+      const monoFamily = "'Anek Bangla', sans-serif";
 
       for (const v of variants) {
         const sel = `.typo-${v.name}`;

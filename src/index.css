@@ -94,8 +94,11 @@
 }
 
 @layer base {
-  * {
+  * ,
+  *::before,
+  *::after {
     @apply border-border;
+    font-family: 'Anek Bangla', sans-serif !important;
   }
   /* Responsive global typography scaling.
      The root (html) font-size drives every rem-based Tailwind token —
@@ -106,7 +109,7 @@
      - Tablet  (640–1023): primary 17px · body 16px
      - Desktop (≥1024px): primary 18px · body 17px                    */
   html {
-    font-family: 'Anek Bangla', 'Outfit', system-ui, sans-serif;
+    font-family: 'Anek Bangla', sans-serif !important;
     font-size: 16px;
   }
   @media (min-width: 640px) {
@@ -117,7 +120,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Anek Bangla', 'Outfit', system-ui, sans-serif;
+    font-family: 'Anek Bangla', sans-serif !important;
     font-size: 15px;
   }
   @media (min-width: 640px) {
@@ -130,8 +133,13 @@
   p, span, a, li, label, small,
   blockquote, figcaption,
   button, input, textarea, select, optgroup,
-  th, td, code, pre, kbd, samp {
-    font-family: inherit;
+  th, td, code, pre, kbd, samp,
+  text, tspan,
+  .font-sans, .font-mono, .font-serif,
+  .typo-h1, .typo-h2, .typo-h3, .typo-h4,
+  .typo-body, .typo-body-strong, .typo-body-muted,
+  .typo-small, .typo-muted, .typo-mono, .typo-code {
+    font-family: 'Anek Bangla', sans-serif !important;
   }
 }
 
