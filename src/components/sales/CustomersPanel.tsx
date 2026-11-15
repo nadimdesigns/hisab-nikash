@@ -800,7 +800,7 @@ export default function CustomersPanel() {
                       <Link
                         to={`/customers/${encodeURIComponent(c.name)}`}
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4",
+                          "flex w-full items-center gap-3 rounded-2xl border px-4 py-[18px] text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:px-5 sm:py-[22px]",
                           c.due > 0
                             ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                             : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",

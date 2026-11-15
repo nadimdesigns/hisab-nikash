@@ -511,7 +511,7 @@ export default function Expenses() {
                   {items.map((i, idx) => (
                     <li
                       key={idx}
-                      className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 p-3 dark:bg-white/10"
+                      className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-[18px] dark:bg-white/10"
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-foreground">{i.name}</p>
@@ -590,7 +590,7 @@ export default function Expenses() {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <li
                       key={i}
-                      className="flex items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 p-3 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                      className="flex items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-[18px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     >
                       <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/60" />
                       <div className="min-w-0 flex-1 space-y-1.5">
@@ -615,7 +615,7 @@ export default function Expenses() {
                   {filtered.map((r) => (
                     <li
                       key={r.id}
-                      className="flex items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 p-3 sm:p-4 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                      className="flex items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-[18px] sm:px-5 sm:py-[22px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     >
                       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-rose-600 dark:bg-white/10 dark:text-rose-300">
                         <ArrowUpRight className="h-5 w-5" />

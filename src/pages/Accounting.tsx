@@ -554,7 +554,7 @@ export default function Accounting() {
                   {items.map((i, idx) => (
                     <li
                       key={idx}
-                      className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 p-3 dark:bg-white/10"
+                      className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-[18px] dark:bg-white/10"
                     >
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm font-semibold text-foreground">{i.name}</p>
@@ -619,7 +619,7 @@ export default function Accounting() {
                   {Array.from({ length: 6 }).map((_, i) => (
                     <li
                       key={`all-sk-${i}`}
-                      className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                      className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                     >
                       <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/60" />
                       <div className="min-w-0 flex-1 space-y-1.5">
@@ -659,7 +659,7 @@ export default function Accounting() {
                       <li
                         key={t.id}
                         className={cn(
-                          "flex items-center gap-3 rounded-2xl border p-3 sm:p-4",
+                          "flex items-center gap-3 rounded-2xl border px-4 py-[18px] sm:px-5 sm:py-[22px]",
                           isRevenue
                             ? "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                             : "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5",

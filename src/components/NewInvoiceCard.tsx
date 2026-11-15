@@ -276,7 +276,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             {items.map((i) => (
               <li
                 key={i.productId}
-                className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 p-3 dark:bg-white/10"
+                className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-[18px] dark:bg-white/10"
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-foreground">{i.name}</p>

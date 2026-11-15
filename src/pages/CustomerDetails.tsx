@@ -542,7 +542,7 @@ export default function CustomerDetails() {
                 return (
                   <li key={`${h.kind}-${h.id}`}>
                     <Card className={cn("rounded-2xl transition-transform hover:-translate-y-0.5 active:scale-[0.99]", cardTint)}>
-                      <CardContent className="flex items-center gap-3 p-3 sm:p-4">
+                      <CardContent className="flex items-center gap-3 px-4 py-[18px] sm:px-5 sm:py-[22px]">
                         <Badge variant={badgeVariant} className="shrink-0">
                           {badgeLabel}
                         </Badge>

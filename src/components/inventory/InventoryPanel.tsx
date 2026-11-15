@@ -379,7 +379,7 @@ export default function InventoryPanel({
             <li
               key={`sk-${i}`}
               aria-busy="true"
-              className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
             >
               <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/60" />
               <div className="min-w-0 flex-1 space-y-1.5">
@@ -414,7 +414,7 @@ export default function InventoryPanel({
                 key={m.id}
                 data-product-id={m.id}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl border p-3 transition-colors sm:p-4",
+                  "flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-colors sm:px-5 sm:py-[22px]",
                   low
                     ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",

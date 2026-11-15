@@ -148,7 +148,7 @@ const Index = () => {
                   <li
                     key={s.id}
                     className={cn(
-                      "flex items-center gap-3 rounded-2xl border p-3",
+                      "flex items-center gap-3 rounded-2xl border px-4 py-[18px]",
                       isDue
                         ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                         : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
@@ -260,7 +260,7 @@ const Index = () => {
             ) : (
               <ul className="space-y-2">
                 {stats.bestSelling.map((p, idx) => (
-                  <li key={p.id} className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+                  <li key={p.id} className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
                     <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 font-semibold text-emerald-600 dark:bg-white/10 dark:text-emerald-300")}>
                       {idx + 1}
                     </div>
@@ -290,7 +290,7 @@ const Index = () => {
                 <li key={m.id}>
                   <Link
                     to={`/stocks?focus=${encodeURIComponent(m.id)}&edit=1`}
-                    className="flex w-full items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                    className="flex w-full items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-[18px] text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:px-5 sm:py-[22px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-rose-600 dark:bg-white/10 dark:text-rose-300">
