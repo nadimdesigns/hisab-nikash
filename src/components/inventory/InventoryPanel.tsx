@@ -379,9 +379,9 @@ export default function InventoryPanel({
             <li
               key={`sk-${i}`}
               aria-busy="true"
-              className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
             >
-              <Skeleton className="h-11 w-11 shrink-0 rounded-xl bg-white/80" />
+              <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/25" />
               <div className="min-w-0 flex-1 space-y-1.5">
                 <Skeleton className="h-4 w-32" />
                 <Skeleton className="h-3 w-24" />
@@ -397,7 +397,7 @@ export default function InventoryPanel({
         <div
           className={typography(
             "body-muted",
-            "rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:from-emerald-500/15 dark:to-emerald-500/5",
+            "rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
           )}
         >
           No products found.
@@ -414,10 +414,10 @@ export default function InventoryPanel({
                 key={m.id}
                 data-product-id={m.id}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl border-0 p-3 transition-colors sm:p-4",
+                  "flex items-center gap-3 rounded-2xl border p-3 transition-colors sm:p-4",
                   low
-                    ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-                    : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                    ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                    : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
                   highlightId === m.id && "ring-2 ring-primary/50",
                 )}
               >

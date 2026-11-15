@@ -171,8 +171,8 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       className={
         className ??
         (isCredit
-          ? "w-full min-w-0 overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-          : "w-full min-w-0 overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5")
+          ? "w-full min-w-0 overflow-hidden rounded-3xl border border-rose-200 dark:border-rose-500/25 bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
+          : "w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5")
       }
     >
       {/* Header */}

@@ -326,7 +326,7 @@ export default function CustomerDetails() {
             type="button"
             variant="outline"
             size="sm"
-            className="shrink-0 gap-1.5 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5"
+            className="shrink-0 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
             onClick={exportCSV}
             disabled={history.length === 0}
           >
@@ -336,7 +336,7 @@ export default function CustomerDetails() {
         </div>
 
         {/* Customer details / edit */}
-        <Card className="rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+        <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
           <CardContent className="p-4 sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
               <h3 className={typography("body-strong")}>কাস্টমারের বিস্তারিত</h3>
@@ -444,7 +444,7 @@ export default function CustomerDetails() {
 
         {/* Payment — only when due exists */}
         {hasDue && (
-          <Card className="rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+          <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
             <CardContent className="p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between gap-2">
                 <h3 className={typography("body-strong")}>টাকা গ্রহণ</h3>
@@ -517,7 +517,7 @@ export default function CustomerDetails() {
           </div>
 
           {history.length === 0 ? (
-            <Card className="rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+            <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
               <CardContent className="p-10 text-center">
                 <p className={typography("body-muted")}>এখনও কোনো লেনদেন নেই।</p>
               </CardContent>
@@ -537,11 +537,11 @@ export default function CustomerDetails() {
                 const badgeLabel =
                   isDue ? "বাকি" : isPayment ? "পেমেন্ট" : "নগদ";
                 const cardTint = isDue
-                  ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-                  : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5";
+                  ? "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                  : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
                 return (
                   <li key={`${h.kind}-${h.id}`}>
-                    <Card className={cn("rounded-2xl border-0 transition-transform hover:-translate-y-0.5 active:scale-[0.99]", cardTint)}>
+                    <Card className={cn("rounded-2xl transition-transform hover:-translate-y-0.5 active:scale-[0.99]", cardTint)}>
                       <CardContent className="flex items-center gap-3 p-3 sm:p-4">
                         <Badge variant={badgeVariant} className="shrink-0">
                           {badgeLabel}
@@ -599,10 +599,10 @@ function StatTile({
       : "text-rose-600 dark:text-rose-400";
   const bgClass =
     tone === "destructive" || tone === "muted"
-      ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-      : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5";
+      ? "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+      : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
   return (
-    <div className={cn("min-w-0 rounded-2xl border-0 p-4", bgClass)}>
+    <div className={cn("min-w-0 rounded-2xl p-4", bgClass)}>
       <p className={typography("body-muted", "truncate")}>{label}</p>
       <p className={cn(typography("h3", "mt-1 truncate"), valueClass)}>{value}</p>
     </div>

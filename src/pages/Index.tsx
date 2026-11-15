@@ -107,7 +107,7 @@ const Index = () => {
                 "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 period === k
                   ? "bg-emerald-900 text-white"
-                  : "border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-900 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-emerald-200"
+                  : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-900 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-emerald-200"
               )}
             >
               {l}
@@ -148,10 +148,10 @@ const Index = () => {
                   <li
                     key={s.id}
                     className={cn(
-                      "flex items-center gap-3 rounded-2xl p-3",
+                      "flex items-center gap-3 rounded-2xl border p-3",
                       isDue
-                        ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-                        : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                        ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                        : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
                     )}
                   >
                     <span
@@ -200,7 +200,7 @@ const Index = () => {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2 rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+        <Card className="lg:col-span-2 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
           <CardHeader>
             <CardTitle>গত ১৪ দিনের বিক্রি</CardTitle>
           </CardHeader>
@@ -260,7 +260,7 @@ const Index = () => {
             ) : (
               <ul className="space-y-2">
                 {stats.bestSelling.map((p, idx) => (
-                  <li key={p.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:from-emerald-500/15 dark:to-emerald-500/5">
+                  <li key={p.id} className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
                     <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/25 font-semibold text-emerald-600 dark:bg-white/10 dark:text-emerald-300")}>
                       {idx + 1}
                     </div>
@@ -290,7 +290,7 @@ const Index = () => {
                 <li key={m.id}>
                   <Link
                     to={`/stocks?focus=${encodeURIComponent(m.id)}&edit=1`}
-                    className="flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-rose-100 to-rose-50 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:from-rose-500/15 dark:to-rose-500/5"
+                    className="flex w-full items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/25 text-rose-600 dark:bg-white/10 dark:text-rose-300">
@@ -394,8 +394,8 @@ function BalanceCardSkeleton() {
 }
 
 const QUICK_TINTS = {
-  emerald: { icon: "text-emerald-600 dark:text-emerald-300", bg: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5" },
-  rose: { icon: "text-rose-600 dark:text-rose-300", bg: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5" },
+  emerald: { icon: "text-emerald-600 dark:text-emerald-300", bg: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" },
+  rose: { icon: "text-rose-600 dark:text-rose-300", bg: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5" },
 } as const;
 
 function QuickAction({
@@ -413,7 +413,7 @@ function QuickAction({
   return (
     <Link
       to={to}
-      className={`flex flex-col items-center gap-2 rounded-2xl border-0 p-4 text-center transition-transform active:scale-[0.97] ${t.bg}`}
+      className={`flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-transform active:scale-[0.97] ${t.bg}`}
     >
       <span className="flex h-11 w-11 items-center justify-center rounded-[100px] bg-white/25 dark:bg-white/10">
         <Icon className={`h-5 w-5 ${t.icon}`} strokeWidth={2.2} />
@@ -425,7 +425,7 @@ function QuickAction({
 
 function StatCardSkeleton() {
   return (
-    <Card className="rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5" aria-busy="true" aria-label="Loading">
+    <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" aria-busy="true" aria-label="Loading">
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
           <Skeleton className="h-12 w-12 shrink-0 rounded-[100px] md:h-14 md:w-14" />
@@ -457,13 +457,13 @@ function StatCard({
   // Permanent Branding Rule:
   // Revenue / Healthy = emerald tint, Expense / Due / Low Stock = rose tint.
   const STYLE = {
-    emerald: { card: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5", icon: "text-emerald-600 dark:text-emerald-300" },
-    rose: { card: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5", icon: "text-rose-600 dark:text-rose-300" },
+    emerald: { card: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5", icon: "text-emerald-600 dark:text-emerald-300" },
+    rose: { card: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5", icon: "text-rose-600 dark:text-rose-300" },
   } as const;
   const s = STYLE[gradient];
 
   return (
-    <Card className={`border-0 rounded-2xl ${s.card}`}>
+    <Card className={`rounded-2xl ${s.card}`}>
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[100px] bg-white/25 dark:bg-white/10 md:h-14 md:w-14">

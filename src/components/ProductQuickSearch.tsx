@@ -207,10 +207,10 @@ export function ProductQuickSearch() {
                       <li key={m.id}>
                         <div
                           className={cn(
-                            "group flex w-full items-center gap-3 rounded-2xl border-0 p-3 transition-colors",
+                            "group flex w-full items-center gap-3 rounded-2xl border p-3 transition-colors",
                             low
-                              ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-                              : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                              ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                              : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
                           )}
                         >
                           <button
@@ -277,7 +277,7 @@ export function ProductQuickSearch() {
                         type="button"
                         onClick={() => pickCustomer(c.name)}
                         aria-label={`${c.name} এর বিবরণ খুলুন`}
-                        className="flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 text-left transition-colors dark:from-emerald-500/15 dark:to-emerald-500/5"
+                        className="flex w-full items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 text-left transition-colors dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                       >
                         <span className="min-w-0 flex-1">
                           <span className={cn(BODY_TEXT, "block truncate font-medium")}>{c.name}</span>

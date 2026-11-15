@@ -19,42 +19,42 @@ const quickActions: QuickAction[] = [
     title: ACTION.cashSale,
     icon: Banknote,
     url: "/new-sale?mode=cash",
-    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    surface: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
     iconBox: "bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
     title: ACTION.dueSale,
     icon: Clock,
     url: "/new-sale?mode=credit",
-    surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
+    surface: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5",
     iconBox: "bg-white/25 text-rose-600 dark:bg-white/10 dark:text-rose-300",
   },
   {
     title: "টাকা জমা",
     icon: Wallet,
     url: "/accounting?tab=payment",
-    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    surface: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
     iconBox: "bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
     title: ACTION.newPurchase,
     icon: PackagePlus,
     url: "/expenses?tab=purchase",
-    surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
+    surface: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5",
     iconBox: "bg-white/25 text-rose-600 dark:bg-white/10 dark:text-rose-300",
   },
   {
     title: ACTION.newCustomer,
     icon: UserPlus,
     url: "/customers?tab=new",
-    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    surface: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
     iconBox: "bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
     title: `${NAV.stocks} ${ACTION.add}`,
     icon: Package,
     url: "/stocks?new=1",
-    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    surface: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
     iconBox: "bg-white/25 text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
 ];
@@ -161,7 +161,7 @@ export function MobileBottomNav() {
                     navigate(action.url);
                   }}
                   className={cn(
-                    "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border-0 p-5 transition-all active:scale-[0.97]",
+                    "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl p-5 transition-all active:scale-[0.97]",
                     action.surface,
                     "animate-fade-in",
                   )}

@@ -447,7 +447,7 @@ export default function CustomersPanel() {
 
       {tab === "new" ? (
         /* ===== Inline নতুন কাস্টমার Form (Tint Green) ===== */
-        <div className="w-full min-w-0 overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+        <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
           <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-5 sm:px-6">
             <div>
               <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-300">
@@ -612,7 +612,7 @@ export default function CustomersPanel() {
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="relative h-12 shrink-0 gap-2 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5 md:h-10"
+                    className="relative h-12 shrink-0 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 md:h-10"
                     aria-label="কাস্টমার ফিল্টার খুলুন"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
@@ -638,7 +638,7 @@ export default function CustomersPanel() {
                 aria-label="কাস্টমারের মোট"
               >
                 <div
-                  className="min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:from-emerald-500/15 dark:to-emerald-500/5"
+                  className="min-w-0 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                   role="group"
                   aria-label={`মোট বিল: ${currency(customers.reduce((s, c) => s + c.totalBilled, 0))}`}
                 >
@@ -650,7 +650,7 @@ export default function CustomersPanel() {
                   </p>
                 </div>
                 <div
-                  className="min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:from-rose-500/15 dark:to-rose-500/5"
+                  className="min-w-0 overflow-hidden rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                   role="group"
                   aria-label={`মোট বাকি: ${currency(customers.reduce((s, c) => s + c.due, 0))}`}
                 >
@@ -668,7 +668,7 @@ export default function CustomersPanel() {
 
               <DialogContent
                 style={{ fontFamily: "'Anek Bangla', sans-serif" }}
-                className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-md"
+                className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:border-emerald-500/25 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-md"
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
                 <DialogHeader className="px-6 pt-6 text-left">
@@ -793,7 +793,7 @@ export default function CustomersPanel() {
               </p>
 
               {filteredCustomers.length === 0 ? (
-                <div className={typography("body-muted", "rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:from-emerald-500/15 dark:to-emerald-500/5")}>
+                <div className={typography("body-muted", "rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5")}>
                   {customers.length === 0
                     ? "এখনো কোনো কাস্টমার নেই।"
                     : "কোনো কাস্টমার ফিল্টারের সাথে মিলছে না।"}
@@ -805,10 +805,10 @@ export default function CustomersPanel() {
                       <Link
                         to={`/customers/${encodeURIComponent(c.name)}`}
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-2xl border-0 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4",
+                          "flex w-full items-center gap-3 rounded-2xl border p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4",
                           c.due > 0
-                            ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-                            : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                            ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                            : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
                         )}
                       >
                         <div className="min-w-0 flex-1">

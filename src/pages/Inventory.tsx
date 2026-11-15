@@ -198,7 +198,7 @@ export default function Inventory() {
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="flex-1 justify-between gap-2 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5 sm:w-48 sm:flex-none"
+                className="flex-1 justify-between gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 sm:w-48 sm:flex-none"
                 aria-label="ক্যাটাগরি নির্বাচন করুন"
               >
                 <span className="truncate">
@@ -207,7 +207,7 @@ export default function Inventory() {
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="flex max-h-[80svh] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-sm">
+            <DialogContent className="flex max-h-[80svh] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:border-emerald-500/25 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-sm">
               <DialogHeader className="border-b border-emerald-200/60 px-6 py-4 text-left dark:border-white/10">
                 <DialogTitle>ক্যাটাগরি</DialogTitle>
               </DialogHeader>
@@ -253,7 +253,7 @@ export default function Inventory() {
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="relative flex-1 gap-2 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 px-[26px] hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5 sm:flex-none sm:shrink-0"
+                className="relative flex-1 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-[26px] hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 sm:flex-none sm:shrink-0"
                 aria-label="ফিল্টার খুলুন"
               >
                 <SlidersHorizontal className="h-4 w-4" />
@@ -270,7 +270,7 @@ export default function Inventory() {
             </DialogTrigger>
             <DialogContent
               style={{ fontFamily: "'Anek Bangla', sans-serif" }}
-              className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-md"
+              className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:border-emerald-500/25 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-md"
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
               <DialogHeader className="px-6 pt-6 text-left">
@@ -402,7 +402,7 @@ export default function Inventory() {
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
-              className="gap-2 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              className="gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
             >
               <Download className="h-4 w-4" /> এক্সপোর্ট
             </Button>

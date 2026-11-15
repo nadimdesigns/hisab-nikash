@@ -355,7 +355,7 @@ export default function Accounting() {
 
         {tab === "payment" ? (
           /* ===== Inline টাকা জমা Form (Tint Green) ===== */
-          <div className="w-full min-w-0 overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+          <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
             <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-5 sm:px-6">
               <div>
                 <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-300">
@@ -475,7 +475,7 @@ export default function Accounting() {
           </div>
         ) : tab === "purchase" ? (
           /* ===== Inline নতুন ক্রয় / খরচ Form (Tint Red) ===== */
-          <div className="w-full min-w-0 overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-5 dark:from-rose-500/15 dark:to-rose-500/5 sm:px-6">
+          <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-rose-200 dark:border-rose-500/25 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-5 dark:from-rose-500/15 dark:to-rose-500/5 sm:px-6">
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-3 pb-1">
                 <div>
@@ -603,7 +603,7 @@ export default function Accounting() {
           <>
             <div className="flex w-full items-center gap-2">
               <Select value={allTypeFilter} onValueChange={(v) => setAllTypeFilter(v as "all" | AllTxnType)}>
-                <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3 py-2 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-foreground md:h-10">
+                <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3 py-2 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-foreground md:h-10">
                   <SelectValue placeholder="সব ধরনের" />
                 </SelectTrigger>
                 <SelectContent>
@@ -623,7 +623,7 @@ export default function Accounting() {
                   {Array.from({ length: 6 }).map((_, i) => (
                     <li
                       key={`all-sk-${i}`}
-                      className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                      className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                     >
                       <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/25" />
                       <div className="min-w-0 flex-1 space-y-1.5">
@@ -638,7 +638,7 @@ export default function Accounting() {
                 <div
                   className={typography(
                     "body-muted",
-                    "rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:from-emerald-500/15 dark:to-emerald-500/5",
+                    "rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
                   )}
                 >
                   {allTypeFilter === "New Payment"
@@ -663,10 +663,10 @@ export default function Accounting() {
                       <li
                         key={t.id}
                         className={cn(
-                          "flex items-center gap-3 rounded-2xl border-0 p-3 sm:p-4",
+                          "flex items-center gap-3 rounded-2xl border p-3 sm:p-4",
                           isRevenue
-                            ? "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5"
-                            : "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
+                            ? "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                            : "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5",
                         )}
                       >
                         <span
