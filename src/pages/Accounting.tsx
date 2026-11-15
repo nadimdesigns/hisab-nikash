@@ -305,7 +305,7 @@ export default function Accounting() {
           role="tablist"
           aria-label="হিসাব ও লেনদেন ট্যাব"
           className={cn(
-            "grid grid-cols-3 gap-1.5 rounded-full p-1 transition-colors",
+            "home-card-appear grid grid-cols-3 gap-1.5 rounded-full p-1 transition-colors",
             tab === "purchase"
               ? "bg-rose-100/70 dark:bg-rose-500/15"
               : "bg-emerald-100/60 dark:bg-emerald-500/15",
@@ -366,7 +366,10 @@ export default function Accounting() {
 
         {tab === "payment" ? (
           /* ===== Inline টাকা জমা Form (Tint Green) ===== */
-          <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+          <div
+            style={{ animationDelay: "60ms" }}
+            className="home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5"
+          >
             <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
               <div>
                 <h2 className={typography("h4", "m-0 leading-tight")}>
@@ -483,7 +486,10 @@ export default function Accounting() {
           </div>
         ) : tab === "purchase" ? (
           /* ===== Inline নতুন ক্রয় / খরচ Form (Tint Red) ===== */
-          <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-rose-200 dark:border-rose-500/25 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-5 dark:from-rose-500/15 dark:to-rose-500/5 sm:px-6">
+          <div
+            style={{ animationDelay: "60ms" }}
+            className="home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-rose-200 dark:border-rose-500/25 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-5 dark:from-rose-500/15 dark:to-rose-500/5 sm:px-6"
+          >
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-3 pb-1">
                 <div>
@@ -606,7 +612,10 @@ export default function Accounting() {
         ) : (
           /* ===== সব হিসাব তালিকা ===== */
           <>
-            <div className="flex w-full items-center gap-2">
+            <div
+              style={{ animationDelay: "60ms" }}
+              className="home-card-appear flex w-full items-center gap-2"
+            >
               <Select value={allTypeFilter} onValueChange={(v) => setAllTypeFilter(v as "all" | AllTxnType)}>
                 <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3 py-2 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-foreground md:h-10">
                   <SelectValue placeholder="সব ধরনের" />
@@ -643,7 +652,7 @@ export default function Accounting() {
                 <div
                   className={typography(
                     "body-muted",
-                    "rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                    "home-card-appear rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
                   )}
                 >
                   {allTypeFilter === "New Payment"
@@ -652,7 +661,7 @@ export default function Accounting() {
                 </div>
               ) : (
                 <ul className="space-y-2">
-                  {filteredAllTransactions.map((t) => {
+                  {filteredAllTransactions.map((t, idx) => {
                     const isRevenue = t.type === "Cash Sale" || t.type === "New Payment";
                     const isOutflow = t.type === "Purchase" || t.type === "Expense";
                     const Icon =
@@ -667,8 +676,9 @@ export default function Accounting() {
                     return (
                       <li
                         key={t.id}
+                        style={{ animationDelay: `${Math.min(idx, 12) * 45 + 100}ms` }}
                         className={cn(
-                          "flex items-center gap-3 rounded-2xl border px-4 py-[18px] sm:px-5 sm:py-[22px]",
+                          "home-card-appear group flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-5 sm:py-[22px]",
                           isRevenue
                             ? "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                             : "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5",
@@ -676,7 +686,7 @@ export default function Accounting() {
                       >
                         <span
                           className={cn(
-                            "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10",
+                            "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10",
                             isRevenue
                               ? "text-emerald-600 dark:text-emerald-300"
                               : "text-rose-600 dark:text-rose-300",

@@ -201,7 +201,7 @@ export default function Inventory() {
     <AppLayout title="স্টক">
       <div className="mb-4 space-y-3">
         {/* Top 50% / 50% inline row: পণ্য যোগ করুন + ফিল্টার */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="home-card-appear grid grid-cols-2 gap-2">
           <Button
             type="button"
             onClick={() => setAddOpen(true)}
@@ -336,7 +336,8 @@ export default function Inventory() {
         <div
           role="tablist"
           aria-label="ক্যাটাগরি"
-          className="flex items-center gap-1.5 overflow-x-auto rounded-full bg-emerald-100/60 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:bg-emerald-500/15"
+          style={{ animationDelay: "60ms" }}
+          className="home-card-appear flex items-center gap-1.5 overflow-x-auto rounded-full bg-emerald-100/60 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:bg-emerald-500/15"
         >
           {[
             { value: "all", label: "সব ক্যাটাগরি", count: products.length },

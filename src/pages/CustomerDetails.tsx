@@ -298,7 +298,7 @@ export default function CustomerDetails() {
         style={{ fontFamily: "'Anek Bangla', sans-serif" }}
       >
         {/* Top Action Bar */}
-        <div className="flex items-center justify-between gap-2">
+        <div className="home-card-appear flex items-center justify-between gap-2">
           <Button
             type="button"
             variant="outline"
@@ -339,8 +339,9 @@ export default function CustomerDetails() {
 
         {/* Unified Customer Profile & Identity Card */}
         <Card
+          style={{ animationDelay: "50ms" }}
           className={cn(
-            "overflow-hidden rounded-3xl border",
+            "home-hero-appear overflow-hidden rounded-3xl border",
             hasDue
               ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
               : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
@@ -468,18 +469,22 @@ export default function CustomerDetails() {
 
         {/* Balanced 3-Column Financial Summary */}
         <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
-          <StatTile label="মোট বিল" value={currency(stats.totalBilled)} tone="default" />
-          <StatTile label="পরিশোধিত" value={currency(stats.paid)} tone="success" />
+          <StatTile label="মোট বিল" value={currency(stats.totalBilled)} tone="default" delay={100} />
+          <StatTile label="পরিশোধিত" value={currency(stats.paid)} tone="success" delay={150} />
           <StatTile
             label="বকেয়া"
             value={currency(stats.due)}
             tone={hasDue ? "destructive" : "success"}
+            delay={200}
           />
         </div>
 
         {/* Quick Due Payment Card — only when due exists */}
         {hasDue && (
-          <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+          <Card
+            style={{ animationDelay: "240ms" }}
+            className="home-card-appear rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+          >
             <CardContent className="p-4 sm:p-5">
               <div className="mb-2.5 flex items-center justify-between gap-2">
                 <h3 className="text-sm font-bold text-foreground">টাকা জমা নিন</h3>
@@ -546,12 +551,12 @@ export default function CustomerDetails() {
           </div>
 
           {history.length === 0 ? (
-            <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center text-sm text-muted-foreground dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+            <div className="home-card-appear rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center text-sm text-muted-foreground dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
               এখনও কোনো লেনদেন নেই।
             </div>
           ) : (
             <ol className="space-y-2">
-              {history.map((h) => {
+              {history.map((h, idx) => {
                 const isPayment = h.kind === "payment";
                 const isDue = h.kind === "due";
                 const itemCount = h.items.reduce((s, it) => s + it.qty, 0);
@@ -570,14 +575,15 @@ export default function CustomerDetails() {
                 return (
                   <li
                     key={`${h.kind}-${h.id}`}
+                    style={{ animationDelay: `${Math.min(idx, 12) * 45 + 260}ms` }}
                     className={cn(
-                      "flex items-center gap-3 rounded-2xl border px-4 py-[18px] sm:px-5 sm:py-[22px]",
+                      "home-card-appear group flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-5 sm:py-[22px]",
                       cardTint,
                     )}
                   >
                     <span
                       className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10",
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10",
                         isDue
                           ? "text-rose-600 dark:text-rose-300"
                           : "text-emerald-600 dark:text-emerald-300",
@@ -639,10 +645,12 @@ function StatTile({
   label,
   value,
   tone = "default",
+  delay = 0,
 }: {
   label: string;
   value: string;
   tone?: "default" | "success" | "destructive";
+  delay?: number;
 }) {
   const isDestructive = tone === "destructive";
   const valueClass = isDestructive
@@ -652,7 +660,10 @@ function StatTile({
     ? "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
     : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
   return (
-    <div className={cn("min-w-0 rounded-2xl p-3.5 text-center sm:p-4 sm:text-left", bgClass)}>
+    <div
+      style={{ animationDelay: `${delay}ms` }}
+      className={cn("home-card-appear min-w-0 rounded-2xl p-3.5 text-center transition-transform duration-200 hover:-translate-y-0.5 sm:p-4 sm:text-left", bgClass)}
+    >
       <p className="truncate text-xs font-medium text-muted-foreground">{label}</p>
       <p className={cn("mt-1 truncate text-base font-bold tabular-nums sm:text-xl", valueClass)}>
         {value}

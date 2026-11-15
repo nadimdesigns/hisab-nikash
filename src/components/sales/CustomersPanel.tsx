@@ -409,7 +409,7 @@ export default function CustomersPanel() {
     <Dialog open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
       <div className="space-y-4">
         {/* Top Row: Pill Tab Switcher (left) + Filter Button (right) */}
-        <div className="flex items-center gap-2">
+        <div className="home-card-appear flex items-center gap-2">
           <div
             role="tablist"
             aria-label="কাস্টমার ট্যাব"
@@ -470,7 +470,10 @@ export default function CustomersPanel() {
 
         {tab === "new" ? (
           /* ===== Inline নতুন কাস্টমার Form (Tint Green) ===== */
-          <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+          <div
+            style={{ animationDelay: "60ms" }}
+            className="home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5"
+          >
             <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
               <div>
                 <h2 className={typography("h4", "m-0 leading-tight")}>
@@ -608,7 +611,8 @@ export default function CustomersPanel() {
                 aria-label="কাস্টমারের মোট"
               >
                 <div
-                  className="min-w-0 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                  style={{ animationDelay: "60ms" }}
+                  className="home-card-appear min-w-0 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-[16px] pl-[21px] pr-1.5 transition-transform duration-200 hover:-translate-y-0.5 sm:px-3 sm:py-[7px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
                   role="group"
                   aria-label={`মোট বিল: ${currency(customers.reduce((s, c) => s + c.totalBilled, 0))}`}
                 >
@@ -620,7 +624,8 @@ export default function CustomersPanel() {
                   </p>
                 </div>
                 <div
-                  className="min-w-0 overflow-hidden rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                  style={{ animationDelay: "110ms" }}
+                  className="home-card-appear min-w-0 overflow-hidden rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 py-[16px] pl-[21px] pr-1.5 transition-transform duration-200 hover:-translate-y-0.5 sm:px-3 sm:py-[7px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                   role="group"
                   aria-label={`মোট বাকি: ${currency(customers.reduce((s, c) => s + c.due, 0))}`}
                 >
@@ -770,12 +775,16 @@ export default function CustomersPanel() {
                 </div>
               ) : (
                 <ul className="space-y-2">
-                  {filteredCustomers.map((c) => (
-                    <li key={c.name}>
+                  {filteredCustomers.map((c, idx) => (
+                    <li
+                      key={c.name}
+                      style={{ animationDelay: `${Math.min(idx, 12) * 45 + 140}ms` }}
+                      className="home-card-appear"
+                    >
                       <Link
                         to={`/customers/${encodeURIComponent(c.name)}`}
                         className={cn(
-                          "flex w-full items-center gap-3 rounded-2xl border px-4 py-[18px] text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:px-5 sm:py-[22px]",
+                          "flex w-full items-center gap-3 rounded-2xl border px-4 py-[18px] text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-5 sm:py-[22px]",
                           c.due > 0
                             ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                             : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",

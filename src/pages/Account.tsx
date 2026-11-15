@@ -31,7 +31,7 @@ const Account = () => {
   return (
     <AppLayout title="অ্যাকাউন্ট">
       <div className="space-y-6">
-        <Card className="max-w-xl rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+        <Card className="home-hero-appear max-w-xl rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
           <CardHeader className="flex flex-row items-center gap-4 space-y-0">
             <Avatar className="h-14 w-14">
               {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}

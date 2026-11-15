@@ -404,7 +404,7 @@ export default function InventoryPanel({
         </div>
       ) : (
         <ul className="space-y-2">
-          {filtered.map((m) => {
+          {filtered.map((m, idx) => {
             // Permanent branding rule:
             // Healthy stock = Tint Green, Low/Out of stock = Tint Red
             const low = m.stock <= m.reorderLevel;
@@ -413,8 +413,9 @@ export default function InventoryPanel({
               <li
                 key={m.id}
                 data-product-id={m.id}
+                style={{ animationDelay: `${Math.min(idx, 12) * 45 + 100}ms` }}
                 className={cn(
-                  "flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-colors sm:px-5 sm:py-[22px]",
+                  "home-card-appear flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] sm:px-5 sm:py-[22px]",
                   low
                     ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",

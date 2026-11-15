@@ -21,7 +21,7 @@ export default function NewSale() {
           role="tablist"
           aria-label="বিক্রির ধরন"
           className={cn(
-            "grid grid-cols-2 gap-2 rounded-full p-1 transition-colors",
+            "home-card-appear grid grid-cols-2 gap-2 rounded-full p-1 transition-colors",
             isCredit
               ? "bg-rose-100/70 dark:bg-rose-500/15"
               : "bg-emerald-100/60 dark:bg-emerald-500/15",
