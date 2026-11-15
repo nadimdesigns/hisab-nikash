@@ -23,13 +23,6 @@ const quickActions: QuickAction[] = [
     iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
-    title: ACTION.newPurchase,
-    icon: PackagePlus,
-    url: "/expenses?action=new",
-    surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
-    iconBox: "bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300",
-  },
-  {
     title: ACTION.dueSale,
     icon: Clock,
     url: "/new-sale?mode=credit",
@@ -37,9 +30,23 @@ const quickActions: QuickAction[] = [
     iconBox: "bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300",
   },
   {
+    title: "টাকা জমা",
+    icon: Wallet,
+    url: "/accounting?tab=payment",
+    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
+  },
+  {
+    title: ACTION.newPurchase,
+    icon: PackagePlus,
+    url: "/expenses?tab=purchase",
+    surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
+    iconBox: "bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300",
+  },
+  {
     title: ACTION.newCustomer,
     icon: UserPlus,
-    url: "/customers?new=1",
+    url: "/customers?tab=new",
     surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
     iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },

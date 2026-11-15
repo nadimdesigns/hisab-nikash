@@ -49,6 +49,7 @@ export function applyCustomerPayment<D extends DueEntryLike>(
   customerName: string,
   amount: number,
   { sales, dues, updateSale, setDues }: ApplyPaymentDeps<D>,
+  note?: string,
 ): number {
   const target = customerName || "Walk-in";
   let remaining = round2(amount);
@@ -112,7 +113,12 @@ export function applyCustomerPayment<D extends DueEntryLike>(
 
   const applied = round2(amount - remaining);
   if (applied > 0) {
-    appendPayment({ customer: target, amount: applied, allocatedToDues });
+    appendPayment({
+      customer: target,
+      amount: applied,
+      allocatedToDues,
+      note: note?.trim() || undefined,
+    });
   }
   return applied;
 }

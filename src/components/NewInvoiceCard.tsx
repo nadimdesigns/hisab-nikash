@@ -8,14 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Trash2, Save } from "lucide-react";
 import { useShop, SaleItem } from "@/store/shop";
 import { currency, formatDate } from "@/lib/format";
@@ -297,34 +289,38 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             <p className="text-xs font-medium text-muted-foreground">এখনো কোনো আইটেম যোগ হয়নি</p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border">
-            <Table className="table-global">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[38%]">আইটেম</TableHead>
-                  <TableHead className="text-center">পরিমাণ</TableHead>
-                  <TableHead className="text-right">দাম</TableHead>
-                  <TableHead className="w-10" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {items.map((i) => (
-                  <TableRow key={i.productId}>
-                    <TableCell className="w-[38%] font-medium">
-                      <span className="item-name-cell">{i.name}</span>
-                    </TableCell>
-                    <TableCell>{i.qty}</TableCell>
-                    <TableCell>{currency(i.unitPrice)}</TableCell>
-                    <TableCell>
-                      <Button size="icon" variant="ghost" onClick={() => removeItem(i.productId)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <ul className="space-y-2">
+            {items.map((i) => (
+              <li
+                key={i.productId}
+                className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 p-3 dark:bg-white/10"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">{i.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {i.qty} × {currency(i.unitPrice)}
+                  </p>
+                </div>
+                <span
+                  className={
+                    isCredit
+                      ? "shrink-0 text-sm font-bold tabular-nums text-rose-600 dark:text-rose-400"
+                      : "shrink-0 text-sm font-bold tabular-nums text-emerald-700 dark:text-emerald-300"
+                  }
+                >
+                  {currency(i.qty * i.unitPrice)}
+                </span>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 shrink-0 rounded-xl bg-white text-rose-600 hover:bg-rose-50 dark:bg-white/10 dark:text-rose-300"
+                  onClick={() => removeItem(i.productId)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 

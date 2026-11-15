@@ -1,21 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import NewCustomerDialog from "@/components/sales/NewCustomerDialog";
 import type { DateRange } from "react-day-picker";
+import { z } from "zod";
 import {
   CalendarIcon,
+  Save,
   Search,
   SlidersHorizontal,
   UserPlus,
+  Users,
   X,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
@@ -30,8 +33,45 @@ import { cn } from "@/lib/utils";
 import { currency, formatDate, useResponsiveCurrency } from "@/lib/format";
 import { typography } from "@/lib/typography";
 import { useShop, type SaleItem } from "@/store/shop";
-import { loadProfiles } from "@/lib/customerProfiles";
-import { dataKey } from "@/lib/demoMode";
+import { loadProfiles, upsertProfile } from "@/lib/customerProfiles";
+import { dataKey, isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
+import { useToast } from "@/hooks/use-toast";
+
+const customerSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .nonempty({ message: "কাস্টমারের নাম আবশ্যক" })
+    .max(100, { message: "নাম ১০০ অক্ষরের কম হতে হবে" }),
+  phone: z
+    .string()
+    .trim()
+    .max(20, { message: "ফোন ২০ অক্ষরের কম হতে হবে" })
+    .regex(/^[+\d\s()-]*$/, { message: "শুধু সংখ্যা, স্পেস এবং + ( ) - অনুমোদিত" })
+    .optional()
+    .or(z.literal("")),
+  email: z
+    .string()
+    .trim()
+    .max(255, { message: "ইমেইল অনেক বড়" })
+    .email({ message: "অবৈধ ইমেইল ঠিকানা" })
+    .optional()
+    .or(z.literal("")),
+  address: z
+    .string()
+    .trim()
+    .max(200, { message: "ঠিকানা ২০০ অক্ষরের কম হতে হবে" })
+    .optional()
+    .or(z.literal("")),
+  notes: z
+    .string()
+    .trim()
+    .max(500, { message: "নোট ৫০০ অক্ষরের কম হতে হবে" })
+    .optional()
+    .or(z.literal("")),
+});
+
+type FormErrors = Partial<Record<"name" | "phone" | "email" | "address" | "notes", string>>;
 
 type DueEntry = {
   id: string;
@@ -156,20 +196,88 @@ export default function CustomersPanel() {
     return Array.from(map.values()).sort((a, b) => b.totalBilled - a.totalBilled);
   }, [sales, dues, profileNames]);
 
-  // ===== Filters =====
+  // ===== Tab & Filters =====
+  const { toast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const resolveTab = (params: URLSearchParams): "list" | "new" =>
+    params.get("new") === "1" || params.get("tab") === "new" ? "new" : "list";
+
+  const [tab, setTabState] = useState<"list" | "new">(() => resolveTab(searchParams));
+
+  useEffect(() => {
+    setTabState(resolveTab(searchParams));
+  }, [searchParams]);
+
+  const setTab = (nextTab: "list" | "new") => {
+    setTabState(nextTab);
+    const next = new URLSearchParams(searchParams);
+    next.delete("new");
+    if (nextTab === "list") {
+      next.delete("tab");
+    } else {
+      next.set("tab", "new");
+    }
+    setSearchParams(next, { replace: true });
+  };
+
+  // ===== Inline New Customer Form state =====
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [notes, setNotes] = useState("");
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [now, setNow] = useState<Date>(() => new Date());
+
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const handleCreateCustomer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isReadOnly()) {
+      notifyReadOnlyBlocked();
+      return;
+    }
+    const result = customerSchema.safeParse({ name, phone, email, address, notes });
+    if (!result.success) {
+      const fieldErrors: FormErrors = {};
+      result.error.issues.forEach((issue) => {
+        const key = issue.path[0] as keyof FormErrors;
+        if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+    const cleanName = result.data.name;
+    const existing = loadProfiles();
+    if (Object.keys(existing).some((k) => k.toLowerCase() === cleanName.toLowerCase())) {
+      setErrors({ name: "এই নামে একজন কাস্টমার আগে থেকেই আছে" });
+      return;
+    }
+    setErrors({});
+    upsertProfile(cleanName, {
+      phone: result.data.phone || undefined,
+      email: result.data.email || undefined,
+      address: result.data.address || undefined,
+      notes: result.data.notes || undefined,
+    });
+    setProfileNames(Object.keys(loadProfiles()));
+    toast({ title: "কাস্টমার সংরক্ষিত হয়েছে", description: `${cleanName} যোগ করা হয়েছে।` });
+    setName("");
+    setPhone("");
+    setEmail("");
+    setAddress("");
+    setNotes("");
+    setTab("list");
+  };
+
   const [custQuery, setCustQuery] = useState("");
   const [custStatus, setCustStatus] = useState<"all" | "due" | "cleared">("all");
   const [custDueRange, setCustDueRange] = useState<"any" | "gt0" | "gt500" | "gt2000">("any");
   const [custSort, setCustSort] = useState<CustSortKey>("billed-desc");
   const [custDateRange, setCustDateRange] = useState<DateRange | undefined>(undefined);
-  const [newCustOpen, setNewCustOpen] = useState(false);
-
-  // Auto-open the new-customer dialog when arriving via ?new=1 (bottom nav / homepage).
-  const [searchParams] = useSearchParams();
-  useEffect(() => {
-    if (searchParams.get("new") === "1") setNewCustOpen(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const customerActivity = useMemo(() => {
     const map = new Map<string, number[]>();
@@ -298,287 +406,447 @@ export default function CustomersPanel() {
   };
 
   return (
-    <>
-      <Card className="min-w-0 rounded-3xl border-0 bg-transparent">
-        <Sheet open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
-          <CardHeader className="px-0 pt-5 sm:px-6">
-            <div className="flex w-full items-center gap-2">
-              {custFiltersActive && (
-                <Button variant="ghost" onClick={clearCustFilters} className="h-12 shrink-0 gap-1 rounded-xl md:h-10">
-                  <X className="h-3.5 w-3.5" /> মুছুন
-                </Button>
-              )}
-              <Button
-                type="button"
-                variant="default"
-                onClick={() => setNewCustOpen(true)}
-                className="h-12 flex-1 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-10"
-              >
-                <UserPlus className="h-4 w-4" />
-                <span className="hidden sm:inline">কাস্টমার যোগ করুন</span>
-                <span className="sm:hidden">যোগ করুন</span>
-              </Button>
-              <SheetTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="relative h-12 flex-1 shrink-0 gap-2 rounded-xl border-2 bg-white md:h-10"
-                  aria-label="কাস্টমার ফিল্টার খুলুন"
-                >
-                  <SlidersHorizontal className="h-4 w-4" />
-                  ফিল্টার
-                  {custAdvancedFilterCount > 0 && (
-                    <Badge
-                      variant="default"
-                      className={typography(
-                        "small",
-                        "absolute -right-1.5 -top-1.5 h-5 min-w-5 justify-center rounded-full px-1 leading-none text-primary-foreground",
-                      )}
-                    >
-                      {custAdvancedFilterCount}
-                    </Badge>
-                  )}
-                </Button>
-              </SheetTrigger>
+    <div className="space-y-4">
+      {/* Pill Tab Switcher: সকল কাস্টমার | নতুন কাস্টমার */}
+      <div
+        role="tablist"
+        aria-label="কাস্টমার ট্যাব"
+        className="grid grid-cols-2 gap-2 rounded-full bg-emerald-100/60 p-1.5 dark:bg-white/5"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "list"}
+          onClick={() => setTab("list")}
+          className={cn(
+            "flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
+            tab === "list"
+              ? "bg-emerald-900 text-white"
+              : "text-foreground/75 hover:text-foreground",
+          )}
+        >
+          <Users className="h-4 w-4 shrink-0" />
+          <span>সকল কাস্টমার</span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === "new"}
+          onClick={() => setTab("new")}
+          className={cn(
+            "flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
+            tab === "new"
+              ? "bg-emerald-900 text-white"
+              : "text-foreground/75 hover:text-foreground",
+          )}
+        >
+          <UserPlus className="h-4 w-4 shrink-0" />
+          <span>নতুন কাস্টমার</span>
+        </button>
+      </div>
+
+      {tab === "new" ? (
+        /* ===== Inline নতুন কাস্টমার Form (Tint Green) ===== */
+        <div className="w-full min-w-0 overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
+          <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-5 sm:px-6">
+            <div>
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-300">
+                নিবন্ধনের তারিখ
+              </p>
+              <h2 className={typography("h4", "m-0 leading-tight")}>
+                {formatDate(now, "MMMM d, yyyy")}
+              </h2>
             </div>
-          </CardHeader>
-          <CardContent className="px-0 sm:px-6">
-            <div className="mb-3 relative">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 dark:border-emerald-500/20 dark:bg-white/10">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              <span className="text-xs font-bold uppercase tracking-tight text-emerald-700 dark:text-emerald-300">
+                নতুন কাস্টমার
+              </span>
+            </div>
+          </div>
+
+          <div className="mb-4 flex items-center gap-2 px-5 text-muted-foreground sm:px-6">
+            <span className="text-xs font-medium tabular-nums">
+              {formatDate(now, "h:mm:ss a")}
+            </span>
+          </div>
+
+          <form onSubmit={handleCreateCustomer} className="space-y-4 px-5 pb-6 sm:px-6">
+            <div>
+              <Label htmlFor="new-cust-name" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                নাম <span className="text-destructive">*</span>
+              </Label>
               <Input
-                value={custQuery}
-                onChange={(e) => setCustQuery(e.target.value)}
-                placeholder="নাম, নম্বর বা আইডি দিয়ে খুঁজুন"
-                className="pl-9 pr-9"
-                aria-label="কাস্টমার খুঁজুন"
+                id="new-cust-name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="কাস্টমারের নাম"
+                maxLength={100}
+                aria-invalid={Boolean(errors.name)}
+                className="h-12 rounded-2xl bg-white dark:bg-white/10"
               />
-              {custQuery && (
-                <button
-                  type="button"
-                  onClick={() => setCustQuery("")}
-                  aria-label="Clear search"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-muted"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
+              {errors.name && (
+                <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.name}</p>
               )}
             </div>
 
-            <div
-              className="mb-4 grid w-full grid-cols-2 gap-1.5 overflow-hidden sm:gap-3"
-              role="group"
-              aria-label="কাস্টমারের মোট"
-            >
-              <div
-                className="min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:from-emerald-500/15 dark:to-emerald-500/5"
-                role="group"
-                aria-label={`মোট বিল: ${currency(customers.reduce((s, c) => s + c.totalBilled, 0))}`}
-              >
-                <p aria-hidden="true" className={typography("body-muted", "truncate leading-tight")}>
-                  মোট বিল
-                </p>
-                <p aria-hidden="true" className={typography("h4", "mt-0.5 truncate tabular-nums sm:mt-1")}>
-                  {fmtMoney(customers.reduce((s, c) => s + c.totalBilled, 0))}
-                </p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="new-cust-phone" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                  ফোন নম্বর
+                </Label>
+                <Input
+                  id="new-cust-phone"
+                  type="tel"
+                  inputMode="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+880 1XXX XXXXXX"
+                  maxLength={20}
+                  aria-invalid={Boolean(errors.phone)}
+                  className="h-12 rounded-2xl bg-white dark:bg-white/10"
+                />
+                {errors.phone && (
+                  <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.phone}</p>
+                )}
               </div>
-              <div
-                className="min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:from-rose-500/15 dark:to-rose-500/5"
-                role="group"
-                aria-label={`মোট বাকি: ${currency(customers.reduce((s, c) => s + c.due, 0))}`}
-              >
-                <p aria-hidden="true" className={typography("body-muted", "truncate leading-tight")}>
-                  মোট বাকি
-                </p>
-                <p
-                  aria-hidden="true"
-                  className={typography("h4", "mt-0.5 truncate tabular-nums text-destructive sm:mt-1")}
-                >
-                  {fmtMoney(customers.reduce((s, c) => s + c.due, 0))}
-                </p>
+
+              <div>
+                <Label htmlFor="new-cust-email" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                  ইমেইল
+                </Label>
+                <Input
+                  id="new-cust-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  maxLength={255}
+                  aria-invalid={Boolean(errors.email)}
+                  className="h-12 rounded-2xl bg-white dark:bg-white/10"
+                />
+                {errors.email && (
+                  <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.email}</p>
+                )}
               </div>
             </div>
 
-            <SheetContent
-              side="right"
-              style={{ fontFamily: "'Anek Bangla', sans-serif" }}
-              className="flex w-full flex-col overflow-hidden p-0 sm:max-w-sm"
-              onOpenAutoFocus={(e) => e.preventDefault()}
+            <div>
+              <Label htmlFor="new-cust-address" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                ঠিকানা
+              </Label>
+              <Input
+                id="new-cust-address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="রাস্তা, শহর"
+                maxLength={200}
+                aria-invalid={Boolean(errors.address)}
+                className="h-12 rounded-2xl bg-white dark:bg-white/10"
+              />
+              {errors.address && (
+                <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.address}</p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="new-cust-notes" className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
+                নোট
+              </Label>
+              <Textarea
+                id="new-cust-notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="পছন্দ, রিমাইন্ডার বা অতিরিক্ত তথ্য…"
+                maxLength={500}
+                rows={3}
+                aria-invalid={Boolean(errors.notes)}
+                className="rounded-2xl bg-white dark:bg-white/10"
+              />
+              {errors.notes && (
+                <p className={typography("body-muted", "mt-1 text-destructive")}>{errors.notes}</p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
             >
-              <SheetHeader className="px-6 pt-6">
-                <SheetTitle>কাস্টমার ফিল্টার</SheetTitle>
-              </SheetHeader>
-
-              <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
-                <CustFilterRadioGroup
-                  title="স্ট্যাটাস"
-                  value={draftCustStatus}
-                  onValueChange={(v) => setDraftCustStatus(v as typeof custStatus)}
-                  options={[
-                    { value: "all", label: "সব স্ট্যাটাস" },
-                    { value: "due", label: "বাকি আছে" },
-                    { value: "cleared", label: "পরিশোধিত" },
-                  ]}
-                />
-
-                <CustFilterRadioGroup
-                  title="বাকির পরিমাণ"
-                  value={draftCustDueRange}
-                  onValueChange={(v) => setDraftCustDueRange(v as typeof custDueRange)}
-                  options={[
-                    { value: "any", label: "যেকোনো বাকির পরিমাণ" },
-                    { value: "gt0", label: `বাকি > ${currency(0)}` },
-                    { value: "gt500", label: `বাকি > ${currency(500)}` },
-                    { value: "gt2000", label: `বাকি > ${currency(2000)}` },
-                  ]}
-                />
-
-                <CustFilterRadioGroup
-                  title="সাজান"
-                  value={draftCustSort}
-                  onValueChange={(v) => setDraftCustSort(v as CustSortKey)}
-                  options={[
-                    { value: "billed-desc", label: "মোট বিল · বেশি থেকে কম" },
-                    { value: "billed-asc", label: "মোট বিল · কম থেকে বেশি" },
-                    { value: "due-desc", label: "বাকি · বেশি থেকে কম" },
-                    { value: "due-asc", label: "বাকি · কম থেকে বেশি" },
-                    { value: "name-asc", label: "নাম · A → Z" },
-                    { value: "name-desc", label: "নাম · Z → A" },
-                    { value: "purchases-desc", label: "সবচেয়ে বেশি কেনাকাটা" },
-                    { value: "recent", label: "সবচেয়ে সাম্প্রতিক কার্যকলাপ" },
-                  ]}
-                />
-
-                <div className="space-y-3">
-                  <p className="font-semibold text-foreground">লেনদেনের তারিখের সীমা</p>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start gap-2 text-left font-normal",
-                          !draftCustDateRange?.from && "text-muted-foreground",
+              <Save className="h-4 w-4" />
+              কাস্টমার সংরক্ষণ করুন
+            </Button>
+          </form>
+        </div>
+      ) : (
+        /* ===== সকল কাস্টমার তালিকা ===== */
+        <Card className="min-w-0 rounded-3xl border-0 bg-transparent">
+          <Sheet open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
+            <CardContent className="px-0 pt-0 sm:px-6">
+              <div className="mb-3 flex w-full items-center gap-2">
+                <div className="relative flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={custQuery}
+                    onChange={(e) => setCustQuery(e.target.value)}
+                    placeholder="নাম, নম্বর বা আইডি দিয়ে খুঁজুন"
+                    className="h-12 rounded-xl bg-white pl-9 pr-9 dark:bg-white/5 md:h-10"
+                    aria-label="কাস্টমার খুঁজুন"
+                  />
+                  {custQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setCustQuery("")}
+                      aria-label="Clear search"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-muted"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                </div>
+                {custFiltersActive && (
+                  <Button variant="ghost" onClick={clearCustFilters} className="h-12 shrink-0 gap-1 rounded-xl md:h-10">
+                    <X className="h-3.5 w-3.5" /> মুছুন
+                  </Button>
+                )}
+                <SheetTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="relative h-12 shrink-0 gap-2 rounded-xl border bg-white px-4 dark:bg-white/5 md:h-10"
+                    aria-label="কাস্টমার ফিল্টার খুলুন"
+                  >
+                    <SlidersHorizontal className="h-4 w-4" />
+                    <span className="hidden sm:inline">ফিল্টার</span>
+                    {custAdvancedFilterCount > 0 && (
+                      <Badge
+                        variant="default"
+                        className={typography(
+                          "small",
+                          "absolute -right-1.5 -top-1.5 h-5 min-w-5 justify-center rounded-full px-1 leading-none text-primary-foreground",
                         )}
                       >
-                        <CalendarIcon className="h-4 w-4 shrink-0" />
-                        {draftCustDateRange?.from ? (
-                          draftCustDateRange.to ? (
-                            <span className="truncate">
-                              {formatDate(draftCustDateRange.from, "LLL d, y")} –{" "}
-                              {formatDate(draftCustDateRange.to, "LLL d, y")}
-                            </span>
-                          ) : (
-                            <span className="truncate">
-                              {formatDate(draftCustDateRange.from, "LLL d, y")}
-                            </span>
-                          )
-                        ) : (
-                          <span>তারিখের পরিসর বাছাই করুন</span>
-                        )}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="range"
-                        selected={draftCustDateRange}
-                        onSelect={setDraftCustDateRange}
-                        numberOfMonths={1}
-                        initialFocus
-                        className={cn("p-3 pointer-events-auto")}
-                      />
-                      {draftCustDateRange?.from && (
-                        <div className="flex items-center justify-end border-t p-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setDraftCustDateRange(undefined)}
-                            className="gap-1 rounded-md bg-white hover:bg-white"
-                          >
-                            <X className="h-3.5 w-3.5" /> তারিখ মুছুন
-                          </Button>
-                        </div>
-                      )}
-                    </PopoverContent>
-                  </Popover>
+                        {custAdvancedFilterCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </SheetTrigger>
+              </div>
+
+              <div
+                className="mb-4 grid w-full grid-cols-2 gap-1.5 overflow-hidden sm:gap-3"
+                role="group"
+                aria-label="কাস্টমারের মোট"
+              >
+                <div
+                  className="min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:from-emerald-500/15 dark:to-emerald-500/5"
+                  role="group"
+                  aria-label={`মোট বিল: ${currency(customers.reduce((s, c) => s + c.totalBilled, 0))}`}
+                >
+                  <p aria-hidden="true" className={typography("body-muted", "truncate leading-tight")}>
+                    মোট বিল
+                  </p>
+                  <p aria-hidden="true" className={typography("h4", "mt-0.5 truncate tabular-nums text-emerald-700 dark:text-emerald-300 sm:mt-1")}>
+                    {fmtMoney(customers.reduce((s, c) => s + c.totalBilled, 0))}
+                  </p>
+                </div>
+                <div
+                  className="min-w-0 overflow-hidden rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 py-[16px] pl-[21px] pr-1.5 sm:px-3 sm:py-[7px] dark:from-rose-500/15 dark:to-rose-500/5"
+                  role="group"
+                  aria-label={`মোট বাকি: ${currency(customers.reduce((s, c) => s + c.due, 0))}`}
+                >
+                  <p aria-hidden="true" className={typography("body-muted", "truncate leading-tight")}>
+                    মোট বাকি
+                  </p>
+                  <p
+                    aria-hidden="true"
+                    className={typography("h4", "mt-0.5 truncate tabular-nums text-destructive sm:mt-1")}
+                  >
+                    {fmtMoney(customers.reduce((s, c) => s + c.due, 0))}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2 border-t bg-background px-6 py-4">
-                {draftCustAdvancedFilterCount > 0 && (
-                  <Button
-                    variant="outline"
-                    onClick={resetCustDraftFilters}
-                    className="h-12 w-full gap-2 rounded-xl bg-white hover:bg-white md:h-11"
-                  >
-                    <X className="h-4 w-4" /> ফিল্টার রিসেট করুন
-                  </Button>
-                )}
-                <Button
-                  onClick={applyCustDraftFilters}
-                  className="h-12 w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-11"
-                >
-                  ফিল্টার প্রয়োগ করুন
-                </Button>
-              </div>
-            </SheetContent>
+              <SheetContent
+                side="right"
+                style={{ fontFamily: "'Anek Bangla', sans-serif" }}
+                className="flex w-full flex-col overflow-hidden p-0 sm:max-w-sm"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+              >
+                <SheetHeader className="px-6 pt-6">
+                  <SheetTitle>কাস্টমার ফিল্টার</SheetTitle>
+                </SheetHeader>
 
-            <p className={typography("body-muted", "mb-2")}>
-              {filteredCustomers.length} এর মধ্যে {customers.length} জন কাস্টমার দেখানো হচ্ছে
-            </p>
+                <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
+                  <CustFilterRadioGroup
+                    title="স্ট্যাটাস"
+                    value={draftCustStatus}
+                    onValueChange={(v) => setDraftCustStatus(v as typeof custStatus)}
+                    options={[
+                      { value: "all", label: "সব স্ট্যাটাস" },
+                      { value: "due", label: "বাকি আছে" },
+                      { value: "cleared", label: "পরিশোধিত" },
+                    ]}
+                  />
 
-            {filteredCustomers.length === 0 ? (
-              <div className={typography("body-muted", "rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:from-emerald-500/15 dark:to-emerald-500/5")}>
-                {customers.length === 0
-                  ? "এখনো কোনো কাস্টমার নেই।"
-                  : "কোনো কাস্টমার ফিল্টারের সাথে মিলছে না।"}
-              </div>
-            ) : (
-              <ul className="space-y-2">
-                {filteredCustomers.map((c) => (
-                  <li key={c.name}>
-                    <Link
-                      to={`/customers/${encodeURIComponent(c.name)}`}
-                      className={cn(
-                        "flex w-full items-center gap-3 rounded-2xl border-0 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4",
-                        c.due > 0
-                          ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-                          : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
-                      )}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="truncate text-sm font-semibold">{c.name}</span>
-                          <span className="shrink-0 text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
-                            {fmtMoney(c.totalBilled)}
-                          </span>
-                        </div>
-                        <div className="mt-0.5 flex items-center justify-between gap-2">
-                          <span className="truncate text-xs text-muted-foreground">
-                            {c.purchases + c.dueEntries}টি লেনদেন ·{" "}
-                            {c.lastPurchase
-                              ? formatDate(c.lastPurchase, "MMM d, yyyy")
-                              : "কোনো কার্যকলাপ নেই"}
-                          </span>
-                          <span className="shrink-0 text-xs tabular-nums">
-                            {c.due > 0 ? (
-                              <span className="font-medium text-destructive">
-                                বাকি {fmtMoney(c.due)}
+                  <CustFilterRadioGroup
+                    title="বাকির পরিমাণ"
+                    value={draftCustDueRange}
+                    onValueChange={(v) => setDraftCustDueRange(v as typeof custDueRange)}
+                    options={[
+                      { value: "any", label: "যেকোনো বাকির পরিমাণ" },
+                      { value: "gt0", label: `বাকি > ${currency(0)}` },
+                      { value: "gt500", label: `বাকি > ${currency(500)}` },
+                      { value: "gt2000", label: `বাকি > ${currency(2000)}` },
+                    ]}
+                  />
+
+                  <CustFilterRadioGroup
+                    title="সাজান"
+                    value={draftCustSort}
+                    onValueChange={(v) => setDraftCustSort(v as CustSortKey)}
+                    options={[
+                      { value: "billed-desc", label: "মোট বিল · বেশি থেকে কম" },
+                      { value: "billed-asc", label: "মোট বিল · কম থেকে বেশি" },
+                      { value: "due-desc", label: "বাকি · বেশি থেকে কম" },
+                      { value: "due-asc", label: "বাকি · কম থেকে বেশি" },
+                      { value: "name-asc", label: "নাম · A → Z" },
+                      { value: "name-desc", label: "নাম · Z → A" },
+                      { value: "purchases-desc", label: "সবচেয়ে বেশি কেনাকাটা" },
+                      { value: "recent", label: "সবচেয়ে সাম্প্রতিক কার্যকলাপ" },
+                    ]}
+                  />
+
+                  <div className="space-y-3">
+                    <p className="font-semibold text-foreground">লেনদেনের তারিখের সীমা</p>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start gap-2 text-left font-normal",
+                            !draftCustDateRange?.from && "text-muted-foreground",
+                          )}
+                        >
+                          <CalendarIcon className="h-4 w-4 shrink-0" />
+                          {draftCustDateRange?.from ? (
+                            draftCustDateRange.to ? (
+                              <span className="truncate">
+                                {formatDate(draftCustDateRange.from, "LLL d, y")} –{" "}
+                                {formatDate(draftCustDateRange.to, "LLL d, y")}
                               </span>
                             ) : (
-                              <span className="text-muted-foreground">পরিশোধিত</span>
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </CardContent>
-        </Sheet>
+                              <span className="truncate">
+                                {formatDate(draftCustDateRange.from, "LLL d, y")}
+                              </span>
+                            )
+                          ) : (
+                            <span>তারিখের পরিসর বাছাই করুন</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="range"
+                          selected={draftCustDateRange}
+                          onSelect={setDraftCustDateRange}
+                          numberOfMonths={1}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                        {draftCustDateRange?.from && (
+                          <div className="flex items-center justify-end border-t p-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setDraftCustDateRange(undefined)}
+                              className="gap-1 rounded-md bg-white hover:bg-white"
+                            >
+                              <X className="h-3.5 w-3.5" /> তারিখ মুছুন
+                            </Button>
+                          </div>
+                        )}
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </div>
 
-      <NewCustomerDialog open={newCustOpen} onOpenChange={setNewCustOpen} />
-      </Card>
-    </>
+                <div className="flex flex-col gap-2 border-t bg-background px-6 py-4">
+                  {draftCustAdvancedFilterCount > 0 && (
+                    <Button
+                      variant="outline"
+                      onClick={resetCustDraftFilters}
+                      className="h-12 w-full gap-2 rounded-xl bg-white hover:bg-white md:h-11"
+                    >
+                      <X className="h-4 w-4" /> ফিল্টার রিসেট করুন
+                    </Button>
+                  )}
+                  <Button
+                    onClick={applyCustDraftFilters}
+                    className="h-12 w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-11"
+                  >
+                    ফিল্টার প্রয়োগ করুন
+                  </Button>
+                </div>
+              </SheetContent>
+
+              <p className={typography("body-muted", "mb-2")}>
+                {filteredCustomers.length} এর মধ্যে {customers.length} জন কাস্টমার দেখানো হচ্ছে
+              </p>
+
+              {filteredCustomers.length === 0 ? (
+                <div className={typography("body-muted", "rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:from-emerald-500/15 dark:to-emerald-500/5")}>
+                  {customers.length === 0
+                    ? "এখনো কোনো কাস্টমার নেই।"
+                    : "কোনো কাস্টমার ফিল্টারের সাথে মিলছে না।"}
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {filteredCustomers.map((c) => (
+                    <li key={c.name}>
+                      <Link
+                        to={`/customers/${encodeURIComponent(c.name)}`}
+                        className={cn(
+                          "flex w-full items-center gap-3 rounded-2xl border-0 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4",
+                          c.due > 0
+                            ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
+                            : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                        )}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="truncate text-sm font-semibold">{c.name}</span>
+                            <span className="shrink-0 text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                              {fmtMoney(c.totalBilled)}
+                            </span>
+                          </div>
+                          <div className="mt-0.5 flex items-center justify-between gap-2">
+                            <span className="truncate text-xs text-muted-foreground">
+                              {c.purchases + c.dueEntries}টি লেনদেন ·{" "}
+                              {c.lastPurchase
+                                ? formatDate(c.lastPurchase, "MMM d, yyyy")
+                                : "কোনো কার্যকলাপ নেই"}
+                            </span>
+                            <span className="shrink-0 text-xs tabular-nums">
+                              {c.due > 0 ? (
+                                <span className="font-medium text-destructive">
+                                  বাকি {fmtMoney(c.due)}
+                                </span>
+                              ) : (
+                                <span className="text-muted-foreground">পরিশোধিত</span>
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Sheet>
+        </Card>
+      )}
+    </div>
   );
 }
 
