@@ -98,13 +98,14 @@ const Index = () => {
             { k: "week", l: "এই সপ্তাহ" },
             { k: "month", l: "এই মাস" },
             { k: "year", l: "এই বছর" },
-          ] as const).map(({ k, l }) => (
+          ] as const).map(({ k, l }, idx) => (
             <button
               key={k}
               type="button"
               onClick={() => setPeriod(k)}
+              style={{ animationDelay: `${idx * 40}ms` }}
               className={cn(
-                "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "home-card-appear shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 period === k
                   ? "bg-emerald-900 text-white"
                   : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-900 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-emerald-200"
@@ -122,12 +123,12 @@ const Index = () => {
         )}
 
         <div className="grid grid-cols-3 gap-1.5">
-          <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" />
-          <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" />
-          <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" />
-          <QuickAction icon={Clock} label="বাকি বিক্রি" to="/new-sale?mode=credit" tint="rose" />
-          <QuickAction icon={Wallet} label="টাকা জমা" to="/accounting?tab=payment" tint="emerald" />
-          <QuickAction icon={Package} label="পণ্য যোগ" to="/stocks?new=1" tint="emerald" />
+          <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" delay={100} />
+          <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" delay={150} />
+          <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" delay={200} />
+          <QuickAction icon={Clock} label="বাকি বিক্রি" to="/new-sale?mode=credit" tint="rose" delay={250} />
+          <QuickAction icon={Wallet} label="টাকা জমা" to="/accounting?tab=payment" tint="emerald" delay={300} />
+          <QuickAction icon={Package} label="পণ্য যোগ" to="/stocks?new=1" tint="emerald" delay={350} />
         </div>
 
         {/* Recent activity (Hisab-Kitab "Recent activity" section) */}
@@ -139,19 +140,20 @@ const Index = () => {
           {!hydrated ? (
             <Skeleton className="h-[76px] w-full rounded-2xl" />
           ) : stats.recent.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
+            <div className="home-card-appear rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
               এখনো কোনো লেনদেন নেই — প্রথম বিক্রি করে শুরু করুন!
             </div>
           ) : (
             <ul className="space-y-2">
-              {stats.recent.map((s) => {
+              {stats.recent.map((s, idx) => {
                 const isDue = s.saleType === "credit";
                 const Icon = isDue ? Clock : ArrowDownLeft;
                 return (
                   <li
                     key={s.id}
+                    style={{ animationDelay: `${260 + idx * 55}ms` }}
                     className={cn(
-                      "flex items-center gap-3 rounded-2xl border px-4 py-[18px]",
+                      "home-card-appear group flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98]",
                       isDue
                         ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                         : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
@@ -159,7 +161,7 @@ const Index = () => {
                   >
                     <span
                       className={cn(
-                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10",
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10",
                         isDue
                           ? "text-rose-600 dark:text-rose-300"
                           : "text-emerald-600 dark:text-emerald-300",
@@ -191,10 +193,10 @@ const Index = () => {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           {hydrated ? (
             <>
-              <StatCard icon={Wallet} gradient="emerald" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} />
-              <StatCard icon={LineChart} gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} />
-              <StatCard icon={Package} gradient="emerald" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} />
-              <StatCard icon={AlertTriangle} gradient="rose" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
+              <StatCard icon={Wallet} gradient="emerald" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} delay={340} />
+              <StatCard icon={LineChart} gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} delay={400} />
+              <StatCard icon={Package} gradient="emerald" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} delay={460} />
+              <StatCard icon={AlertTriangle} gradient="rose" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} delay={520} />
             </>
           ) : (
             Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
@@ -203,7 +205,10 @@ const Index = () => {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+        <Card
+          style={{ animationDelay: "440ms" }}
+          className="home-card-appear lg:col-span-2 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 transition-transform duration-200 hover:-translate-y-0.5 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+        >
           <CardHeader>
             <CardTitle>গত ১৪ দিনের বিক্রি</CardTitle>
           </CardHeader>
@@ -263,8 +268,12 @@ const Index = () => {
             ) : (
               <ul className="space-y-2">
                 {stats.bestSelling.map((p, idx) => (
-                  <li key={p.id} className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
-                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 font-semibold text-emerald-600 dark:bg-white/10 dark:text-emerald-300")}>
+                  <li
+                    key={p.id}
+                    style={{ animationDelay: `${480 + idx * 55}ms` }}
+                    className="home-card-appear group flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                  >
+                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 font-semibold text-emerald-600 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 dark:text-emerald-300")}>
                       {idx + 1}
                     </div>
                     <div className="min-w-0 flex-1">
@@ -289,14 +298,15 @@ const Index = () => {
           </CardHeader>
           <CardContent className="px-0 pb-0">
             <ul className="space-y-2">
-              {stats.lowStock.map((m) => (
+              {stats.lowStock.map((m, idx) => (
                 <li key={m.id}>
                   <Link
                     to={`/stocks?focus=${encodeURIComponent(m.id)}&edit=1`}
-                    className="flex w-full items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-[18px] text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:px-5 sm:py-[22px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                    style={{ animationDelay: `${540 + idx * 55}ms` }}
+                    className="home-card-appear group flex w-full items-center gap-3 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 px-4 py-[18px] text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-5 sm:py-[22px] dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-rose-600 dark:bg-white/10 dark:text-rose-300">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-rose-600 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 dark:text-rose-300">
                       <AlertTriangle className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -330,10 +340,11 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
       type="button"
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
-      className="relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#000d05_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#000d05_100%)] p-4 text-left text-white transition-transform active:scale-[0.99] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      style={{ animationDelay: "50ms" }}
+      className="home-hero-appear group relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#000d05_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#000d05_100%)] p-4 text-left text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Glowing wave lines (50% reduced opacity) */}
-      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
+      <svg className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
         <path d="M0 150 Q 50 115, 100 150 T 200 150 T 300 150 T 400 150" stroke="rgba(255,255,255,0.14)" strokeWidth="2.5" fill="none" />
         <path d="M0 185 Q 50 150, 100 185 T 200 185 T 300 185 T 400 185" stroke="rgba(255,255,255,0.075)" strokeWidth="2" fill="none" />
         <path d="M0 220 Q 50 190, 100 220 T 200 220 T 300 220 T 400 220" stroke="rgba(255,255,255,0.045)" strokeWidth="2" fill="none" />
@@ -352,14 +363,17 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
 
       <div className="relative flex items-start justify-between">
         {/* EMV-style chip */}
-        <span className="flex h-7 w-10 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40">
+        <span className="flex h-7 w-10 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40 transition-transform duration-300 group-hover:scale-105">
           <span className="flex flex-col gap-[3px]">
             <span className="h-px w-6 bg-amber-900/50" />
             <span className="h-px w-6 bg-amber-900/50" />
             <span className="h-px w-6 bg-amber-900/50" />
           </span>
         </span>
-        <span className="rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide backdrop-blur-sm">Active</span>
+        <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide backdrop-blur-sm">
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />
+          Active
+        </span>
       </div>
 
       <div className="relative mt-2 flex items-center justify-between">
@@ -367,19 +381,19 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
         <p className="text-[10px] uppercase tracking-wider text-white/70">Net Balance · Tap</p>
       </div>
 
-      <p className="relative mt-1 text-[26px] font-extrabold leading-none tracking-tight tabular-nums [text-shadow:0_1px_0_rgba(255,255,255,0.28),0_2px_2px_rgba(0,0,0,0.35),0_6px_16px_rgba(0,0,0,0.35)]">
+      <p className="relative mt-1 text-[26px] font-extrabold leading-none tracking-tight tabular-nums transition-transform duration-200 group-active:scale-[0.98] [text-shadow:0_1px_0_rgba(255,255,255,0.28),0_2px_2px_rgba(0,0,0,0.35),0_6px_16px_rgba(0,0,0,0.35)]">
         {revealed ? currency(net) : "৳ ••••"}
       </p>
 
       {/* Income / Expense split — inline horizontal */}
       <div className="relative mt-3 grid grid-cols-2 gap-2">
-        <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15">
+        <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
           <p className="flex items-center gap-1 text-[11px] text-white/70">
             <ArrowUpRight className="h-3.5 w-3.5" /> আয়
           </p>
           <p className="text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(income) : "৳ ••••"}</p>
         </div>
-        <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15">
+        <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
           <p className="flex items-center gap-1 text-[11px] text-white/70">
             <ArrowDownLeft className="h-3.5 w-3.5" /> খরচ
           </p>
@@ -406,19 +420,22 @@ function QuickAction({
   label,
   to,
   tint,
+  delay = 0,
 }: {
   icon: LucideIcon;
   label: string;
   to: string;
   tint: keyof typeof QUICK_TINTS;
+  delay?: number;
 }) {
   const t = QUICK_TINTS[tint];
   return (
     <Link
       to={to}
-      className={`flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-transform active:scale-[0.97] ${t.bg}`}
+      style={{ animationDelay: `${delay}ms` }}
+      className={`home-card-appear group flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-all duration-200 hover:-translate-y-1 active:scale-[0.95] ${t.bg}`}
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10">
+      <span className="flex h-11 w-11 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10">
         <Icon className={`h-5 w-5 ${t.icon}`} strokeWidth={2.2} />
       </span>
       <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
@@ -449,6 +466,7 @@ function StatCard({
   value,
   sub,
   tone,
+  delay = 0,
 }: {
   icon: LucideIcon;
   gradient: "emerald" | "rose";
@@ -456,6 +474,7 @@ function StatCard({
   value: string;
   sub?: string;
   tone?: "ok" | "warn";
+  delay?: number;
 }) {
   // Permanent Branding Rule:
   // Revenue / Healthy = emerald tint, Expense / Due / Low Stock = rose tint.
@@ -466,10 +485,13 @@ function StatCard({
   const s = STYLE[gradient];
 
   return (
-    <Card className={`rounded-2xl ${s.card}`}>
+    <Card
+      style={{ animationDelay: `${delay}ms` }}
+      className={`home-card-appear group rounded-2xl transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${s.card}`}
+    >
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10 md:h-14 md:w-14">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 md:h-14 md:w-14">
             <Icon className={`h-6 w-6 md:h-7 md:w-7 ${s.icon}`} strokeWidth={2} aria-hidden />
           </div>
           <div className="flex min-w-0 flex-1 flex-col">

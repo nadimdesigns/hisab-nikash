@@ -326,3 +326,33 @@
     border-color: hsl(var(--sidebar-border)) !important;
   }
 }
+
+@keyframes home-card-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes home-hero-card-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.home-card-appear {
+  animation: home-card-appear 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.home-hero-appear {
+  animation: home-hero-card-appear 0.58s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
