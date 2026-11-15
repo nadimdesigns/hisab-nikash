@@ -17,7 +17,7 @@ import { currency } from "@/lib/format";
 import { format } from "date-fns";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
-import { Plus, Trash2 } from "lucide-react";
+import { ArrowUpRight, Plus, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { ProductPickerSheet } from "@/components/ProductPickerSheet";
 import { QtyStepper } from "@/components/QtyStepper";
@@ -152,8 +152,8 @@ export default function Expenses() {
         </div>
 
         {tab === "list" ? (
-          <Card className="form-surface min-w-0 max-w-full overflow-hidden border-0">
-            <CardHeader className="px-4 sm:px-6">
+          <Card className="min-w-0 max-w-full overflow-hidden border-0 bg-transparent">
+            <CardHeader className="px-0 pt-0">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <CardTitle className={typography("h4", "m-0")}>সব খরচ</CardTitle>
                 <Button size="sm" onClick={() => setTab("purchase")}>
@@ -161,10 +161,10 @@ export default function Expenses() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4 px-4 sm:px-6">
+            <CardContent className="space-y-4 px-0 pb-0">
               <div className="grid gap-3 sm:grid-cols-[200px_1fr]">
                 <Select value={type} onValueChange={(v) => setType(v as ExpenseType)}>
-                  <SelectTrigger className="bg-[#f7f7f7] dark:bg-white/5">
+                  <SelectTrigger className="bg-white dark:bg-white/5">
                     <SelectValue placeholder="লেনদেনের ধরন" />
                   </SelectTrigger>
                   <SelectContent>
@@ -176,65 +176,78 @@ export default function Expenses() {
                   placeholder="পাইকার বা ধরন অনুযায়ী খুঁজুন…"
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  className="bg-[#f7f7f7] dark:bg-white/5"
+                  className="bg-white dark:bg-white/5"
                 />
               </div>
 
-              <div className="rounded-lg border overflow-x-auto">
-                <Table className="table-global">
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>তারিখ</TableHead>
-                      <TableHead>ধরন</TableHead>
-                      <TableHead>পাইকার</TableHead>
-                      <TableHead>বিস্তারিত</TableHead>
-                      <TableHead className="text-right">পরিমাণ</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {!hydrated ? (
-                      Array.from({ length: 5 }).map((_, i) => (
-                        <TableRow key={i}>
-                          <TableCell colSpan={5}>
-                            <Skeleton className="h-5 w-full" />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : filtered.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={5} className={typography("body-muted", "py-8 text-center")}>
-                          এখনও কোনো খরচের লেনদেন নেই।
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      filtered.map((r) => (
-                        <TableRow key={r.id}>
-                          <TableCell className="whitespace-nowrap">
-                            {format(new Date(r.date), "MMM d, yyyy")}
-                          </TableCell>
-                          <TableCell>{r.typeLabel}</TableCell>
-                          <TableCell className="font-medium">{r.party}</TableCell>
-                          <TableCell className={typography("body-muted")}>{r.detail}</TableCell>
-                          <TableCell className="text-right font-semibold tabular-nums">
-                            {currency(r.amount)}
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
+              {!hydrated ? (
+                <ul className="space-y-2">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <li
+                      key={i}
+                      className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 p-3 dark:from-rose-500/15 dark:to-rose-500/5"
+                    >
+                      <Skeleton className="h-11 w-11 shrink-0 rounded-xl bg-white/80" />
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                      <Skeleton className="h-5 w-16" />
+                    </li>
+                  ))}
+                </ul>
+              ) : filtered.length === 0 ? (
+                <div
+                  className={typography(
+                    "body-muted",
+                    "rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 py-8 text-center dark:from-rose-500/15 dark:to-rose-500/5",
+                  )}
+                >
+                  এখনও কোনো খরচের লেনদেন নেই।
+                </div>
+              ) : (
+                <ul className="space-y-2">
+                  {filtered.map((r) => (
+                    <li
+                      key={r.id}
+                      className="flex items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-rose-100 to-rose-50 p-3 sm:p-4 dark:from-rose-500/15 dark:to-rose-500/5"
+                    >
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300">
+                        <ArrowUpRight className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="truncate text-sm font-semibold text-foreground">
+                            {r.party}
+                          </span>
+                          <span className="shrink-0 text-sm font-bold tabular-nums text-rose-600 dark:text-rose-400">
+                            −{currency(r.amount)}
+                          </span>
+                        </div>
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                          <span className="inline-flex items-center rounded-md bg-white px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:bg-white/10 dark:text-rose-300">
+                            {r.typeLabel}
+                          </span>
+                          <span className="truncate">
+                            {r.detail} · {format(new Date(r.date), "MMM d, yyyy")}
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               <div className="flex items-center justify-end gap-[15px]">
                 <p className={typography("body-muted")}>
                   মোট ({filtered.length}টি লেনদেন)
                 </p>
-                <p className={typography("h3")}>{currency(total)}</p>
+                <p className={typography("h3", "text-rose-600 dark:text-rose-400")}>{currency(total)}</p>
               </div>
             </CardContent>
           </Card>
         ) : (
-          <Card className="form-surface min-w-0 max-w-full overflow-hidden rounded-3xl border-0">
+          <Card className="min-w-0 max-w-full overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5">
             <CardContent className="space-y-4 px-4 py-5 sm:px-6">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">

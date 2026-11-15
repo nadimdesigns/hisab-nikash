@@ -132,8 +132,8 @@ const Index = () => {
 
         <div className="grid grid-cols-3 gap-1.5">
           <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" />
-          <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="sky" />
-          <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/accounting?new=1" tint="amber" />
+          <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" />
+          <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" />
         </div>
 
         {/* Upcoming dues (Hisab-Kitab "Upcoming" section) */}
@@ -153,14 +153,17 @@ const Index = () => {
               {stats.dues.map((d) => {
                 const paid = d.amountPaid ?? (d.saleType === "credit" ? 0 : d.total);
                 return (
-                  <li key={d.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 p-3 dark:from-sky-500/15 dark:to-sky-500/5">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-sky-600 dark:bg-white/10 dark:text-sky-300">
+                  <li key={d.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-rose-100 to-rose-50 p-3 dark:from-rose-500/15 dark:to-rose-500/5">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300">
                       <Clock className="h-5 w-5" />
                     </span>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold">{d.customer || "বিক্রি"}</p>
                       <p className="text-xs text-muted-foreground">{formatDate(new Date(d.date), "MMM d")} · বাকি {currency(d.total - paid)}</p>
                     </div>
+                    <span className="shrink-0 text-sm font-bold tabular-nums text-rose-600 dark:text-rose-400">
+                      {currency(d.total - paid)}
+                    </span>
                   </li>
                 );
               })}
@@ -182,18 +185,46 @@ const Index = () => {
             </div>
           ) : (
             <ul className="space-y-2">
-              {stats.recent.map((s) => (
-                <li key={s.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:from-emerald-500/15 dark:to-emerald-500/5">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300">
-                    <ArrowDownLeft className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{s.customer || "নগদ বিক্রি"}</p>
-                    <p className="text-xs text-muted-foreground">{formatDate(new Date(s.date), "MMM d")} · {s.items.reduce((n, it) => n + it.qty, 0)}টি আইটেম</p>
-                  </div>
-                  <span className="text-sm font-bold text-emerald-600">+{currency(s.total)}</span>
-                </li>
-              ))}
+              {stats.recent.map((s) => {
+                const isDue = s.saleType === "credit";
+                const Icon = isDue ? Clock : ArrowDownLeft;
+                return (
+                  <li
+                    key={s.id}
+                    className={cn(
+                      "flex items-center gap-3 rounded-2xl p-3",
+                      isDue
+                        ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
+                        : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-white/10",
+                        isDue
+                          ? "text-rose-600 dark:text-rose-300"
+                          : "text-emerald-600 dark:text-emerald-300",
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold">{s.customer || "নগদ বিক্রি"}</p>
+                      <p className="text-xs text-muted-foreground">{formatDate(new Date(s.date), "MMM d")} · {s.items.reduce((n, it) => n + it.qty, 0)}টি আইটেম</p>
+                    </div>
+                    <span
+                      className={cn(
+                        "text-sm font-bold tabular-nums",
+                        isDue
+                          ? "text-rose-600 dark:text-rose-400"
+                          : "text-emerald-600 dark:text-emerald-400",
+                      )}
+                    >
+                      {isDue ? "" : "+"}{currency(s.total)}
+                    </span>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
@@ -201,10 +232,10 @@ const Index = () => {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
           {hydrated ? (
             <>
-              <StatCard icon={Wallet} gradient="sky" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} />
+              <StatCard icon={Wallet} gradient="emerald" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} />
               <StatCard icon={LineChart} gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} />
-              <StatCard icon={Package} gradient="violet" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} />
-              <StatCard icon={AlertTriangle} gradient="amber" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
+              <StatCard icon={Package} gradient="emerald" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} />
+              <StatCard icon={AlertTriangle} gradient="rose" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} />
             </>
           ) : (
             Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />)
@@ -213,7 +244,7 @@ const Index = () => {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2 rounded-2xl border-0 bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5">
+        <Card className="lg:col-span-2 rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
           <CardHeader>
             <CardTitle>গত ১৪ দিনের বিক্রি</CardTitle>
           </CardHeader>
@@ -273,15 +304,15 @@ const Index = () => {
             ) : (
               <ul className="space-y-2">
                 {stats.bestSelling.map((p, idx) => (
-                  <li key={p.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-violet-100 to-purple-50 p-3 dark:from-violet-500/15 dark:to-violet-500/5">
-                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white font-semibold text-violet-600 dark:bg-white/10 dark:text-violet-300")}>
+                  <li key={p.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:from-emerald-500/15 dark:to-emerald-500/5">
+                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white font-semibold text-emerald-600 dark:bg-white/10 dark:text-emerald-300")}>
                       {idx + 1}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={typography("body-strong", "truncate")}>{p.name}</p>
                       <p className={typography("body-muted")}>{currency(p.revenue)} বিক্রি</p>
                     </div>
-                    <Badge variant="secondary" className="bg-white text-violet-700 dark:bg-white/10 dark:text-violet-300">{bnNumber(p.qty)} বিক্রি</Badge>
+                    <Badge variant="secondary" className="bg-white text-emerald-700 dark:bg-white/10 dark:text-emerald-300">{bnNumber(p.qty)} বিক্রি</Badge>
                   </li>
                 ))}
               </ul>
@@ -294,7 +325,7 @@ const Index = () => {
         <Card className="mt-6 rounded-2xl border-0 bg-transparent">
           <CardHeader className="px-0 pt-0">
             <CardTitle className="flex items-center gap-2 text-base font-bold">
-              <AlertTriangle className="h-4 w-4 text-warning" /> কম স্টকের পণ্য
+              <AlertTriangle className="h-4 w-4 text-rose-600" /> কম স্টকের পণ্য
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0 pb-0">
@@ -303,17 +334,17 @@ const Index = () => {
                 <li key={m.id}>
                   <Link
                     to={`/stocks?focus=${encodeURIComponent(m.id)}&edit=1`}
-                    className="flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-amber-100 to-orange-50 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:from-amber-500/15 dark:to-amber-500/5"
+                    className="flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-rose-100 to-rose-50 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:from-rose-500/15 dark:to-rose-500/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-amber-600 dark:bg-white/10 dark:text-amber-300">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300">
                       <AlertTriangle className="h-5 w-5" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className={typography("body-strong", "block truncate")}>{m.name}</span>
                       <span className={typography("body-muted", "block truncate")}>{m.sku || "—"}</span>
                     </span>
-                    <Badge variant="destructive" className="shrink-0">
+                    <Badge variant="destructive" className="shrink-0 bg-white text-rose-700 hover:bg-white dark:bg-white/10 dark:text-rose-300">
                       {bnNumber(m.stock)} {unitLabel(m.unit)} বাকি
                     </Badge>
                   </Link>
@@ -408,8 +439,7 @@ function BalanceCardSkeleton() {
 
 const QUICK_TINTS = {
   emerald: { icon: "text-emerald-600 dark:text-emerald-300", bg: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5" },
-  sky: { icon: "text-sky-600 dark:text-sky-300", bg: "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5" },
-  amber: { icon: "text-amber-600 dark:text-amber-300", bg: "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-500/15 dark:to-amber-500/5" },
+  rose: { icon: "text-rose-600 dark:text-rose-300", bg: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5" },
 } as const;
 
 function QuickAction({
@@ -462,19 +492,17 @@ function StatCard({
   tone,
 }: {
   icon: LucideIcon;
-  gradient: "sky" | "emerald" | "violet" | "amber";
+  gradient: "emerald" | "rose";
   label: string;
   value: string;
   sub?: string;
   tone?: "ok" | "warn";
 }) {
-  // Soft pastel gradient card (Schoolzee style): translucent white icon
-  // chip on a tinted gradient, deeper icon color, dark mode = faint tint.
+  // Permanent Branding Rule:
+  // Revenue / Healthy = emerald tint, Expense / Due / Low Stock = rose tint.
   const STYLE = {
-    sky: { card: "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5", icon: "text-sky-600 dark:text-sky-300" },
     emerald: { card: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5", icon: "text-emerald-600 dark:text-emerald-300" },
-    violet: { card: "bg-gradient-to-br from-violet-100 to-purple-50 dark:from-violet-500/15 dark:to-violet-500/5", icon: "text-violet-600 dark:text-violet-300" },
-    amber: { card: "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-500/15 dark:to-amber-500/5", icon: "text-amber-600 dark:text-amber-300" },
+    rose: { card: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5", icon: "text-rose-600 dark:text-rose-300" },
   } as const;
   const s = STYLE[gradient];
 

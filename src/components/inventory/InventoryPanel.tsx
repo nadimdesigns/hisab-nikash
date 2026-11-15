@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,14 +20,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Pencil, Trash2 } from "lucide-react";
 import { Product, useShop, useShopHydrated } from "@/store/shop";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -211,7 +202,7 @@ export default function InventoryPanel({
   useEffect(() => {
     if (!focusId) return;
     setHighlightId(focusId);
-    const el = document.querySelector<HTMLTableRowElement>(
+    const el = document.querySelector<HTMLElement>(
       `[data-product-id="${focusId}"]`,
     );
     if (el) {
@@ -382,120 +373,127 @@ export default function InventoryPanel({
 
       <CrossTabSyncBanner className="mb-3" />
 
-      <Card className="form-surface overflow-hidden rounded-[15px] border-0">
-        <CardContent className="p-0">
-          <Table className="table-global">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="min-w-[200px] md:min-w-0">পণ্য</TableHead>
-                <TableHead className="min-w-[150px] md:min-w-0">ক্যাটাগরি</TableHead>
-                <TableHead className="min-w-[130px] text-right md:min-w-0">স্টক / দাম</TableHead>
-                <TableHead className="w-[76px]" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {!hydrated ? (
-                Array.from({ length: 8 }).map((_, i) => (
-                  <TableRow key={`sk-${i}`} aria-busy="true">
-                    <TableCell>
-                      <div className="min-w-0 space-y-1.5">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-16" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="space-y-1.5">
-                        <Skeleton className="h-3 w-20" />
-                        <Skeleton className="h-3 w-24" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="ml-auto space-y-1.5">
-                        <Skeleton className="ml-auto h-5 w-14 rounded-full" />
-                        <Skeleton className="ml-auto h-3 w-16" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex justify-end gap-1">
-                        <Skeleton className="h-8 w-8 rounded-md" />
-                        <Skeleton className="h-8 w-8 rounded-md" />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <>
-                  {filtered.map((m) => {
-                    const low = m.stock <= m.reorderLevel;
-                    const days = daysUntil(m.expiry);
-                    return (
-                      <TableRow
-                        key={m.id}
-                        data-product-id={m.id}
+      {!hydrated ? (
+        <ul className="space-y-2">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <li
+              key={`sk-${i}`}
+              aria-busy="true"
+              className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:from-emerald-500/15 dark:to-emerald-500/5"
+            >
+              <Skeleton className="h-11 w-11 shrink-0 rounded-xl bg-white/80" />
+              <div className="min-w-0 flex-1 space-y-1.5">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+              <div className="space-y-1.5 text-right">
+                <Skeleton className="ml-auto h-5 w-14 rounded-md" />
+                <Skeleton className="ml-auto h-3 w-16" />
+              </div>
+            </li>
+          ))}
+        </ul>
+      ) : filtered.length === 0 ? (
+        <div
+          className={typography(
+            "body-muted",
+            "rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:from-emerald-500/15 dark:to-emerald-500/5",
+          )}
+        >
+          No products found.
+        </div>
+      ) : (
+        <ul className="space-y-2">
+          {filtered.map((m) => {
+            // Permanent branding rule:
+            // Healthy stock = Tint Green, Low/Out of stock = Tint Red
+            const low = m.stock <= m.reorderLevel;
+            const days = daysUntil(m.expiry);
+            return (
+              <li
+                key={m.id}
+                data-product-id={m.id}
+                className={cn(
+                  "flex items-center gap-3 rounded-2xl border-0 p-3 transition-colors sm:p-4",
+                  low
+                    ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
+                    : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                  highlightId === m.id && "ring-2 ring-primary/50",
+                )}
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="truncate text-sm font-semibold text-foreground">
+                      {m.name}
+                    </span>
+                    <span
+                      className={cn(
+                        "inline-flex shrink-0 items-center whitespace-nowrap rounded-md bg-white px-2 py-0.5 text-xs font-semibold tabular-nums dark:bg-white/10",
+                        low
+                          ? "text-rose-700 dark:text-rose-300"
+                          : "text-emerald-700 dark:text-emerald-300",
+                      )}
+                    >
+                      {bnNumber(m.stock)} {unitLabel(m.unit)}
+                    </span>
+                  </div>
+
+                  <div className="mt-1 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                      <span
                         className={cn(
-                          "transition-colors",
-                          highlightId === m.id && "bg-primary/15 ring-2 ring-primary/40",
+                          "inline-flex items-center rounded-md bg-white px-2 py-0.5 text-[11px] font-medium dark:bg-white/10",
+                          low
+                            ? "text-rose-800 dark:text-rose-300"
+                            : "text-emerald-800 dark:text-emerald-300",
                         )}
                       >
-                        <TableCell className="font-medium">
-                          <span className="block min-w-0">
-                            <span className="block truncate text-sm font-semibold">{m.name}</span>
-                            <span className="mt-0.5 inline-flex items-center rounded-md bg-emerald-100 px-2 py-0.5 text-[11px] font-medium text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300">
-                              {m.sku}
-                            </span>
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="truncate text-sm font-medium">{m.category || "—"}</div>
-                          <div className={cn("mt-0.5 truncate text-xs text-muted-foreground", !!m.expiry && days <= 60 && "text-warning")}>
-                            {m.batch ? `${m.batch}${m.expiry ? " · " : ""}` : ""}
-                            {m.expiry ? `${m.expiry} ${days >= 0 ? `(${days}d)` : "(expired)"}` : !m.batch ? "—" : ""}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <span className={cn(
-                            "inline-flex items-center whitespace-nowrap rounded-md px-2 py-0.5 text-xs font-semibold tabular-nums",
-                            low
-                              ? "bg-rose-100 text-rose-800 dark:bg-rose-500/15 dark:text-rose-300"
-                              : "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300",
-                          )}>
-                            {bnNumber(m.stock)} {unitLabel(m.unit)}
-                          </span>
-                          <div className="mt-0.5 whitespace-nowrap text-xs tabular-nums text-muted-foreground">
-                            {currency(m.costPrice)} / {currency(m.sellPrice)}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-1">
-                            <Button size="icon" variant="ghost" onClick={() => openEdit(m)}>
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              onClick={() => setPendingDelete(m)}
-                              aria-label={`Delete ${m.name}`}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                  {filtered.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={4} className={typography("body-muted", "py-10 text-center")}>
-                        No products found.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                        {m.sku}
+                      </span>
+                      {m.category && <span className="truncate">· {m.category}</span>}
+                      {(m.batch || m.expiry) && (
+                        <span
+                          className={cn(
+                            "truncate",
+                            !!m.expiry && days <= 60 && "font-medium text-rose-600 dark:text-rose-400",
+                          )}
+                        >
+                          · {m.batch ? `${m.batch}${m.expiry ? " · " : ""}` : ""}
+                          {m.expiry ? `${m.expiry} ${days >= 0 ? `(${days}d)` : "(expired)"}` : ""}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="whitespace-nowrap text-xs font-medium tabular-nums text-muted-foreground">
+                      {currency(m.costPrice)} / {currency(m.sellPrice)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex shrink-0 items-center gap-1">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => openEdit(m)}
+                    className="h-9 w-9 rounded-xl bg-white hover:bg-white/90 dark:bg-white/10"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setPendingDelete(m)}
+                    aria-label={`Delete ${m.name}`}
+                    className="h-9 w-9 rounded-xl bg-white text-rose-600 hover:bg-white/90 hover:text-rose-700 dark:bg-white/10 dark:text-rose-300"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
 
       <AlertDialog open={!!pendingDelete} onOpenChange={(v) => !v && setPendingDelete(null)}>
         <AlertDialogContent>

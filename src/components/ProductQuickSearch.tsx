@@ -205,7 +205,14 @@ export function ProductQuickSearch() {
                     const days = daysUntil(m.expiry);
                     return (
                       <li key={m.id}>
-                        <div className="group flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 transition-colors dark:from-emerald-500/15 dark:to-emerald-500/5">
+                        <div
+                          className={cn(
+                            "group flex w-full items-center gap-3 rounded-2xl border-0 p-3 transition-colors",
+                            low
+                              ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
+                              : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                          )}
+                        >
                           <button
                             type="button"
                             onClick={() => pickProduct(m.id)}
@@ -215,7 +222,7 @@ export function ProductQuickSearch() {
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-2">
                                 <p className={cn(BODY_TEXT, "truncate font-medium")}>{m.name}</p>
-                                <span className={cn(BODY_TEXT, "shrink-0 text-muted-foreground")}>{currency(m.sellPrice)}</span>
+                                <span className={cn(BODY_TEXT, "shrink-0 font-semibold text-emerald-600 dark:text-emerald-400")}>{currency(m.sellPrice)}</span>
                               </div>
                               <p className={typography("body-muted", "truncate")}>
                                 {m.sku}{m.category ? ` · ${m.category}` : ""}
@@ -270,7 +277,7 @@ export function ProductQuickSearch() {
                         type="button"
                         onClick={() => pickCustomer(c.name)}
                         aria-label={`${c.name} এর বিবরণ খুলুন`}
-                        className="flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-sky-100 to-sky-50 p-3 text-left transition-colors dark:from-sky-500/15 dark:to-sky-500/5"
+                        className="flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 text-left transition-colors dark:from-emerald-500/15 dark:to-emerald-500/5"
                       >
                         <span className="min-w-0 flex-1">
                           <span className={cn(BODY_TEXT, "block truncate font-medium")}>{c.name}</span>

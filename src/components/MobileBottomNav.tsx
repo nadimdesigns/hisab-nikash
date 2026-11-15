@@ -10,11 +10,8 @@ type QuickAction = {
   title: string;
   icon: typeof Banknote;
   url: string;
-  // Soft pastel surface + bold gradient blob behind the icon for a 3D look.
   surface: string;
-  gradient: string;
-  iconColor: string;
-  ring: string;
+  iconBox: string;
 };
 
 const quickActions: QuickAction[] = [
@@ -22,46 +19,36 @@ const quickActions: QuickAction[] = [
     title: ACTION.cashSale,
     icon: Banknote,
     url: "/new-sale?mode=cash",
-    surface: "bg-emerald-50 dark:bg-emerald-950/40",
-    gradient: "from-emerald-400 to-green-600",
-    iconColor: "text-white",
-    ring: "ring-emerald-200/60 dark:ring-emerald-500/20",
+    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
     title: ACTION.newPurchase,
     icon: PackagePlus,
     url: "/expenses?action=new",
-    surface: "bg-rose-50 dark:bg-rose-950/40",
-    gradient: "from-rose-400 to-red-500",
-    iconColor: "text-white",
-    ring: "ring-rose-200/60 dark:ring-rose-500/20",
+    surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
+    iconBox: "bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300",
   },
   {
     title: ACTION.dueSale,
     icon: Clock,
     url: "/new-sale?mode=credit",
-    surface: "bg-rose-50 dark:bg-rose-950/40",
-    gradient: "from-rose-400 to-red-500",
-    iconColor: "text-white",
-    ring: "ring-rose-200/60 dark:ring-rose-500/20",
+    surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
+    iconBox: "bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300",
   },
   {
     title: ACTION.newCustomer,
     icon: UserPlus,
     url: "/customers?new=1",
-    surface: "bg-sky-50 dark:bg-sky-950/40",
-    gradient: "from-sky-400 to-blue-600",
-    iconColor: "text-white",
-    ring: "ring-sky-200/60 dark:ring-sky-500/20",
+    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
   {
     title: `${NAV.stocks} ${ACTION.add}`,
     icon: Package,
     url: "/stocks?new=1",
-    surface: "bg-violet-50 dark:bg-violet-950/40",
-    gradient: "from-violet-400 to-purple-600",
-    iconColor: "text-white",
-    ring: "ring-violet-200/60 dark:ring-violet-500/20",
+    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
   },
 ];
 
@@ -170,29 +157,19 @@ export function MobileBottomNav() {
                     navigate(action.url);
                   }}
                   className={cn(
-                    "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl p-5 ring-1 transition-all active:scale-[0.97]",
+                    "group relative flex flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border-0 p-5 transition-all active:scale-[0.97]",
                     action.surface,
-                    action.ring,
                     "animate-fade-in",
                   )}
                   style={{ animationDelay: `${idx * 60}ms` }}
                 >
-                  {/* Decorative gradient blob */}
                   <span
                     className={cn(
-                      "pointer-events-none absolute -right-6 -top-6 h-20 w-20 rounded-full bg-gradient-to-br opacity-20 blur-2xl",
-                      action.gradient,
-                    )}
-                  />
-                  {/* 3D-style icon tile */}
-                  <span
-                    className={cn(
-                      "relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br shadow-lg shadow-black/10 transition-transform group-active:scale-95",
-                      action.gradient,
+                      "relative flex h-12 w-12 items-center justify-center rounded-xl transition-transform group-active:scale-95",
+                      action.iconBox,
                     )}
                   >
-                    <span className="absolute inset-x-2 top-1 h-3 rounded-full bg-white/30 blur-[2px]" />
-                    <Icon className={cn("relative h-7 w-7 drop-shadow-sm", action.iconColor)} strokeWidth={2} />
+                    <Icon className="relative h-6 w-6" strokeWidth={2} />
                   </span>
                   <span className={cn(typography("body-strong"), "text-center text-foreground")}>
                     {action.title}

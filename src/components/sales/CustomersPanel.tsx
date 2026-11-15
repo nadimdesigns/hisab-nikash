@@ -539,7 +539,7 @@ export default function CustomersPanel() {
                       className={cn(
                         "flex w-full items-center gap-3 rounded-2xl border-0 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4",
                         c.due > 0
-                          ? "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5"
+                          ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
                           : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
                       )}
                     >

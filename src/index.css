@@ -226,6 +226,24 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none; /* Chrome, Safari, new Edge */
   }
+
+  /* Permanent App-Wide Branding Color Rule:
+     - Revenue / Cash Sale / Payment (Joma) / Healthy Stock = Tint Green
+     - Expense / Purchase / Due Sale / Due / Low Stock      = Tint Red */
+  .tint-revenue {
+    @apply bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5;
+  }
+  .tint-expense,
+  .tint-due {
+    @apply bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5;
+  }
+  .tint-icon-revenue {
+    @apply bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300;
+  }
+  .tint-icon-expense,
+  .tint-icon-due {
+    @apply bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300;
+  }
 }
 
 @layer base {

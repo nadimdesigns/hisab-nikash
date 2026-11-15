@@ -444,7 +444,7 @@ export default function CustomerDetails() {
 
         {/* Payment — only when due exists */}
         {hasDue && (
-          <Card className="rounded-2xl border-0 bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5">
+          <Card className="rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
             <CardContent className="p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between gap-2">
                 <h3 className={typography("body-strong")}>টাকা গ্রহণ</h3>
@@ -526,21 +526,19 @@ export default function CustomerDetails() {
             <ol className="space-y-2">
               {history.map((h) => {
                 const isPayment = h.kind === "payment";
+                const isDue = h.kind === "due";
                 const itemCount = h.items.reduce((s, it) => s + it.qty, 0);
                 const preview = isPayment
                   ? "টাকা গ্রহণ করা হয়েছে"
                   : h.items.slice(0, 2).map((it) => it.name).join(", ");
                 const more = !isPayment && h.items.length > 2 ? ` +${h.items.length - 2} আরও` : "";
                 const badgeVariant =
-                  h.kind === "due" ? "destructive" : h.kind === "payment" ? "default" : "secondary";
+                  isDue ? "destructive" : isPayment ? "default" : "secondary";
                 const badgeLabel =
-                  h.kind === "due" ? "বাকি" : h.kind === "payment" ? "পেমেন্ট" : "নগদ";
-                const cardTint =
-                  h.kind === "due"
-                    ? "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-500/15 dark:to-amber-500/5"
-                    : h.kind === "payment"
-                      ? "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5"
-                      : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5";
+                  isDue ? "বাকি" : isPayment ? "পেমেন্ট" : "নগদ";
+                const cardTint = isDue
+                  ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
+                  : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5";
                 return (
                   <li key={`${h.kind}-${h.id}`}>
                     <Card className={cn("rounded-2xl border-0 transition-transform hover:-translate-y-0.5 active:scale-[0.99]", cardTint)}>
@@ -564,10 +562,12 @@ export default function CustomerDetails() {
                           <p
                             className={cn(
                               typography("body-strong"),
-                              isPayment && "text-success",
+                              isDue
+                                ? "text-rose-600 dark:text-rose-400"
+                                : "text-emerald-600 dark:text-emerald-400",
                             )}
                           >
-                            {isPayment ? "+" : ""}
+                            {isPayment ? "+" : isDue ? "-" : "+"}
                             {currency(h.total)}
                           </p>
                         </div>
@@ -594,19 +594,13 @@ function StatTile({
   tone?: "default" | "success" | "destructive" | "muted";
 }) {
   const valueClass =
-    tone === "success"
-      ? "text-success"
-      : tone === "destructive"
-        ? "text-destructive"
-        : tone === "muted"
-          ? "text-muted-foreground"
-          : "text-foreground";
+    tone === "success" || tone === "default"
+      ? "text-emerald-600 dark:text-emerald-400"
+      : "text-rose-600 dark:text-rose-400";
   const bgClass =
-    tone === "success"
-      ? "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5"
-      : tone === "destructive" || tone === "muted"
-        ? "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-500/15 dark:to-amber-500/5"
-        : "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5";
+    tone === "destructive" || tone === "muted"
+      ? "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
+      : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5";
   return (
     <div className={cn("min-w-0 rounded-2xl border-0 p-4", bgClass)}>
       <p className={typography("body-muted", "truncate")}>{label}</p>

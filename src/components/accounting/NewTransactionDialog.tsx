@@ -12,8 +12,7 @@ const OPTIONS: {
   description: string;
   icon: typeof Banknote;
   surface: string;
-  gradient: string;
-  ring: string;
+  iconBox: string;
   route: string;
 }[] = [
   {
@@ -21,9 +20,8 @@ const OPTIONS: {
     title: "বিক্রি",
     description: "কাস্টমারের কাছে নগদ বা বাকি বিক্রি রেকর্ড করুন।",
     icon: Banknote,
-    surface: "bg-emerald-50 dark:bg-emerald-950/40",
-    gradient: "from-emerald-400 to-green-600",
-    ring: "ring-emerald-200/60 dark:ring-emerald-500/20",
+    surface: "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+    iconBox: "bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300",
     route: "/new-sale",
   },
   {
@@ -31,9 +29,8 @@ const OPTIONS: {
     title: "ক্রয়",
     description: "পাইকারের কাছ থেকে খরচ বা স্টক ক্রয় রেকর্ড করুন।",
     icon: PackagePlus,
-    surface: "bg-rose-50 dark:bg-rose-950/40",
-    gradient: "from-rose-400 to-red-500",
-    ring: "ring-rose-200/60 dark:ring-rose-500/20",
+    surface: "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5",
+    iconBox: "bg-white text-rose-600 dark:bg-white/10 dark:text-rose-300",
     route: "/expenses?action=new",
   },
 ];
@@ -70,24 +67,17 @@ export default function NewTransactionDialog({
                     navigate(opt.route);
                   }}
                   className={cn(
-                    "group relative flex items-center gap-4 overflow-hidden rounded-2xl p-5 text-left ring-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:ring-2 active:scale-[0.98]",
+                    "group relative flex items-center gap-4 overflow-hidden rounded-2xl border-0 p-5 text-left transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]",
                     opt.surface,
-                    opt.ring,
                   )}
                 >
                   <span
                     className={cn(
-                      "pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-gradient-to-br opacity-20 blur-2xl transition-all duration-500 group-hover:scale-150 group-hover:opacity-40",
-                      opt.gradient,
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br text-white shadow-lg shadow-black/10 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",
-                      opt.gradient,
+                      "relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl",
+                      opt.iconBox,
                     )}
                   >
-                    <Icon className="h-7 w-7 drop-shadow-sm" strokeWidth={2} />
+                    <Icon className="h-6 w-6" strokeWidth={2} />
                   </span>
                   <div className="min-w-0">
                     <p className={typography("body-strong", "m-0 text-foreground")}>

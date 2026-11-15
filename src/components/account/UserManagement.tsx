@@ -143,10 +143,10 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
               const isAdmin = u.role === "admin";
               const initials = (u.display_name ?? u.email ?? "U").slice(0, 2).toUpperCase();
               return (
-                <li key={u.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 p-3 sm:p-4 dark:from-sky-500/15 dark:to-sky-500/5">
+                <li key={u.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 sm:p-4 dark:from-emerald-500/15 dark:to-emerald-500/5">
                   <Avatar className="h-10 w-10 shrink-0 rounded-xl">
                     {u.avatar_url && <AvatarImage src={u.avatar_url} alt={u.display_name ?? ""} />}
-                    <AvatarFallback className="rounded-xl bg-white text-sky-600 text-xs font-semibold dark:bg-white/10 dark:text-sky-300">
+                    <AvatarFallback className="rounded-xl bg-white text-emerald-600 text-xs font-semibold dark:bg-white/10 dark:text-emerald-300">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -156,7 +156,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                         {u.display_name ?? u.email ?? "নামহীন"}
                       </p>
                       {isAdmin && (
-                        <Badge variant="secondary" className="gap-1 bg-white text-sky-700 dark:bg-white/10 dark:text-sky-300">
+                        <Badge variant="secondary" className="gap-1 bg-white text-emerald-700 dark:bg-white/10 dark:text-emerald-300">
                           <ShieldCheck className="h-3 w-3" />
                           অ্যাডমিন
                         </Badge>
