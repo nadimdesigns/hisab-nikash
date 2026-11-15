@@ -693,10 +693,10 @@ export default function Accounting() {
                               </span>
                               <span
                                 className={cn(
-                                  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10",
+                                  "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold text-white",
                                   isRevenue
-                                    ? "text-emerald-700 dark:text-emerald-300"
-                                    : "text-rose-700 dark:text-rose-300",
+                                    ? "bg-emerald-600"
+                                    : "bg-rose-600",
                                 )}
                               >
                                 {TXN_TYPE_LABEL[t.type]}

@@ -626,7 +626,7 @@ export default function Expenses() {
                             <span className="truncate text-sm font-semibold text-foreground">
                               {r.party}
                             </span>
-                            <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-rose-700 dark:bg-white/10 dark:text-rose-300">
+                            <span className="inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-rose-600 px-2 py-0.5 text-[11px] font-semibold text-white">
                               {r.typeLabel}
                             </span>
                           </div>
