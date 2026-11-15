@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { format } from "date-fns";
-import { ArrowLeft, Download, Mail, MapPin, Pencil, Phone, StickyNote, Wallet } from "lucide-react";
+import { ArrowDownLeft, ArrowLeft, Clock, Download, Mail, MapPin, Pencil, Phone, StickyNote, Wallet } from "lucide-react";
 import { z } from "zod";
 
 import AppLayout from "@/components/AppLayout";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -289,108 +288,144 @@ export default function CustomerDetails() {
     toast({ title: "CSV এক্সপোর্ট হয়েছে", description: `${customerName} এর লেনদেন ডাউনলোড হয়েছে।` });
   };
 
-  const hasAny = stats.purchases + stats.dueEntries > 0;
+  const hasAny = stats.purchases + stats.dueEntries > 0 || payments.some((p) => (p.customer || "Walk-in") === customerName);
   const hasDue = stats.due > 0;
 
   return (
-    <AppLayout title="কাস্টমার">
+    <AppLayout title="কাস্টমার বিবরণ">
       <div
-        className="mx-auto max-w-3xl space-y-6"
+        className="mx-auto max-w-3xl space-y-4"
         style={{ fontFamily: "'Anek Bangla', sans-serif" }}
       >
-        {/* Top nav */}
+        {/* Top Action Bar */}
         <div className="flex items-center justify-between gap-2">
-          <Button variant="ghost" size="sm" className="gap-1 -ml-2" onClick={() => navigate(-1)}>
-            <ArrowLeft className="h-4 w-4" /> ফিরে যান
-          </Button>
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/customers">সব কাস্টমার</Link>
-          </Button>
-        </div>
-
-        {/* Identity */}
-        <div className="flex items-center gap-4">
-          <div className="min-w-0 flex-1">
-            <h1 className={typography("h2", "truncate")}>{customerName || "কাস্টমার"}</h1>
-            <p className={typography("body-muted")}>
-              {hasAny
-                ? `${stats.purchases + stats.dueEntries}টি লেনদেন · সর্বশেষ ${
-                    stats.lastPurchase
-                      ? format(new Date(stats.lastPurchase), "MMM d, yyyy")
-                      : "—"
-                  }`
-                : "এখনও কোনো লেনদেন নেই।"}
-            </p>
-          </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
-            className="shrink-0 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
-            onClick={exportCSV}
-            disabled={history.length === 0}
+            onClick={() => navigate("/customers")}
+            className="h-10 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 font-semibold hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
           >
-            <Download className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">এক্সপোর্ট</span>
+            <ArrowLeft className="h-4 w-4" />
+            <span>সকল কাস্টমার</span>
           </Button>
+
+          <div className="flex items-center gap-2">
+            {!isEditing && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={startEdit}
+                className="h-10 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 font-semibold hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                <span>{hasProfileInfo ? "সম্পাদনা" : "তথ্য যোগ"}</span>
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-10 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 font-semibold hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              onClick={exportCSV}
+              disabled={history.length === 0}
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>এক্সপোর্ট</span>
+            </Button>
+          </div>
         </div>
 
-        {/* Customer details / edit */}
-        <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
-          <CardContent className="p-4 sm:p-5">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <h3 className={typography("body-strong")}>কাস্টমারের বিস্তারিত</h3>
-              {!isEditing && (
-                <Button type="button" variant="ghost" size="sm" className="gap-1" onClick={startEdit}>
-                  <Pencil className="h-3.5 w-3.5" />
-                  {hasProfileInfo ? "সম্পাদনা" : "তথ্য যোগ করুন"}
-                </Button>
-              )}
+        {/* Unified Customer Profile & Identity Card */}
+        <Card
+          className={cn(
+            "overflow-hidden rounded-3xl border",
+            hasDue
+              ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+              : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+          )}
+        >
+          <CardContent className="p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className={typography("h3", "m-0 truncate leading-tight")}>
+                    {customerName || "কাস্টমার"}
+                  </h1>
+                  <span
+                    className={cn(
+                      "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-2.5 py-0.5 text-xs font-bold dark:bg-white/10",
+                      hasDue
+                        ? "text-rose-600 dark:text-rose-300"
+                        : "text-emerald-700 dark:text-emerald-300",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        hasDue ? "bg-rose-500" : "bg-emerald-500",
+                      )}
+                    />
+                    {hasDue ? `বাকি ${currency(stats.due)}` : "পরিশোধিত"}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {hasAny
+                    ? `${stats.purchases + stats.dueEntries}টি লেনদেন · সর্বশেষ ${
+                        stats.lastPurchase
+                          ? format(new Date(stats.lastPurchase), "MMM d, yyyy")
+                          : "—"
+                      }`
+                    : "এখনও কোনো লেনদেন নেই"}
+                </p>
+              </div>
             </div>
 
+            {/* Contact Info or Edit Form */}
             {!isEditing ? (
-              hasProfileInfo ? (
-                <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <InfoRow icon={<Phone className="h-4 w-4" />} label="ফোন" value={profile.phone} />
-                  <InfoRow icon={<Mail className="h-4 w-4" />} label="ইমেইল" value={profile.email} />
-                  <InfoRow icon={<MapPin className="h-4 w-4" />} label="ঠিকানা" value={profile.address} />
-                  <InfoRow icon={<StickyNote className="h-4 w-4" />} label="নোট" value={profile.notes} wide />
+              hasProfileInfo && (
+                <dl className="mt-4 grid grid-cols-1 gap-2.5 border-t border-black/5 pt-4 dark:border-white/10 sm:grid-cols-2">
+                  <InfoRow icon={<Phone className="h-4 w-4" />} label="ফোন" value={profile.phone} hasDue={hasDue} />
+                  <InfoRow icon={<Mail className="h-4 w-4" />} label="ইমেইল" value={profile.email} hasDue={hasDue} />
+                  <InfoRow icon={<MapPin className="h-4 w-4" />} label="ঠিকানা" value={profile.address} hasDue={hasDue} />
+                  <InfoRow icon={<StickyNote className="h-4 w-4" />} label="নোট" value={profile.notes} wide hasDue={hasDue} />
                 </dl>
-              ) : (
-                <p className={typography("body-muted")}>এখনও কোনো যোগাযোগের তথ্য নেই। এই কাস্টমারের জন্য ফোন, ইমেইল, ঠিকানা বা নোট যোগ করুন।</p>
               )
             ) : (
-              <div className="space-y-3">
-                <FieldRow label="ফোন" htmlFor="cust-phone" error={errors.phone}>
-                  <Input
-                    id="cust-phone"
-                    type="tel"
-                    inputMode="tel"
-                    maxLength={20}
-                    className="h-[46px] rounded-xl bg-white dark:bg-white/10"
-                    placeholder="+880 1XXX XXXXXX"
-                    value={draft.phone ?? ""}
-                    onChange={(e) => updateDraft("phone", e.target.value)}
-                    aria-invalid={Boolean(errors.phone)}
-                  />
-                </FieldRow>
-                <FieldRow label="ইমেইল" htmlFor="cust-email" error={errors.email}>
-                  <Input
-                    id="cust-email"
-                    type="email"
-                    maxLength={255}
-                    className="h-[46px] rounded-xl bg-white dark:bg-white/10"
-                    placeholder="name@example.com"
-                    value={draft.email ?? ""}
-                    onChange={(e) => updateDraft("email", e.target.value)}
-                    aria-invalid={Boolean(errors.email)}
-                  />
-                </FieldRow>
+              <div className="mt-4 space-y-3 border-t border-black/5 pt-4 dark:border-white/10">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <FieldRow label="ফোন" htmlFor="cust-phone" error={errors.phone}>
+                    <Input
+                      id="cust-phone"
+                      type="tel"
+                      inputMode="tel"
+                      maxLength={20}
+                      className="h-[44px] rounded-xl bg-white dark:bg-white/10"
+                      placeholder="+880 1XXX XXXXXX"
+                      value={draft.phone ?? ""}
+                      onChange={(e) => updateDraft("phone", e.target.value)}
+                      aria-invalid={Boolean(errors.phone)}
+                    />
+                  </FieldRow>
+                  <FieldRow label="ইমেইল" htmlFor="cust-email" error={errors.email}>
+                    <Input
+                      id="cust-email"
+                      type="email"
+                      maxLength={255}
+                      className="h-[44px] rounded-xl bg-white dark:bg-white/10"
+                      placeholder="name@example.com"
+                      value={draft.email ?? ""}
+                      onChange={(e) => updateDraft("email", e.target.value)}
+                      aria-invalid={Boolean(errors.email)}
+                    />
+                  </FieldRow>
+                </div>
                 <FieldRow label="ঠিকানা" htmlFor="cust-address" error={errors.address}>
                   <Input
                     id="cust-address"
                     maxLength={200}
-                    className="h-[46px] rounded-xl bg-white dark:bg-white/10"
+                    className="h-[44px] rounded-xl bg-white dark:bg-white/10"
                     placeholder="রাস্তা, শহর"
                     value={draft.address ?? ""}
                     onChange={(e) => updateDraft("address", e.target.value)}
@@ -401,9 +436,9 @@ export default function CustomerDetails() {
                   <Textarea
                     id="cust-notes"
                     maxLength={500}
-                    rows={3}
+                    rows={2}
                     className="rounded-xl bg-white dark:bg-white/10"
-                    placeholder="পছন্দ, অ্যালার্জি, রিমাইন্ডার…"
+                    placeholder="পছন্দ, রিমাইন্ডার…"
                     value={draft.notes ?? ""}
                     onChange={(e) => updateDraft("notes", e.target.value)}
                     aria-invalid={Boolean(errors.notes)}
@@ -431,97 +466,89 @@ export default function CustomerDetails() {
           </CardContent>
         </Card>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-3">
-          <StatTile label="মোট বিল" value={currency(stats.totalBilled)} />
+        {/* Balanced 3-Column Financial Summary */}
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+          <StatTile label="মোট বিল" value={currency(stats.totalBilled)} tone="default" />
           <StatTile label="পরিশোধিত" value={currency(stats.paid)} tone="success" />
           <StatTile
             label="বকেয়া"
             value={currency(stats.due)}
-            tone={hasDue ? "destructive" : "muted"}
+            tone={hasDue ? "destructive" : "success"}
           />
         </div>
 
-        {/* Payment — only when due exists */}
+        {/* Quick Due Payment Card — only when due exists */}
         {hasDue && (
           <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
             <CardContent className="p-4 sm:p-5">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <h3 className={typography("body-strong")}>টাকা গ্রহণ</h3>
-                <span className={typography("body-muted")}>
-                  বাকি: <span className="font-medium text-destructive">{currency(stats.due)}</span>
-                </span>
+              <div className="mb-2.5 flex items-center justify-between gap-2">
+                <h3 className="text-sm font-bold text-foreground">টাকা জমা নিন</h3>
+                <button
+                  type="button"
+                  onClick={() => setPaymentInput(String(stats.due))}
+                  className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-white/80 dark:bg-white/10 dark:text-emerald-300"
+                >
+                  পুরো বকেয়া ({currency(stats.due)})
+                </button>
               </div>
-              <div className="flex flex-col gap-2 sm:flex-row">
+              <div className="flex items-center gap-2">
                 <Input
                   type="number"
                   inputMode="decimal"
                   min="0"
                   step="0.01"
-                  placeholder="টাকার পরিমাণ"
+                  placeholder="টাকার পরিমাণ লিখুন..."
                   value={paymentInput}
                   onChange={(e) => setPaymentInput(e.target.value)}
-                  className="h-11 rounded-xl bg-white dark:bg-white/10 sm:flex-1"
+                  className="h-11 flex-1 rounded-xl bg-white dark:bg-white/10"
                 />
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setPaymentInput(String(stats.due))}
-                    className="rounded-xl bg-white hover:bg-white"
-                  >
-                    পুরো
-                  </Button>
-                  <Button
-                    type="button"
-                    className="gap-1 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
-                    onClick={() => {
-                      const amount = parseFloat(paymentInput);
-                      if (!Number.isFinite(amount) || amount <= 0) {
-                        toast({ title: "সঠিক টাকার পরিমাণ দিন", variant: "destructive" });
-                        return;
-                      }
-                      if (amount > stats.due + 0.005) {
-                        toast({
-                          title: "পরিমাণ বকেয়ার বেশি",
-                          description: `${customerName} এর বকেয়া ${currency(stats.due)}।`,
-                          variant: "destructive",
-                        });
-                        return;
-                      }
-                      const applied = recordCustomerPayment(amount);
-                      setPaymentInput("");
+                <Button
+                  type="button"
+                  className="h-11 shrink-0 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 px-4 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
+                  onClick={() => {
+                    const amount = parseFloat(paymentInput);
+                    if (!Number.isFinite(amount) || amount <= 0) {
+                      toast({ title: "সঠিক টাকার পরিমাণ দিন", variant: "destructive" });
+                      return;
+                    }
+                    if (amount > stats.due + 0.005) {
                       toast({
-                        title: "টাকা গ্রহণ হয়েছে",
-                        description: `${currency(applied)} ${customerName} এর হিসাবে যোগ হয়েছে।`,
+                        title: "পরিমাণ বকেয়ার বেশি",
+                        description: `${customerName} এর বকেয়া ${currency(stats.due)}।`,
+                        variant: "destructive",
                       });
-                    }}
-                  >
-                    <Wallet className="h-4 w-4" /> পরিশোধ
-                  </Button>
-                </div>
+                      return;
+                    }
+                    const applied = recordCustomerPayment(amount);
+                    setPaymentInput("");
+                    toast({
+                      title: "টাকা গ্রহণ হয়েছে",
+                      description: `${currency(applied)} ${customerName} এর হিসাবে যোগ হয়েছে।`,
+                    });
+                  }}
+                >
+                  <Wallet className="h-4 w-4" /> পরিশোধ
+                </Button>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Transaction history */}
-        <section className="space-y-3">
-          <div className="flex items-baseline justify-between">
-            <h2 className={typography("h4")}>লেনদেন</h2>
+        {/* Transaction History Listing Cards */}
+        <section className="space-y-2.5">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-base font-bold text-foreground">লেনদেনের ইতিহাস</h2>
             {hasAny && (
-              <span className={typography("body-muted")}>
+              <span className="text-xs font-medium text-muted-foreground">
                 মোট {history.length}টি
               </span>
             )}
           </div>
 
           {history.length === 0 ? (
-            <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
-              <CardContent className="p-10 text-center">
-                <p className={typography("body-muted")}>এখনও কোনো লেনদেন নেই।</p>
-              </CardContent>
-            </Card>
+            <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center text-sm text-muted-foreground dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+              এখনও কোনো লেনদেন নেই।
+            </div>
           ) : (
             <ol className="space-y-2">
               {history.map((h) => {
@@ -529,50 +556,74 @@ export default function CustomerDetails() {
                 const isDue = h.kind === "due";
                 const itemCount = h.items.reduce((s, it) => s + it.qty, 0);
                 const preview = isPayment
-                  ? "টাকা গ্রহণ করা হয়েছে"
+                  ? "বকেয়া পরিশোধ"
                   : h.items.slice(0, 2).map((it) => it.name).join(", ");
                 const more = !isPayment && h.items.length > 2 ? ` +${h.items.length - 2} আরও` : "";
-                const badgeVariant =
-                  isDue ? "destructive" : isPayment ? "default" : "secondary";
                 const badgeLabel =
-                  isDue ? "বাকি" : isPayment ? "পেমেন্ট" : "নগদ";
+                  isDue ? "বাকি বিক্রি" : isPayment ? "টাকা জমা" : "নগদ বিক্রি";
                 const cardTint = isDue
-                  ? "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-                  : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
+                  ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+                  : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
+
+                const TxnIcon = isDue ? Clock : isPayment ? Wallet : ArrowDownLeft;
+
                 return (
-                  <li key={`${h.kind}-${h.id}`}>
-                    <Card className={cn("rounded-2xl transition-transform hover:-translate-y-0.5 active:scale-[0.99]", cardTint)}>
-                      <CardContent className="flex items-center gap-3 px-4 py-[18px] sm:px-5 sm:py-[22px]">
-                        <Badge variant={badgeVariant} className="shrink-0">
-                          {badgeLabel}
-                        </Badge>
-                        <div className="min-w-0 flex-1">
-                          <p className={typography("body", "truncate font-medium")}>
+                  <li
+                    key={`${h.kind}-${h.id}`}
+                    className={cn(
+                      "flex items-center gap-3 rounded-2xl border px-4 py-[18px] sm:px-5 sm:py-[22px]",
+                      cardTint,
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10",
+                        isDue
+                          ? "text-rose-600 dark:text-rose-300"
+                          : "text-emerald-600 dark:text-emerald-300",
+                      )}
+                    >
+                      <TxnIcon className="h-5 w-5" />
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-[6px]">
+                          <span className="truncate text-sm font-semibold text-foreground">
                             {preview}
                             {more}
-                          </p>
-                          <p className={typography("body-muted", "truncate")}>
-                            {format(new Date(h.date), "MMM d, yyyy · HH:mm")}
-                            {isPayment
-                              ? " · রসিদ"
-                              : ` · ${itemCount}টি আইটেম`}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p
+                          </span>
+                          <span
                             className={cn(
-                              typography("body-strong"),
+                              "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10",
                               isDue
-                                ? "text-rose-600 dark:text-rose-400"
-                                : "text-emerald-600 dark:text-emerald-400",
+                                ? "text-rose-700 dark:text-rose-300"
+                                : "text-emerald-700 dark:text-emerald-300",
                             )}
                           >
-                            {isPayment ? "+" : isDue ? "-" : "+"}
-                            {currency(h.total)}
-                          </p>
+                            {badgeLabel}
+                          </span>
                         </div>
-                      </CardContent>
-                    </Card>
+                        <span
+                          className={cn(
+                            "shrink-0 text-sm font-bold tabular-nums",
+                            isDue
+                              ? "text-rose-600 dark:text-rose-400"
+                              : "text-emerald-700 dark:text-emerald-300",
+                          )}
+                        >
+                          {isDue ? "−" : "+"}
+                          {currency(h.total)}
+                        </span>
+                      </div>
+
+                      <div className="mt-1 flex items-center text-xs text-muted-foreground">
+                        <span className="truncate">
+                          {isPayment ? "রসিদ" : `${itemCount}টি আইটেম`} ·{" "}
+                          {format(new Date(h.date), "MMM d, yyyy · h:mm a")}
+                        </span>
+                      </div>
+                    </div>
                   </li>
                 );
               })}
@@ -591,20 +642,21 @@ function StatTile({
 }: {
   label: string;
   value: string;
-  tone?: "default" | "success" | "destructive" | "muted";
+  tone?: "default" | "success" | "destructive";
 }) {
-  const valueClass =
-    tone === "success" || tone === "default"
-      ? "text-emerald-600 dark:text-emerald-400"
-      : "text-rose-600 dark:text-rose-400";
-  const bgClass =
-    tone === "destructive" || tone === "muted"
-      ? "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-      : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
+  const isDestructive = tone === "destructive";
+  const valueClass = isDestructive
+    ? "text-rose-600 dark:text-rose-400"
+    : "text-emerald-700 dark:text-emerald-300";
+  const bgClass = isDestructive
+    ? "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
+    : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
   return (
-    <div className={cn("min-w-0 rounded-2xl p-4", bgClass)}>
-      <p className={typography("body-muted", "truncate")}>{label}</p>
-      <p className={cn(typography("h3", "mt-1 truncate"), valueClass)}>{value}</p>
+    <div className={cn("min-w-0 rounded-2xl p-3.5 text-center sm:p-4 sm:text-left", bgClass)}>
+      <p className="truncate text-xs font-medium text-muted-foreground">{label}</p>
+      <p className={cn("mt-1 truncate text-base font-bold tabular-nums sm:text-xl", valueClass)}>
+        {value}
+      </p>
     </div>
   );
 }
@@ -614,19 +666,28 @@ function InfoRow({
   label,
   value,
   wide = false,
+  hasDue = false,
 }: {
   icon: React.ReactNode;
   label: string;
   value?: string;
   wide?: boolean;
+  hasDue?: boolean;
 }) {
   if (!value) return null;
   return (
-    <div className={cn("flex items-start gap-2.5", wide && "sm:col-span-2")}>
-      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-emerald-600 dark:bg-white/10 dark:text-emerald-300">{icon}</span>
+    <div className={cn("flex items-center gap-2.5 rounded-2xl bg-white/50 px-3 py-2 dark:bg-white/5", wide && "sm:col-span-2")}>
+      <span
+        className={cn(
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-[100px] bg-white/60 dark:bg-white/10",
+          hasDue ? "text-rose-600 dark:text-rose-300" : "text-emerald-600 dark:text-emerald-300",
+        )}
+      >
+        {icon}
+      </span>
       <div className="min-w-0 flex-1">
-        <p className={typography("body-muted", "text-xs uppercase tracking-wide")}>{label}</p>
-        <p className={typography("body", "break-words")}>{value}</p>
+        <p className="text-[11px] font-medium text-muted-foreground">{label}</p>
+        <p className="truncate text-xs font-semibold text-foreground">{value}</p>
       </div>
     </div>
   );
@@ -644,8 +705,10 @@ function FieldRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
-      <Label htmlFor={htmlFor}>{label}</Label>
+    <div className="space-y-1">
+      <Label htmlFor={htmlFor} className="text-xs font-semibold text-muted-foreground">
+        {label}
+      </Label>
       {children}
       {error && (
         <p className={typography("small", "text-destructive")} role="alert">
