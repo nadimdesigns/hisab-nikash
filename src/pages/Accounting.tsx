@@ -138,7 +138,7 @@ export default function Accounting() {
       <NewTransactionDialog open={txnOpen} onOpenChange={setTxnOpen} />
 
 
-      <Card className="form-surface shadow-soft overflow-hidden rounded-[15px]">
+      <Card className="form-surface overflow-hidden rounded-[15px] border-0">
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <Table>

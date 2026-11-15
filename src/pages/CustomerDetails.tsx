@@ -336,7 +336,7 @@ export default function CustomerDetails() {
         </div>
 
         {/* Customer details / edit */}
-        <Card className="rounded-2xl border-0 bg-white shadow-soft dark:bg-white/5">
+        <Card className="rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
           <CardContent className="p-4 sm:p-5">
             <div className="mb-3 flex items-center justify-between gap-2">
               <h3 className={typography("body-strong")}>কাস্টমারের বিস্তারিত</h3>
@@ -444,7 +444,7 @@ export default function CustomerDetails() {
 
         {/* Payment — only when due exists */}
         {hasDue && (
-          <Card className="rounded-2xl border-0 bg-white shadow-soft dark:bg-white/5">
+          <Card className="rounded-2xl border-0 bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5">
             <CardContent className="p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between gap-2">
                 <h3 className={typography("body-strong")}>টাকা গ্রহণ</h3>
@@ -517,7 +517,7 @@ export default function CustomerDetails() {
           </div>
 
           {history.length === 0 ? (
-            <Card className="shadow-soft">
+            <Card className="rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
               <CardContent className="p-10 text-center">
                 <p className={typography("body-muted")}>এখনও কোনো লেনদেন নেই।</p>
               </CardContent>
@@ -535,9 +535,15 @@ export default function CustomerDetails() {
                   h.kind === "due" ? "destructive" : h.kind === "payment" ? "default" : "secondary";
                 const badgeLabel =
                   h.kind === "due" ? "বাকি" : h.kind === "payment" ? "পেমেন্ট" : "নগদ";
+                const cardTint =
+                  h.kind === "due"
+                    ? "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-500/15 dark:to-amber-500/5"
+                    : h.kind === "payment"
+                      ? "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5"
+                      : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5";
                 return (
                   <li key={`${h.kind}-${h.id}`}>
-                    <Card className="rounded-2xl border-0 bg-white shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] dark:bg-white/5">
+                    <Card className={cn("rounded-2xl border-0 transition-transform hover:-translate-y-0.5 active:scale-[0.99]", cardTint)}>
                       <CardContent className="flex items-center gap-3 p-3 sm:p-4">
                         <Badge variant={badgeVariant} className="shrink-0">
                           {badgeLabel}
@@ -595,8 +601,14 @@ function StatTile({
         : tone === "muted"
           ? "text-muted-foreground"
           : "text-foreground";
+  const bgClass =
+    tone === "success"
+      ? "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5"
+      : tone === "destructive" || tone === "muted"
+        ? "bg-gradient-to-br from-amber-100 to-orange-50 dark:from-amber-500/15 dark:to-amber-500/5"
+        : "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5";
   return (
-    <div className="min-w-0 rounded-2xl border-0 bg-white p-4 shadow-soft dark:bg-white/5">
+    <div className={cn("min-w-0 rounded-2xl border-0 p-4", bgClass)}>
       <p className={typography("body-muted", "truncate")}>{label}</p>
       <p className={cn(typography("h3", "mt-1 truncate"), valueClass)}>{value}</p>
     </div>
@@ -616,8 +628,8 @@ function InfoRow({
 }) {
   if (!value) return null;
   return (
-    <div className={cn("flex items-start gap-2", wide && "sm:col-span-2")}>
-      <span className="mt-0.5 text-muted-foreground">{icon}</span>
+    <div className={cn("flex items-start gap-2.5", wide && "sm:col-span-2")}>
+      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300">{icon}</span>
       <div className="min-w-0 flex-1">
         <p className={typography("body-muted", "text-xs uppercase tracking-wide")}>{label}</p>
         <p className={typography("body", "break-words")}>{value}</p>

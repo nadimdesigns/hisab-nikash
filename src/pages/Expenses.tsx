@@ -152,7 +152,7 @@ export default function Expenses() {
         </div>
 
         {tab === "list" ? (
-          <Card className="form-surface shadow-soft min-w-0 max-w-full overflow-hidden">
+          <Card className="form-surface min-w-0 max-w-full overflow-hidden border-0">
             <CardHeader className="px-4 sm:px-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <CardTitle className={typography("h4", "m-0")}>সব খরচ</CardTitle>
@@ -234,7 +234,7 @@ export default function Expenses() {
             </CardContent>
           </Card>
         ) : (
-          <Card className="form-surface shadow-soft min-w-0 max-w-full overflow-hidden rounded-3xl border-0">
+          <Card className="form-surface min-w-0 max-w-full overflow-hidden rounded-3xl border-0">
             <CardContent className="space-y-4 px-4 py-5 sm:px-6">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="sm:col-span-2">

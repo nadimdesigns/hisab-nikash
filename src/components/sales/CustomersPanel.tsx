@@ -299,7 +299,7 @@ export default function CustomersPanel() {
 
   return (
     <>
-      <Card className="shadow-soft min-w-0 rounded-3xl border-0">
+      <Card className="min-w-0 rounded-3xl border-0 bg-transparent">
         <Sheet open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
           <CardHeader className="px-0 pt-5 sm:px-6">
             <div className="flex w-full items-center gap-2">
@@ -525,7 +525,7 @@ export default function CustomersPanel() {
             </p>
 
             {filteredCustomers.length === 0 ? (
-              <div className={typography("body-muted", "rounded-lg border py-10 text-center")}>
+              <div className={typography("body-muted", "rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:from-emerald-500/15 dark:to-emerald-500/5")}>
                 {customers.length === 0
                   ? "এখনো কোনো কাস্টমার নেই।"
                   : "কোনো কাস্টমার ফিল্টারের সাথে মিলছে না।"}
@@ -536,7 +536,12 @@ export default function CustomersPanel() {
                   <li key={c.name}>
                     <Link
                       to={`/customers/${encodeURIComponent(c.name)}`}
-                      className="flex w-full items-center gap-3 rounded-2xl border-0 bg-white p-3 text-left shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:bg-white/5"
+                      className={cn(
+                        "flex w-full items-center gap-3 rounded-2xl border-0 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4",
+                        c.due > 0
+                          ? "bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5"
+                          : "bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                      )}
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">

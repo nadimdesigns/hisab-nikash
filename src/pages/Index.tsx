@@ -153,8 +153,8 @@ const Index = () => {
               {stats.dues.map((d) => {
                 const paid = d.amountPaid ?? (d.saleType === "credit" ? 0 : d.total);
                 return (
-                  <li key={d.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-sky-100 text-sky-600 dark:bg-sky-500/15 dark:text-sky-300">
+                  <li key={d.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 p-3 dark:from-sky-500/15 dark:to-sky-500/5">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-sky-600 dark:bg-white/10 dark:text-sky-300">
                       <Clock className="h-5 w-5" />
                     </span>
                     <div className="min-w-0 flex-1">
@@ -183,8 +183,8 @@ const Index = () => {
           ) : (
             <ul className="space-y-2">
               {stats.recent.map((s) => (
-                <li key={s.id} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300">
+                <li key={s.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 dark:from-emerald-500/15 dark:to-emerald-500/5">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-emerald-600 dark:bg-white/10 dark:text-emerald-300">
                     <ArrowDownLeft className="h-5 w-5" />
                   </span>
                   <div className="min-w-0 flex-1">
@@ -213,7 +213,7 @@ const Index = () => {
       </div>
 
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2 shadow-soft">
+        <Card className="lg:col-span-2 rounded-2xl border-0 bg-gradient-to-br from-sky-100 to-sky-50 dark:from-sky-500/15 dark:to-sky-500/5">
           <CardHeader>
             <CardTitle>গত ১৪ দিনের বিক্রি</CardTitle>
           </CardHeader>
@@ -248,18 +248,18 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-soft">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className="rounded-2xl border-0 bg-transparent">
+          <CardHeader className="px-0 pt-0">
+            <CardTitle className="flex items-center gap-2 text-base font-bold">
               <TrendingUp className="h-4 w-4 text-primary" /> সবচেয়ে বেশি বিক্রি
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-0 pb-0">
             {!hydrated ? (
-              <ul className="space-y-[17px]">
+              <ul className="space-y-2">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <li key={i} className="flex items-center gap-3">
-                    <Skeleton className="h-8 w-8 shrink-0 rounded-full" />
+                    <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
                     <div className="min-w-0 flex-1 space-y-1.5">
                       <Skeleton className="h-4 w-3/4" />
                       <Skeleton className="h-3 w-1/2" />
@@ -271,17 +271,17 @@ const Index = () => {
             ) : stats.bestSelling.length === 0 ? (
               <p className={typography("body-muted")}>গত ৩০ দিনে কোনো বিক্রি হয়নি।</p>
             ) : (
-              <ul className="space-y-[17px]">
+              <ul className="space-y-2">
                 {stats.bestSelling.map((p, idx) => (
-                  <li key={p.id} className="flex items-center gap-3">
-                    <div className={typography("body", "flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 font-semibold text-primary")}>
+                  <li key={p.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-violet-100 to-purple-50 p-3 dark:from-violet-500/15 dark:to-violet-500/5">
+                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white font-semibold text-violet-600 dark:bg-white/10 dark:text-violet-300")}>
                       {idx + 1}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={typography("body-strong", "truncate")}>{p.name}</p>
                       <p className={typography("body-muted")}>{currency(p.revenue)} বিক্রি</p>
                     </div>
-                    <Badge variant="secondary">{bnNumber(p.qty)} বিক্রি</Badge>
+                    <Badge variant="secondary" className="bg-white text-violet-700 dark:bg-white/10 dark:text-violet-300">{bnNumber(p.qty)} বিক্রি</Badge>
                   </li>
                 ))}
               </ul>
@@ -291,21 +291,24 @@ const Index = () => {
       </div>
 
       {stats.lowStock.length > 0 && (
-        <Card className="mt-6 shadow-soft">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+        <Card className="mt-6 rounded-2xl border-0 bg-transparent">
+          <CardHeader className="px-0 pt-0">
+            <CardTitle className="flex items-center gap-2 text-base font-bold">
               <AlertTriangle className="h-4 w-4 text-warning" /> কম স্টকের পণ্য
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-0 pb-0">
             <ul className="space-y-2">
               {stats.lowStock.map((m) => (
                 <li key={m.id}>
                   <Link
                     to={`/stocks?focus=${encodeURIComponent(m.id)}&edit=1`}
-                    className="flex w-full items-center gap-3 rounded-2xl border-0 bg-white p-3 text-left shadow-soft transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:bg-white/5"
+                    className="flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-amber-100 to-orange-50 p-3 text-left transition-transform hover:-translate-y-0.5 active:scale-[0.99] sm:p-4 dark:from-amber-500/15 dark:to-amber-500/5"
                     aria-label={`${m.name} এর স্টক দেখুন`}
                   >
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-amber-600 dark:bg-white/10 dark:text-amber-300">
+                      <AlertTriangle className="h-5 w-5" />
+                    </span>
                     <span className="min-w-0 flex-1">
                       <span className={typography("body-strong", "block truncate")}>{m.name}</span>
                       <span className={typography("body-muted", "block truncate")}>{m.sku || "—"}</span>
@@ -426,7 +429,7 @@ function QuickAction({
       to={to}
       className={`flex flex-col items-center gap-2 rounded-2xl border-0 p-4 text-center transition-transform active:scale-[0.97] ${t.bg}`}
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/80 dark:bg-white/10">
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-white/10">
         <Icon className={`h-5 w-5 ${t.icon}`} strokeWidth={2.2} />
       </span>
       <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
@@ -436,7 +439,7 @@ function QuickAction({
 
 function StatCardSkeleton() {
   return (
-    <Card className="shadow-soft" aria-busy="true" aria-label="Loading">
+    <Card className="rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5" aria-busy="true" aria-label="Loading">
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
           <Skeleton className="h-12 w-12 shrink-0 rounded-xl md:h-14 md:w-14" />
@@ -476,10 +479,10 @@ function StatCard({
   const s = STYLE[gradient];
 
   return (
-    <Card className={`border-0 rounded-2xl shadow-soft ${s.card}`}>
+    <Card className={`border-0 rounded-2xl ${s.card}`}>
       <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
         <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/70 shadow-sm dark:bg-white/10 md:h-14 md:w-14">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white dark:bg-white/10 md:h-14 md:w-14">
             <Icon className={`h-6 w-6 md:h-7 md:w-7 ${s.icon}`} strokeWidth={2} aria-hidden />
           </div>
           <div className="flex min-w-0 flex-1 flex-col">

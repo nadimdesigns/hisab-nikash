@@ -151,7 +151,6 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
   const tone = isCredit
     ? {
         border: "border-rose-100 dark:border-rose-500/20",
-        shadow: "shadow-xl shadow-rose-100/50 dark:shadow-rose-950/30",
         label: "text-rose-400 dark:text-rose-300",
         pillBg: "bg-rose-50 border-rose-100 dark:bg-rose-950/40 dark:border-rose-500/20",
         pillText: "text-rose-600 dark:text-rose-300",
@@ -161,11 +160,9 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         emptyHover: "hover:border-rose-300 dark:hover:border-rose-500/40",
         gradient: "from-rose-500 to-red-600",
         gradientHover: "hover:from-rose-600 hover:to-red-700",
-        buttonShadow: "shadow-lg shadow-rose-200 dark:shadow-rose-950/40",
       }
     : {
         border: "border-emerald-100 dark:border-emerald-500/20",
-        shadow: "shadow-xl shadow-emerald-100/50 dark:shadow-emerald-950/30",
         label: "text-emerald-500 dark:text-emerald-300",
         pillBg: "bg-emerald-50 border-emerald-100 dark:bg-emerald-950/40 dark:border-emerald-500/20",
         pillText: "text-emerald-600 dark:text-emerald-300",
@@ -175,14 +172,13 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         emptyHover: "hover:border-emerald-300 dark:hover:border-emerald-500/40",
         gradient: "from-emerald-500 to-green-600",
         gradientHover: "hover:from-emerald-600 hover:to-green-700",
-        buttonShadow: "shadow-lg shadow-emerald-200 dark:shadow-emerald-950/40",
       };
 
   return (
     <div
       className={
         className ??
-        `w-full min-w-0 overflow-hidden rounded-3xl border-0 ${tone.shadow} bg-emerald-50 dark:bg-emerald-950/30`
+        "w-full min-w-0 overflow-hidden rounded-3xl border-0 bg-emerald-50 dark:bg-emerald-950/30"
       }
     >
       {/* Header */}
@@ -291,7 +287,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           <div
             className={`flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-white/70 p-8 transition-colors ${tone.emptyHover}`}
           >
-            <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-background shadow-sm">
+            <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-white/10">
               <svg className={`h-5 w-5 ${tone.label}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
               </svg>
@@ -341,7 +337,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           onClick={checkout}
           disabled={items.length === 0}
           size="lg"
-          className={`w-full rounded-2xl bg-gradient-to-r ${tone.gradient} ${tone.gradientHover} ${tone.buttonShadow} py-4 font-bold tracking-wide text-white transition-all active:scale-[0.98]`}
+          className={`w-full rounded-2xl bg-gradient-to-r ${tone.gradient} ${tone.gradientHover} py-4 font-bold tracking-wide text-white transition-all active:scale-[0.98]`}
         >
           <Save className="h-4 w-4" />
           {isCredit ? "বাকি বিক্রি সংরক্ষণ" : "নগদ বিক্রি সংরক্ষণ"}

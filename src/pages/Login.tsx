@@ -218,7 +218,7 @@ const Login = () => {
 
   return (
     <main className="fixed inset-0 h-[100svh] w-full bg-background flex items-center justify-center p-4 overflow-y-auto [padding-top:max(1rem,env(safe-area-inset-top))] [padding-bottom:max(1rem,env(safe-area-inset-bottom))]">
-      <Card className="w-full max-w-sm rounded-[28px] border-0 shadow-elevated overflow-hidden">
+      <Card className="w-full max-w-sm rounded-[28px] border-0 overflow-hidden">
         {/* Playful gradient header: logo centered (1.7x), name + tagline
             stacked vertically below it, per explicit owner instruction. */}
         <div className="relative bg-gradient-to-br from-emerald-700 via-emerald-600 to-yellow-500 px-6 pt-10 pb-8 flex flex-col items-center gap-2.5 overflow-hidden">

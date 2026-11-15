@@ -109,14 +109,14 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
   });
 
   return (
-    <Card className="shadow-soft">
-      <CardHeader>
+    <Card className="rounded-2xl border-0 bg-transparent">
+      <CardHeader className="px-0">
         <CardTitle>ইউজার ব্যবস্থাপনা</CardTitle>
         <CardDescription>
           মোট {users.length} জন ইউজার। অ্যাডমিন যোগ বা সরান।
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 px-0">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -137,16 +137,16 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
         ) : filtered.length === 0 ? (
           <p className={typography("muted", "text-center py-6")}>কোনো ইউজার পাওয়া যায়নি।</p>
         ) : (
-          <ul className="divide-y divide-border rounded-lg border border-border">
+          <ul className="space-y-2">
             {filtered.map((u) => {
               const isSelf = u.id === currentUserId;
               const isAdmin = u.role === "admin";
               const initials = (u.display_name ?? u.email ?? "U").slice(0, 2).toUpperCase();
               return (
-                <li key={u.id} className="flex items-center gap-3 p-3 sm:p-4">
-                  <Avatar className="h-10 w-10 shrink-0">
+                <li key={u.id} className="flex items-center gap-3 rounded-2xl bg-gradient-to-br from-sky-100 to-sky-50 p-3 sm:p-4 dark:from-sky-500/15 dark:to-sky-500/5">
+                  <Avatar className="h-10 w-10 shrink-0 rounded-xl">
                     {u.avatar_url && <AvatarImage src={u.avatar_url} alt={u.display_name ?? ""} />}
-                    <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+                    <AvatarFallback className="rounded-xl bg-white text-sky-600 text-xs font-semibold dark:bg-white/10 dark:text-sky-300">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -156,12 +156,12 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                         {u.display_name ?? u.email ?? "নামহীন"}
                       </p>
                       {isAdmin && (
-                        <Badge variant="secondary" className="gap-1">
+                        <Badge variant="secondary" className="gap-1 bg-white text-sky-700 dark:bg-white/10 dark:text-sky-300">
                           <ShieldCheck className="h-3 w-3" />
                           অ্যাডমিন
                         </Badge>
                       )}
-                      {isSelf && <Badge variant="outline">আপনি</Badge>}
+                      {isSelf && <Badge variant="outline" className="bg-white dark:bg-white/10">আপনি</Badge>}
                     </div>
                     <p className={typography("muted", "truncate tabular-nums")}>
                       📱 {phoneOf(u.email) || "—"}

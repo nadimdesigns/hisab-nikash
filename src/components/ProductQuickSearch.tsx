@@ -205,7 +205,7 @@ export function ProductQuickSearch() {
                     const days = daysUntil(m.expiry);
                     return (
                       <li key={m.id}>
-                        <div className="group flex w-full items-center gap-3 rounded-md border bg-card p-2 transition-colors hover:border-primary hover:bg-accent">
+                        <div className="group flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 transition-colors dark:from-emerald-500/15 dark:to-emerald-500/5">
                           <button
                             type="button"
                             onClick={() => pickProduct(m.id)}
@@ -270,7 +270,7 @@ export function ProductQuickSearch() {
                         type="button"
                         onClick={() => pickCustomer(c.name)}
                         aria-label={`${c.name} এর বিবরণ খুলুন`}
-                        className="flex w-full items-center gap-3 rounded-md border bg-card p-2 text-left transition-colors hover:border-primary hover:bg-accent"
+                        className="flex w-full items-center gap-3 rounded-2xl border-0 bg-gradient-to-br from-sky-100 to-sky-50 p-3 text-left transition-colors dark:from-sky-500/15 dark:to-sky-500/5"
                       >
                         <span className="min-w-0 flex-1">
                           <span className={cn(BODY_TEXT, "block truncate font-medium")}>{c.name}</span>
