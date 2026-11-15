@@ -116,6 +116,15 @@ export default function Inventory() {
     return Array.from(set).sort();
   }, [products]);
 
+  const categoryCounts = useMemo(() => {
+    const map = new Map<string, number>();
+    products.forEach((m) => {
+      const cat = m.category?.trim();
+      if (cat) map.set(cat, (map.get(cat) ?? 0) + 1);
+    });
+    return map;
+  }, [products]);
+
   const filtersActive =
     query !== "" ||
     category !== "all" ||
@@ -330,8 +339,8 @@ export default function Inventory() {
           className="flex items-center gap-1.5 overflow-x-auto rounded-full bg-emerald-100/60 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:bg-emerald-500/15"
         >
           {[
-            { value: "all", label: "সব ক্যাটাগরি" },
-            ...categories.map((c) => ({ value: c, label: c })),
+            { value: "all", label: "সব ক্যাটাগরি", count: products.length },
+            ...categories.map((c) => ({ value: c, label: c, count: categoryCounts.get(c) ?? 0 })),
           ].map((opt) => {
             const active = category === opt.value;
             return (
@@ -342,13 +351,16 @@ export default function Inventory() {
                 aria-selected={active}
                 onClick={() => setCategory(opt.value)}
                 className={cn(
-                  "shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-semibold transition-colors sm:text-sm",
+                  "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold transition-colors sm:text-sm",
                   active
                     ? "bg-emerald-900 text-white"
                     : "text-foreground/75 hover:text-foreground",
                 )}
               >
-                {opt.label}
+                <span>{opt.label}</span>
+                <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+                  {opt.count}
+                </span>
               </button>
             );
           })}

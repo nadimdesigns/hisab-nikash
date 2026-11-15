@@ -317,13 +317,16 @@ export default function Accounting() {
             aria-selected={tab === "list"}
             onClick={() => setTab("list")}
             className={cn(
-              "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
+              "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
               tab === "list"
                 ? "bg-emerald-900 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >
             <span className="truncate">সব হিসাব</span>
+            <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+              {allTransactionsList.length}
+            </span>
           </button>
           <button
             type="button"
@@ -331,13 +334,16 @@ export default function Accounting() {
             aria-selected={tab === "payment"}
             onClick={() => setTab("payment")}
             className={cn(
-              "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
+              "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
               tab === "payment"
                 ? "bg-emerald-900 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >
             <span className="truncate">টাকা জমা</span>
+            <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+              {payments.length}
+            </span>
           </button>
           <button
             type="button"
@@ -345,13 +351,16 @@ export default function Accounting() {
             aria-selected={tab === "purchase"}
             onClick={() => setTab("purchase")}
             className={cn(
-              "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
+              "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
               tab === "purchase"
                 ? "bg-rose-600 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >
             <span className="truncate">নতুন ক্রয় / খরচ</span>
+            <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+              {purchases.length}
+            </span>
           </button>
         </div>
 
