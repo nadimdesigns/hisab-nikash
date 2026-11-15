@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, X, Search, Download, FileText, FileSpreadsheet, SlidersHorizontal, ChevronDown, Check } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -194,8 +194,8 @@ export default function Inventory() {
     <AppLayout title="স্টক">
       <div className="mb-4 space-y-3">
         <div className="flex items-center gap-2">
-          <Sheet open={categorySheetOpen} onOpenChange={setCategorySheetOpen}>
-            <SheetTrigger asChild>
+          <Dialog open={categorySheetOpen} onOpenChange={setCategorySheetOpen}>
+            <DialogTrigger asChild>
               <Button
                 variant="outline"
                 className="flex-1 justify-between gap-2 sm:w-48 sm:flex-none"
@@ -206,14 +206,11 @@ export default function Inventory() {
                 </span>
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-50" />
               </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="right"
-              className="flex w-full flex-col gap-0 p-0 sm:max-w-sm"
-            >
-              <SheetHeader className="border-b px-6 py-4">
-                <SheetTitle>ক্যাটাগরি</SheetTitle>
-              </SheetHeader>
+            </DialogTrigger>
+            <DialogContent className="flex max-h-[80svh] w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden rounded-3xl p-0 sm:max-w-sm">
+              <DialogHeader className="border-b px-6 py-4 text-left">
+                <DialogTitle>ক্যাটাগরি</DialogTitle>
+              </DialogHeader>
               <ul className="flex-1 overflow-y-auto py-2">
                 {[
                   { value: "all", label: "সব ক্যাটাগরি" },
@@ -241,8 +238,8 @@ export default function Inventory() {
                   );
                 })}
               </ul>
-            </SheetContent>
-          </Sheet>
+            </DialogContent>
+          </Dialog>
 
           <Button
             type="button"
@@ -252,8 +249,8 @@ export default function Inventory() {
             <Plus className="h-4 w-4" /> পণ্য যোগ করুন
           </Button>
 
-          <Sheet open={filterSheetOpen} onOpenChange={handleSheetOpenChange}>
-            <SheetTrigger asChild>
+          <Dialog open={filterSheetOpen} onOpenChange={handleSheetOpenChange}>
+            <DialogTrigger asChild>
               <Button
                 variant="outline"
                 className="relative flex-1 gap-2 px-[26px] sm:flex-none sm:shrink-0"
@@ -270,15 +267,14 @@ export default function Inventory() {
                   </Badge>
                 )}
               </Button>
-            </SheetTrigger>
-            <SheetContent
-              side="right"
+            </DialogTrigger>
+            <DialogContent
               style={{ fontFamily: "'Anek Bangla', sans-serif" }}
-              className="flex w-full flex-col overflow-hidden p-0 sm:max-w-sm"
+              className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl p-0 sm:max-w-md"
               onOpenAutoFocus={(e) => e.preventDefault()}
             >
-              <SheetHeader className="px-6 pt-6">
-                <SheetTitle>স্টক আইটেম ফিল্টার করুন</SheetTitle>
+              <DialogHeader className="px-6 pt-6 text-left">
+                <DialogTitle>স্টক আইটেম ফিল্টার করুন</DialogTitle>
                 <div className="relative mt-3">
                   <Input
                     value={query}
@@ -307,7 +303,7 @@ export default function Inventory() {
                     খুঁজুন
                   </Button>
                 </div>
-              </SheetHeader>
+              </DialogHeader>
 
               <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
                 <FilterRadioGroup
@@ -370,8 +366,8 @@ export default function Inventory() {
                   ফিল্টার প্রয়োগ করুন
                 </Button>
               </div>
-            </SheetContent>
-          </Sheet>
+            </DialogContent>
+          </Dialog>
 
           {filtersActive && (
             <Button variant="ghost" size="sm" onClick={clearFilters} className={cn("gap-1", BODY_TEXT)}>

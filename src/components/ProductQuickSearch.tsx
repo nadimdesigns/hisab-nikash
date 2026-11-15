@@ -161,8 +161,8 @@ export function ProductQuickSearch() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent style={ANEK_FONT} className="max-w-2xl gap-0 p-0">
-        <DialogHeader className="border-b p-4">
+      <DialogContent style={ANEK_FONT} className="max-w-2xl gap-0 overflow-hidden rounded-3xl p-0">
+        <DialogHeader className="border-b p-4 text-left">
           <DialogTitle className={BODY_TEXT}>পণ্য ও কাস্টমার খুঁজুন</DialogTitle>
           <div className="relative mt-2">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

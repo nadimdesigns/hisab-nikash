@@ -297,8 +297,8 @@ export default function InventoryPanel({
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="form-surface max-w-lg flex-col gap-0 overflow-hidden rounded-none border-0 p-0">
-          <DialogHeader className="shrink-0 px-6 pb-2 pt-6">
+        <DialogContent className="form-surface max-h-[85svh] max-w-lg flex-col gap-0 overflow-hidden rounded-3xl border-0 p-0">
+          <DialogHeader className="shrink-0 px-6 pb-2 pt-6 text-left">
             <DialogTitle>{editing ? "পণ্য সম্পাদনা" : "পণ্য যোগ করুন"}</DialogTitle>
           </DialogHeader>
           <div className="grid min-h-0 flex-1 grid-cols-2 gap-3 overflow-y-auto overscroll-contain px-6 pb-4">

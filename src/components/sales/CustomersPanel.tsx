@@ -22,12 +22,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import { cn } from "@/lib/utils";
 import { currency, formatDate, useResponsiveCurrency } from "@/lib/format";
@@ -581,7 +581,7 @@ export default function CustomersPanel() {
       ) : (
         /* ===== সকল কাস্টমার তালিকা ===== */
         <Card className="min-w-0 rounded-3xl border-0 bg-transparent">
-          <Sheet open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
+          <Dialog open={custFilterSheetOpen} onOpenChange={handleCustSheetOpenChange}>
             <CardContent className="px-0 pt-0 sm:px-6">
               <div className="mb-3 flex w-full items-center gap-2">
                 <div className="relative flex-1">
@@ -609,7 +609,7 @@ export default function CustomersPanel() {
                     <X className="h-3.5 w-3.5" /> মুছুন
                   </Button>
                 )}
-                <SheetTrigger asChild>
+                <DialogTrigger asChild>
                   <Button
                     variant="outline"
                     className="relative h-12 shrink-0 gap-2 rounded-xl border bg-white px-4 dark:bg-white/5 md:h-10"
@@ -629,7 +629,7 @@ export default function CustomersPanel() {
                       </Badge>
                     )}
                   </Button>
-                </SheetTrigger>
+                </DialogTrigger>
               </div>
 
               <div
@@ -666,15 +666,14 @@ export default function CustomersPanel() {
                 </div>
               </div>
 
-              <SheetContent
-                side="right"
+              <DialogContent
                 style={{ fontFamily: "'Anek Bangla', sans-serif" }}
-                className="flex w-full flex-col overflow-hidden p-0 sm:max-w-sm"
+                className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl p-0 sm:max-w-md"
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
-                <SheetHeader className="px-6 pt-6">
-                  <SheetTitle>কাস্টমার ফিল্টার</SheetTitle>
-                </SheetHeader>
+                <DialogHeader className="px-6 pt-6 text-left">
+                  <DialogTitle>কাস্টমার ফিল্টার</DialogTitle>
+                </DialogHeader>
 
                 <div className="flex-1 space-y-6 overflow-y-auto px-6 pb-6 pt-3">
                   <CustFilterRadioGroup
@@ -787,7 +786,7 @@ export default function CustomersPanel() {
                     ফিল্টার প্রয়োগ করুন
                   </Button>
                 </div>
-              </SheetContent>
+              </DialogContent>
 
               <p className={typography("body-muted", "mb-2")}>
                 {filteredCustomers.length} এর মধ্যে {customers.length} জন কাস্টমার দেখানো হচ্ছে
@@ -843,7 +842,7 @@ export default function CustomersPanel() {
                 </ul>
               )}
             </CardContent>
-          </Sheet>
+          </Dialog>
         </Card>
       )}
     </div>

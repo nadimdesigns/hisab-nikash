@@ -4,7 +4,7 @@ import { LayoutDashboard, Package, BarChart3, Plus, Banknote, Clock, Wallet, Pac
 import { ACTION, NAV } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 import { typography } from "@/lib/typography";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 type QuickAction = {
   title: string;
@@ -143,16 +143,13 @@ export function MobileBottomNav() {
         {rightItems.map(renderItem)}
       </ul>
 
-      {/* Quick action bottom sheet */}
-      <Sheet open={quickOpen} onOpenChange={setQuickOpen}>
-        <SheetContent
-          side="bottom"
-          className="rounded-t-3xl border-t-0 bg-background p-0 pb-[max(1.5rem,env(safe-area-inset-bottom))]"
-        >
-          <SheetHeader className="px-6 pt-4">
-            <SheetTitle className={typography("h3")}>দ্রুত কাজ</SheetTitle>
-          </SheetHeader>
-          <div className="grid grid-cols-2 gap-4 px-5 pb-2 pt-5">
+      {/* Quick action centered dialog */}
+      <Dialog open={quickOpen} onOpenChange={setQuickOpen}>
+        <DialogContent className="rounded-3xl border bg-background p-5 sm:max-w-md">
+          <DialogHeader className="text-left">
+            <DialogTitle className={typography("h3")}>দ্রুত কাজ</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-3.5 pt-2">
             {quickActions.map((action, idx) => {
               const Icon = action.icon;
               return (
@@ -185,8 +182,8 @@ export function MobileBottomNav() {
               );
             })}
           </div>
-        </SheetContent>
-      </Sheet>
+        </DialogContent>
+      </Dialog>
     </nav>
   );
 }

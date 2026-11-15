@@ -2,12 +2,12 @@ import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { ChevronDown, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { currency } from "@/lib/format";
@@ -53,8 +53,8 @@ export function ProductPickerSheet({
   };
 
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
-      <SheetTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button
           type="button"
           variant="outline"
@@ -70,17 +70,16 @@ export function ProductPickerSheet({
           </span>
           <ChevronDown className="h-4 w-4 shrink-0 text-[#bbbbbb]" />
         </Button>
-      </SheetTrigger>
-      <SheetContent
-        side="right"
-        className="flex w-full flex-col overflow-hidden p-0 sm:max-w-sm"
+      </DialogTrigger>
+      <DialogContent
+        className="flex max-h-[80svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl p-0 sm:max-w-md"
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
-        <SheetHeader className="px-6 pt-6">
-          <SheetTitle>Select Product</SheetTitle>
-        </SheetHeader>
+        <DialogHeader className="px-6 pt-6 text-left">
+          <DialogTitle>Select Product</DialogTitle>
+        </DialogHeader>
 
-        <div className="px-6 pt-3">
+        <div className="px-6 pt-2">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -92,7 +91,7 @@ export function ProductPickerSheet({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-3 pb-6 -mt-2">
+        <div className="-mt-1 flex-1 overflow-y-auto px-3 pb-6">
           {filtered.length === 0 ? (
             <p className={typography("body-muted", "py-6 text-center")}>
               No products found.
@@ -129,8 +128,8 @@ export function ProductPickerSheet({
             </ul>
           )}
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
 
