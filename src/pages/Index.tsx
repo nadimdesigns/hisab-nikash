@@ -237,8 +237,8 @@ const Index = () => {
 
         <Card className="rounded-2xl border-0 bg-transparent">
           <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2 text-base font-bold">
-              <TrendingUp className="h-4 w-4 text-primary" /> সবচেয়ে বেশি বিক্রি
+            <CardTitle className="text-base font-bold">
+              সবচেয়ে বেশি বিক্রি
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0 pb-0">
@@ -280,8 +280,8 @@ const Index = () => {
       {stats.lowStock.length > 0 && (
         <Card className="mt-6 rounded-2xl border-0 bg-transparent">
           <CardHeader className="px-0 pt-0">
-            <CardTitle className="flex items-center gap-2 text-base font-bold">
-              <AlertTriangle className="h-4 w-4 text-rose-600" /> কম স্টকের পণ্য
+            <CardTitle className="text-base font-bold">
+              কম স্টকের পণ্য
             </CardTitle>
           </CardHeader>
           <CardContent className="px-0 pb-0">
