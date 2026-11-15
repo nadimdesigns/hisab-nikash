@@ -5,8 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
-import { forwardRef } from "react";
-import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, ShoppingCart, UserPlus, Clock, ArrowDownLeft, ArrowUpRight, type LucideIcon, type LucideProps } from "lucide-react";
+import { AlertTriangle, TrendingUp, Wallet, LineChart, Package, Clock, ArrowDownLeft, ArrowUpRight, type LucideIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { subDays, startOfDay } from "date-fns";
@@ -14,30 +13,6 @@ import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { isDemoMode } from "@/lib/demoMode";
 import { unitLabel } from "@/lib/copy";
-
-const ReceiptTaka: LucideIcon = forwardRef<SVGSVGElement, LucideProps>(
-  ({ size = 24, strokeWidth = 2, className, ...props }, ref) => (
-    <svg
-      ref={ref}
-      xmlns="http://www.w3.org/2000/svg"
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={cn("lucide lucide-receipt-taka", className)}
-      {...props}
-    >
-      <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
-      <path d="M8.5 8.5h7" />
-      <path d="M10.5 6.5v6a2.5 2.5 0 0 0 5 0c0-1.4-1.1-2.2-2.2-2.2-.9 0-1.6.6-1.6 1.4" />
-    </svg>
-  ),
-);
-ReceiptTaka.displayName = "ReceiptTaka";
 
 const Index = () => {
   const { products, sales, purchases } = useShop();
@@ -148,12 +123,12 @@ const Index = () => {
         )}
 
         <div className="grid grid-cols-3 gap-1.5">
-          <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" delay={100} />
-          <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" delay={150} />
-          <QuickAction icon={ReceiptTaka} label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" delay={200} />
-          <QuickAction icon={Clock} label="বাকি বিক্রি" to="/new-sale?mode=credit" tint="rose" delay={250} />
-          <QuickAction icon={Wallet} label="টাকা জমা" to="/accounting?tab=payment" tint="emerald" delay={300} />
-          <QuickAction icon={Package} label="পণ্য যোগ" to="/stocks?new=1" tint="emerald" delay={350} />
+          <QuickAction emoji="🛒" label="নতুন বিক্রি" to="/new-sale" tint="emerald" delay={100} />
+          <QuickAction emoji="👤" label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" delay={150} />
+          <QuickAction emoji="🧾" label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" delay={200} />
+          <QuickAction emoji="⏳" label="বাকি বিক্রি" to="/new-sale?mode=credit" tint="rose" delay={250} />
+          <QuickAction emoji="💰" label="টাকা জমা" to="/accounting?tab=payment" tint="emerald" delay={300} />
+          <QuickAction emoji="📦" label="পণ্য যোগ" to="/stocks?new=1" tint="emerald" delay={350} />
         </div>
 
         {/* Recent activity (Hisab-Kitab "Recent activity" section) */}
@@ -436,18 +411,18 @@ function BalanceCardSkeleton() {
 }
 
 const QUICK_TINTS = {
-  emerald: { icon: "text-emerald-600 dark:text-emerald-300", bg: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" },
-  rose: { icon: "text-rose-600 dark:text-rose-300", bg: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5" },
+  emerald: { bg: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" },
+  rose: { bg: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5" },
 } as const;
 
 function QuickAction({
-  icon: Icon,
+  emoji,
   label,
   to,
   tint,
   delay = 0,
 }: {
-  icon: LucideIcon;
+  emoji: string;
   label: string;
   to: string;
   tint: keyof typeof QUICK_TINTS;
@@ -460,8 +435,11 @@ function QuickAction({
       style={{ animationDelay: `${delay}ms` }}
       className={`home-card-appear group flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-all duration-200 hover:-translate-y-1 active:scale-[0.95] ${t.bg}`}
     >
-      <span className="flex h-11 w-11 items-center justify-center rounded-[100px] bg-white/60 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10">
-        <Icon className={`h-5 w-5 ${t.icon}`} strokeWidth={2} />
+      <span
+        aria-hidden="true"
+        className="flex h-11 w-11 items-center justify-center rounded-[100px] bg-white/60 text-xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10"
+      >
+        {emoji}
       </span>
       <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
     </Link>
