@@ -176,11 +176,8 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       }
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 px-5 pt-5 pb-3 sm:px-6">
+      <div className="flex items-center justify-between gap-3 px-5 pt-5 pb-2 sm:px-6">
         <div>
-          <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${tone.label}`}>
-            লেনদেনের তারিখ
-          </p>
           <h2 className={typography("h4", "m-0 leading-tight")}>{formatDate(now, "MMMM d, yyyy")}</h2>
         </div>
         <div className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 ${tone.pillBg}`}>
