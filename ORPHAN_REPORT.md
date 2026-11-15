@@ -64,3 +64,7 @@
 - `src/pages/CustomerDetails.tsx` — Duplicate `CustomerProfile`, `PROFILES_KEY`, `loadProfiles`, and `saveProfiles` definitions.
 - `src/components/BrandLogo.tsx` — Unused `BrandLockup` component.
 - `src/components/NewInvoiceCard.tsx` — Unused `saleType` state and unused imports (`PaymentStatusBadge`, `Card`, `Label`, `Receipt`).
+
+## ৬. পরবর্তীতে যুক্ত হওয়া Orphan Files (`main` ব্রাঞ্চ থেকে মুভ করা হয়েছে)
+- `src/pages/Expenses.tsx` (`Accounting.tsx`-এর সাথে একীভূত হওয়ায় আলাদা পেজের আর প্রয়োজন নেই)
+- `src/components/ui/table.tsx` (সমস্ত টেবিল টিন্ট লিস্টিং কার্ডে রূপান্তরিত হওয়ায় অব্যবহৃত)
