@@ -1,12 +1,12 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { Home, LineChart, Package, BarChart3, Users, type LucideIcon } from "lucide-react";
+import { Home, ShoppingCart, Package, BarChart3, Users, type LucideIcon } from "lucide-react";
 import { NAV } from "@/lib/copy";
 import { cn } from "@/lib/utils";
 
 type NavItem = { title: string; url: string; icon: LucideIcon; end?: boolean };
 
 const leftItems: NavItem[] = [
-  { title: NAV.reports, url: "/reports", icon: LineChart },
+  { title: "বিক্রয়", url: "/new-sale", icon: ShoppingCart },
   { title: NAV.stocks, url: "/stocks", icon: Package },
 ];
 
