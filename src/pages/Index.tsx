@@ -125,6 +125,9 @@ const Index = () => {
           <QuickAction icon={ShoppingCart} label="নতুন বিক্রি" to="/new-sale" tint="emerald" />
           <QuickAction icon={UserPlus} label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" />
           <QuickAction icon={Receipt} label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" />
+          <QuickAction icon={Clock} label="বাকি বিক্রি" to="/new-sale?mode=credit" tint="rose" />
+          <QuickAction icon={Wallet} label="টাকা জমা" to="/accounting?tab=payment" tint="emerald" />
+          <QuickAction icon={Package} label="পণ্য যোগ" to="/stocks?new=1" tint="emerald" />
         </div>
 
         {/* Recent activity (Hisab-Kitab "Recent activity" section) */}
