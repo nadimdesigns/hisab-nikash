@@ -274,13 +274,12 @@ export default function Expenses() {
             aria-selected={tab === "payment"}
             onClick={() => setTab("payment")}
             className={cn(
-              "flex items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
+              "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
               tab === "payment"
                 ? "bg-emerald-900 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >
-            <Wallet className="h-4 w-4 shrink-0" />
             <span className="truncate">টাকা জমা</span>
           </button>
           <button
@@ -289,13 +288,12 @@ export default function Expenses() {
             aria-selected={tab === "purchase"}
             onClick={() => setTab("purchase")}
             className={cn(
-              "flex items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
+              "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
               tab === "purchase"
                 ? "bg-rose-600 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >
-            <PackagePlus className="h-4 w-4 shrink-0" />
             <span className="truncate">নতুন ক্রয় / খরচ</span>
           </button>
           <button
@@ -304,13 +302,12 @@ export default function Expenses() {
             aria-selected={tab === "list"}
             onClick={() => setTab("list")}
             className={cn(
-              "flex items-center justify-center gap-1.5 rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
+              "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:text-sm",
               tab === "list"
                 ? "bg-rose-600 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >
-            <ListFilter className="h-4 w-4 shrink-0" />
             <span className="truncate">খরচের তালিকা</span>
           </button>
         </div>
@@ -318,11 +315,8 @@ export default function Expenses() {
         {tab === "payment" ? (
           /* ===== Inline টাকা জমা Form (Tint Green) ===== */
           <div className="w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5">
-            <div className="flex items-start justify-between gap-3 px-5 pb-3 pt-5 sm:px-6">
+            <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
               <div>
-                <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-300">
-                  জমার তারিখ
-                </p>
                 <h2 className={typography("h4", "m-0 leading-tight")}>
                   {formatDate(now, "MMMM d, yyyy")}
                 </h2>
@@ -439,11 +433,8 @@ export default function Expenses() {
           /* ===== Inline নতুন ক্রয় / খরচ Form (Tint Red) ===== */
           <Card className="min-w-0 max-w-full overflow-hidden rounded-3xl border border-rose-200 dark:border-rose-500/25 bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5">
             <CardContent className="space-y-4 px-4 py-5 sm:px-6">
-              <div className="flex items-start justify-between gap-3 pb-1">
+              <div className="flex items-center justify-between gap-3 pb-1">
                 <div>
-                  <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-rose-500 dark:text-rose-300">
-                    ক্রয় ও খরচের তারিখ
-                  </p>
                   <h2 className={typography("h4", "m-0 leading-tight")}>
                     {formatDate(now, "MMMM d, yyyy")}
                   </h2>

@@ -34,13 +34,12 @@ export default function NewSale() {
             aria-selected={!isCredit}
             onClick={() => setMode("cash")}
             className={cn(
-              "flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
+              "flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
               !isCredit
                 ? "bg-emerald-900 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >
-            <Banknote className="h-4 w-4 shrink-0" />
             <span>নগদ বিক্রি</span>
           </button>
           <button
@@ -49,13 +48,12 @@ export default function NewSale() {
             aria-selected={isCredit}
             onClick={() => setMode("credit")}
             className={cn(
-              "flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
+              "flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
               isCredit
                 ? "bg-rose-600 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >
-            <Clock className="h-4 w-4 shrink-0" />
             <span>বাকি বিক্রি</span>
           </button>
         </div>
