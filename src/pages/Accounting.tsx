@@ -603,7 +603,7 @@ export default function Accounting() {
           <>
             <div className="flex w-full items-center gap-2">
               <Select value={allTypeFilter} onValueChange={(v) => setAllTypeFilter(v as "all" | AllTxnType)}>
-                <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-xl border border-input bg-white px-3 py-2 hover:bg-accent hover:text-accent-foreground dark:border-input dark:bg-white/5 dark:text-foreground dark:hover:bg-white/10 dark:hover:text-foreground md:h-10">
+                <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3 py-2 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-foreground md:h-10">
                   <SelectValue placeholder="সব ধরনের" />
                 </SelectTrigger>
                 <SelectContent>

@@ -326,7 +326,7 @@ export default function CustomerDetails() {
             type="button"
             variant="outline"
             size="sm"
-            className="shrink-0 gap-1.5 rounded-xl bg-white hover:bg-white"
+            className="shrink-0 gap-1.5 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5"
             onClick={exportCSV}
             disabled={history.length === 0}
           >

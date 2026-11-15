@@ -612,7 +612,7 @@ export default function CustomersPanel() {
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="relative h-12 shrink-0 gap-2 rounded-xl border bg-white px-4 dark:bg-white/5 md:h-10"
+                    className="relative h-12 shrink-0 gap-2 rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5 md:h-10"
                     aria-label="কাস্টমার ফিল্টার খুলুন"
                   >
                     <SlidersHorizontal className="h-4 w-4" />
@@ -668,7 +668,7 @@ export default function CustomersPanel() {
 
               <DialogContent
                 style={{ fontFamily: "'Anek Bangla', sans-serif" }}
-                className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl p-0 sm:max-w-md"
+                className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-md"
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
                 <DialogHeader className="px-6 pt-6 text-left">

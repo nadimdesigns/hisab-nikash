@@ -107,7 +107,7 @@ const Index = () => {
                 "shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 period === k
                   ? "bg-emerald-900 text-white"
-                  : "border border-border bg-card text-muted-foreground hover:text-foreground"
+                  : "border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-900 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-emerald-200"
               )}
             >
               {l}

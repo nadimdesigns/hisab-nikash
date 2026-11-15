@@ -573,7 +573,7 @@ export default function Expenses() {
             <CardContent className="space-y-4 px-0 pb-0">
               <div className="grid gap-3 sm:grid-cols-[200px_1fr]">
                 <Select value={type} onValueChange={(v) => setType(v as ExpenseType)}>
-                  <SelectTrigger className="bg-white dark:bg-white/5">
+                  <SelectTrigger className="rounded-xl border-0 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:from-emerald-500/15 dark:to-emerald-500/5">
                     <SelectValue placeholder="লেনদেনের ধরন" />
                   </SelectTrigger>
                   <SelectContent>
