@@ -511,11 +511,17 @@ const Login = () => {
                   <Label htmlFor="phone" className={typography("body-strong")}>
                     মোবাইল নম্বর
                   </Label>
-                  <div className="flex">
-                    <span className="inline-flex h-12 shrink-0 select-none items-center rounded-l-2xl border border-r-0 border-input bg-white px-3.5 text-sm font-semibold text-muted-foreground dark:bg-white/10">
+                  <div
+                    className={cn(
+                      "flex h-12 w-full items-center rounded-2xl border border-input bg-white shadow-sm transition-all dark:bg-white/10 overflow-hidden",
+                      "focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/30",
+                      (errors.phone || errors.form) && "border-destructive focus-within:border-destructive focus-within:ring-destructive/30"
+                    )}
+                  >
+                    <span className="inline-flex h-full shrink-0 select-none items-center border-r border-input bg-emerald-50/50 px-3.5 text-sm font-semibold text-muted-foreground dark:bg-white/5">
                       +88
                     </span>
-                    <Input
+                    <input
                       id="phone"
                       type="text"
                       inputMode="numeric"
@@ -533,10 +539,7 @@ const Login = () => {
                         if (errors.phone || errors.form)
                           setErrors((prev) => ({ ...prev, phone: undefined, form: undefined }));
                       }}
-                      className={cn(
-                        "h-12 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10",
-                        (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive"
-                      )}
+                      className="h-full w-full bg-transparent px-3.5 text-[15px] outline-none placeholder:text-muted-foreground/60 border-none focus:outline-none focus:ring-0 text-foreground"
                     />
                   </div>
                   {errors.phone && (
