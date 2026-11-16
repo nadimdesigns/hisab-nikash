@@ -378,45 +378,59 @@ export default function Inventory() {
       />
 
       <div className="mt-4 space-y-3">
-        <div className="flex justify-end">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
-              >
-                <span aria-hidden="true" className="text-sm leading-none select-none">📥</span> এক্সপোর্ট
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className={BODY_TEXT}>
-                এক্সপোর্ট {filteredForExport.length}টি আইটেম
-                {filtersActive && (
-                  <span className={typography("body-muted", "block font-normal")}>
-                    বর্তমান ফিল্টারের ভিত্তিতে
-                  </span>
-                )}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleExport("csv")} className={cn("gap-2", BODY_TEXT)}>
-                <span aria-hidden="true" className="text-sm leading-none select-none">📊</span> CSV ডাউনলোড
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleExport("pdf")} className={cn("gap-2", BODY_TEXT)}>
-                <span aria-hidden="true" className="text-sm leading-none select-none">📄</span> PDF ডাউনলোড
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-
         <Button
           type="button"
           size="lg"
           onClick={() => setAddOpen(true)}
           className="home-card-appear h-12 w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-all hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
         >
-          <span aria-hidden="true" className="text-base leading-none select-none">➕</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-5 w-5 text-white shrink-0"
+            aria-hidden="true"
+          >
+            <path d="M5 12h14" />
+            <path d="M12 5v14" />
+          </svg>
           <span className="truncate">পণ্য যোগ করুন</span>
         </Button>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              size="lg"
+              variant="outline"
+              className="home-card-appear h-12 w-full gap-2 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 font-semibold text-emerald-900 transition-all hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-emerald-200 active:scale-[0.98]"
+            >
+              <span aria-hidden="true" className="text-base leading-none select-none">📥</span>
+              <span>এক্সপোর্ট (PDF / CSV)</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" className="w-[calc(100vw-2rem)] max-w-sm sm:w-64">
+            <DropdownMenuLabel className={BODY_TEXT}>
+              এক্সপোর্ট {filteredForExport.length}টি আইটেম
+              {filtersActive && (
+                <span className={typography("body-muted", "block font-normal")}>
+                  বর্তমান ফিল্টারের ভিত্তিতে
+                </span>
+              )}
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => handleExport("pdf")} className={cn("gap-2", BODY_TEXT)}>
+              <span aria-hidden="true" className="text-sm leading-none select-none">📄</span> PDF ডাউনলোড
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleExport("csv")} className={cn("gap-2", BODY_TEXT)}>
+              <span aria-hidden="true" className="text-sm leading-none select-none">📊</span> CSV ডাউনলোড
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </AppLayout>
   );
