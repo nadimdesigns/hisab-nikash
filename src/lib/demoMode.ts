@@ -1,9 +1,7 @@
 /**
- * Demo sandbox (read-only viewing aid, re-added by owner request Aug 2026).
- * The app stays admin-only — there is no "user"/"demo" role anymore. Demo
- * mode is purely a client-side viewing sandbox: every persisted key gets a
- * `demo:` prefix so the visitor browses seeded sample data without ever
- * touching real records.
+ * Demo account management.
+ * The demo account shares the primary live store keys so all changes (adding/editing
+ * products, recording sales, payments, expenses) update the live preview directly.
  */
 
 const DEMO_KEY = "pharmasee-demo-mode";
@@ -36,9 +34,24 @@ export function disableDemoMode(): void {
   }
 }
 
-/** Persisted keys are namespaced while demo mode is active. */
+/**
+ * Persisted keys are unified with live storage so demo account edits
+ * immediately update the live preview directly (not trapped in an isolated sandbox).
+ * Also migrates any previous demo: prefixed keys to the main keys.
+ */
 export function dataKey(key: string): string {
-  return isDemoMode() ? `${DEMO_PREFIX}${key}` : key;
+  if (typeof window !== "undefined") {
+    try {
+      const demoKey = `demo:${key}`;
+      const demoVal = window.localStorage.getItem(demoKey);
+      if (demoVal && !window.localStorage.getItem(key)) {
+        window.localStorage.setItem(key, demoVal);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  return key;
 }
 
 export type CachedRole = "admin" | null;
