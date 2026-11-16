@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -44,10 +44,7 @@ const App = () => (
               <Route path="/new-sale" element={<RequireAuth><NewSale /></RequireAuth>} />
               <Route path="/customers" element={<RequireAuth><Customers /></RequireAuth>} />
               <Route path="/customers/:id" element={<RequireAuth><CustomerDetails /></RequireAuth>} />
-              <Route path="/expenses" element={<Navigate to="/accounting" replace />} />
               <Route path="/accounting" element={<RequireAuth><Accounting /></RequireAuth>} />
-              <Route path="/reports" element={<RequireAuth><Accounting /></RequireAuth>} />
-
               <Route path="/account" element={<RequireAuth><Account /></RequireAuth>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
