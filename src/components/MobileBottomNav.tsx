@@ -87,27 +87,27 @@ export function MobileBottomNav() {
               onClick={() => navigate("/new-sale")}
               aria-label="বিক্রয়"
               className={cn(
-                "shimmer-overlay group relative -mt-7 flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-95",
+                "shimmer-overlay group relative -mt-7 flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full transition-all duration-200 hover:-translate-y-0.5 active:scale-95",
                 isSale
-                  ? "bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600"
+                  ? "bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600 shadow-md ring-2 ring-emerald-300/40"
                   : "bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400",
               )}
             >
               <span
                 aria-hidden="true"
                 className={cn(
-                  "relative z-10 text-xl leading-none select-none transition-transform duration-200",
-                  isSale ? "scale-110" : "group-hover:scale-105",
+                  "relative z-10 text-[26px] font-black leading-none select-none transition-all duration-200",
+                  isSale ? "scale-110 text-yellow-300" : "text-white group-hover:scale-105",
                 )}
               >
-                🛒
+                ৳
               </span>
               <span className="shimmer-streak" aria-hidden="true" />
             </button>
             <span
               className={cn(
                 "mt-[7px] text-[11px] leading-none tracking-tight transition-colors duration-200",
-                isSale ? "font-bold text-emerald-300" : "font-medium text-emerald-100/70",
+                isSale ? "font-bold text-yellow-300" : "font-medium text-emerald-100/70",
               )}
             >
               বিক্রয়
