@@ -370,7 +370,7 @@ export default function Accounting() {
             role="tablist"
             aria-label="হিসাব ও লেনদেন ট্যাব"
             className={cn(
-              "grid min-w-0 flex-1 grid-cols-3 gap-1.5 rounded-full p-1 transition-colors",
+              "flex min-w-0 flex-1 items-stretch gap-1 rounded-full p-1 transition-colors",
               tab === "purchase"
                 ? "bg-rose-100/70 dark:bg-rose-500/15"
                 : "bg-emerald-100/60 dark:bg-emerald-500/15",
@@ -382,13 +382,13 @@ export default function Accounting() {
               aria-selected={tab === "list"}
               onClick={() => setTab("list")}
               className={cn(
-                "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
+                "flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold transition-all sm:px-3 sm:py-2.5 sm:text-sm",
                 tab === "list"
-                  ? "bg-emerald-900 text-white"
-                  : "text-foreground/75 hover:text-foreground",
+                  ? "flex-[1.2] bg-emerald-900 text-white shadow-sm"
+                  : "flex-1 text-foreground/75 hover:text-foreground",
               )}
             >
-              <span className="truncate">সব হিসাব</span>
+              <span className="whitespace-nowrap">সব হিসাব</span>
               {tab === "list" && (
                 <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
                   {allTransactionsList.length}
@@ -401,13 +401,13 @@ export default function Accounting() {
               aria-selected={tab === "payment"}
               onClick={() => setTab("payment")}
               className={cn(
-                "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
+                "flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold transition-all sm:px-3 sm:py-2.5 sm:text-sm",
                 tab === "payment"
-                  ? "bg-emerald-900 text-white"
-                  : "text-foreground/75 hover:text-foreground",
+                  ? "flex-[1.2] bg-emerald-900 text-white shadow-sm"
+                  : "flex-1 text-foreground/75 hover:text-foreground",
               )}
             >
-              <span className="truncate">টাকা জমা</span>
+              <span className="whitespace-nowrap">টাকা জমা</span>
               {tab === "payment" && (
                 <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
                   {payments.length}
@@ -420,13 +420,13 @@ export default function Accounting() {
               aria-selected={tab === "purchase"}
               onClick={() => setTab("purchase")}
               className={cn(
-                "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
+                "flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold transition-all sm:px-3 sm:py-2.5 sm:text-sm",
                 tab === "purchase"
-                  ? "bg-rose-600 text-white"
-                  : "text-foreground/75 hover:text-foreground",
+                  ? "flex-[1.3] bg-rose-600 text-white shadow-sm"
+                  : "flex-1 text-foreground/75 hover:text-foreground",
               )}
             >
-              <span className="truncate">ক্রয় / খরচ</span>
+              <span className="whitespace-nowrap">ক্রয় / খরচ</span>
               {tab === "purchase" && (
                 <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
                   {purchases.length}

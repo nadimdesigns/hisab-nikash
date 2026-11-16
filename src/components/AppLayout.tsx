@@ -44,7 +44,7 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
             <div className="hidden md:block">
               <SidebarTrigger />
             </div>
-            <h1 className={typography("h3", "max-w-[80px] xs:max-w-[120px] sm:max-w-none truncate shrink-0 text-sidebar-foreground")}>{title}</h1>
+            <h1 className={typography("h3", "whitespace-nowrap shrink-0 text-sidebar-foreground")}>{title}</h1>
 
             {/* Live Digital Clock centered */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
