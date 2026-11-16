@@ -56,7 +56,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
   const addItemFor = (productId: string, quantity: number) => {
     const m = products.find((x) => x.id === productId);
     if (!m) return;
-    if (quantity < 1) return;
+    if (quantity <= 0) return;
     if (m.stock < quantity) {
       toast({ title: `স্টকে আছে মাত্র ${m.stock}`, variant: "destructive" });
       return;
@@ -71,7 +71,12 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
 
   const handleSelectProduct = (id: string) => {
     setPickId(id);
-    addItemFor(id, qty);
+    const existing = items.find((i) => i.productId === id);
+    const initialQty = existing ? existing.qty : 1;
+    setQty(initialQty);
+    if (!existing) {
+      addItemFor(id, 1);
+    }
   };
 
   const handleQtyChange = (value: number) => {
@@ -80,7 +85,13 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
     if (pickId) addItemFor(pickId, next);
   };
 
-  const removeItem = (id: string) => setItems(items.filter((i) => i.productId !== id));
+  const removeItem = (id: string) => {
+    setItems(items.filter((i) => i.productId !== id));
+    if (pickId === id) {
+      setPickId("");
+      setQty(1);
+    }
+  };
 
   const checkout = () => {
     if (items.length === 0) {
@@ -261,7 +272,13 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             {items.map((i) => (
               <li
                 key={i.productId}
-                className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-[18px] dark:bg-white/10"
+                onClick={() => {
+                  setPickId(i.productId);
+                  setQty(i.qty);
+                }}
+                className={`flex cursor-pointer items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-[18px] transition-all hover:bg-white dark:bg-white/10 dark:hover:bg-white/15 ${
+                  pickId === i.productId ? "ring-2 ring-emerald-600/50 dark:ring-emerald-400/50" : ""
+                }`}
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-foreground">{i.name}</p>
@@ -282,7 +299,10 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
                   size="icon"
                   variant="ghost"
                   className="h-8 w-8 shrink-0 rounded-[100px] bg-white/60 text-rose-600 hover:bg-rose-50 dark:bg-white/10 dark:text-rose-300"
-                  onClick={() => removeItem(i.productId)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    removeItem(i.productId);
+                  }}
                 >
                   <span aria-hidden="true" className="text-sm leading-none select-none">🗑️</span>
                 </Button>

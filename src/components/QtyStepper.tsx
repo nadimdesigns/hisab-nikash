@@ -1,5 +1,5 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { unitDef, type UnitCode } from "@/lib/copy";
 import { roundQty } from "@/store/shop";
@@ -44,8 +44,48 @@ export function QtyStepper({
     return roundQty(v);
   };
 
-  const dec = () => onChange(clamp(value - effectiveStep));
-  const inc = () => onChange(clamp(value + effectiveStep));
+  const [localVal, setLocalVal] = useState<string>(String(value ?? effectiveMin));
+
+  useEffect(() => {
+    setLocalVal(String(value ?? effectiveMin));
+  }, [value, effectiveMin]);
+
+  const dec = () => {
+    const next = clamp((value ?? effectiveMin) - effectiveStep);
+    setLocalVal(String(next));
+    onChange(next);
+  };
+
+  const inc = () => {
+    const next = clamp((value ?? effectiveMin) + effectiveStep);
+    setLocalVal(String(next));
+    onChange(next);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setLocalVal(raw);
+    const parsed = parseFloat(raw);
+    if (!Number.isNaN(parsed) && parsed > 0) {
+      if (typeof max === "number" && parsed > max) {
+        onChange(max);
+      } else {
+        onChange(roundQty(parsed));
+      }
+    }
+  };
+
+  const handleInputBlur = () => {
+    const parsed = parseFloat(localVal);
+    if (Number.isNaN(parsed) || parsed < effectiveMin) {
+      setLocalVal(String(effectiveMin));
+      onChange(effectiveMin);
+    } else {
+      const clamped = clamp(parsed);
+      setLocalVal(String(clamped));
+      onChange(clamped);
+    }
+  };
 
   return (
     <div
@@ -61,28 +101,31 @@ export function QtyStepper({
         onClick={dec}
         disabled={value <= effectiveMin}
         aria-label="পরিমাণ কমান"
-        className="h-full w-12 shrink-0 rounded-r-none rounded-l-md md:w-10"
+        className="h-full w-10 shrink-0 rounded-r-none rounded-l-md hover:bg-black/5 dark:hover:bg-white/5"
       >
         <span aria-hidden="true" className="text-xs leading-none select-none">➖</span>
       </Button>
-      <Input
-        type="number"
-        // Latin digits on purpose: the numeric keypad and <input type="number">
-        // only accept them, so a Bengali-numeral value would not be editable.
-        inputMode={allowsDecimals ? "decimal" : "numeric"}
-        min={effectiveMin}
-        max={max}
-        step={effectiveStep}
-        value={value}
-        onChange={(e) => onChange(clamp(+e.target.value))}
-        aria-label={ariaLabel}
-        className="h-full min-w-0 flex-1 border-0 bg-transparent dark:!bg-transparent px-1 text-center focus-visible:ring-0 focus-visible:ring-offset-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-      />
-      {def && (
-        <span className="shrink-0 px-2 text-xs text-muted-foreground" aria-hidden>
-          {def.label}
-        </span>
-      )}
+
+      <div className="flex min-w-0 flex-1 items-center justify-center gap-1.5 px-1">
+        <input
+          type="number"
+          inputMode={allowsDecimals ? "decimal" : "numeric"}
+          min={effectiveMin}
+          max={max}
+          step={effectiveStep}
+          value={localVal}
+          onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          aria-label={ariaLabel}
+          className="h-full w-14 min-w-0 border-0 bg-transparent text-center text-sm font-bold text-foreground tabular-nums focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+        />
+        {def && (
+          <span className="shrink-0 text-xs font-semibold text-muted-foreground select-none" aria-hidden>
+            {def.label}
+          </span>
+        )}
+      </div>
+
       <Button
         type="button"
         variant="ghost"
@@ -90,7 +133,7 @@ export function QtyStepper({
         onClick={inc}
         disabled={typeof max === "number" && value >= max}
         aria-label="পরিমাণ বাড়ান"
-        className="h-full w-12 shrink-0 rounded-l-none rounded-r-md md:w-10"
+        className="h-full w-10 shrink-0 rounded-l-none rounded-r-md hover:bg-black/5 dark:hover:bg-white/5"
       >
         <span aria-hidden="true" className="text-xs leading-none select-none">➕</span>
       </Button>
