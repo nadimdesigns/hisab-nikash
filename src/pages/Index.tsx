@@ -126,7 +126,7 @@ const Index = () => {
           </div>
 
           <div className="lg:col-span-7">
-            <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5 h-full">
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-3 md:gap-4 h-full">
               <QuickAction emoji="🛒" label="নতুন বিক্রি" to="/new-sale" tint="emerald" delay={100} />
               <QuickAction emoji="👤" label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" delay={150} />
               <QuickAction emoji="🧾" label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" delay={200} />
@@ -436,7 +436,7 @@ function QuickAction({
     <Link
       to={to}
       style={{ animationDelay: `${delay}ms` }}
-      className={`home-card-appear group flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-2xl p-2.5 sm:p-4 text-center transition-all duration-200 hover:-translate-y-1 active:scale-[0.95] ${t.bg}`}
+      className={`home-card-appear group flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-2xl px-2.5 py-3.5 sm:px-4 sm:py-5 text-center transition-all duration-200 hover:-translate-y-1 active:scale-[0.95] ${t.bg}`}
     >
       <span
         aria-hidden="true"
