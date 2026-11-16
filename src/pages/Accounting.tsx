@@ -287,6 +287,67 @@ export default function Accounting() {
     });
   }, [allTransactionsList, allTypeFilter]);
 
+  const filterSums = useMemo(() => {
+    let allSum = 0;
+    let purchaseSum = 0;
+    let expenseSum = 0;
+    let cashSaleSum = 0;
+    let dueSaleSum = 0;
+    let paymentSum = 0;
+
+    allTransactionsList.forEach((t) => {
+      allSum += t.amount;
+      if (t.type === "Purchase") {
+        purchaseSum += t.amount;
+      }
+      if (EXPENSE_ALIASES.includes(t.type)) {
+        expenseSum += t.amount;
+      }
+      if (t.type === "Cash Sale") {
+        cashSaleSum += t.amount;
+      } else if (t.type === "Due Sale") {
+        dueSaleSum += t.amount;
+      } else if (t.type === "New Payment") {
+        paymentSum += t.amount;
+      }
+    });
+
+    return {
+      all: allSum,
+      Purchase: purchaseSum,
+      Expense: expenseSum,
+      "Cash Sale": cashSaleSum,
+      "Due Sale": dueSaleSum,
+      "New Payment": paymentSum,
+    };
+  }, [allTransactionsList]);
+
+  const getFilterAmountNode = (type: "all" | AllTxnType) => {
+    const sum = filterSums[type] ?? 0;
+    if (type === "all") {
+      return (
+        <span className="shrink-0 text-xs sm:text-sm font-bold tabular-nums text-foreground/80">
+          {currency(sum)}
+        </span>
+      );
+    }
+    const isRevenue = type === "Cash Sale" || type === "New Payment";
+    const isOutflow = type === "Purchase" || type === "Expense";
+    const prefix = isRevenue ? "+" : isOutflow ? "−" : "";
+    return (
+      <span
+        className={cn(
+          "shrink-0 text-xs sm:text-sm font-bold tabular-nums",
+          isRevenue
+            ? "text-emerald-700 dark:text-emerald-300"
+            : "text-rose-600 dark:text-rose-400",
+        )}
+      >
+        {prefix}{currency(sum)}
+      </span>
+    );
+  };
+
   return (
     <AppLayout title={tab === "payment" ? "টাকা জমা" : tab === "purchase" ? "নতুন ক্রয় / খরচ" : "হিসাব"}>
       <div className="space-y-4">
@@ -607,16 +668,46 @@ export default function Accounting() {
               className="home-card-appear flex w-full items-center gap-2"
             >
               <Select value={allTypeFilter} onValueChange={(v) => setAllTypeFilter(v as "all" | AllTxnType)}>
-                <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3 py-2 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-foreground md:h-10">
+                <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 py-2 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-foreground md:h-10 [&>span]:flex [&>span]:flex-1 [&>span]:w-full [&>span]:items-center [&>span]:justify-between [&>span]:!line-clamp-none">
                   <SelectValue placeholder="সব ধরনের" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">সব ধরনের</SelectItem>
-                  <SelectItem value="Purchase">ক্রয়</SelectItem>
-                  <SelectItem value="Expense">খরচ</SelectItem>
-                  <SelectItem value="Cash Sale">নগদ বিক্রি</SelectItem>
-                  <SelectItem value="Due Sale">বাকি বিক্রি</SelectItem>
-                  <SelectItem value="New Payment">নগদ পেমেন্ট</SelectItem>
+                <SelectContent className="w-[calc(100vw-2rem)] max-w-sm sm:max-w-md">
+                  <SelectItem value="all" className="cursor-pointer py-2.5">
+                    <span className="flex w-full items-center justify-between gap-3">
+                      <span>সব ধরনের</span>
+                      {getFilterAmountNode("all")}
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="Purchase" className="cursor-pointer py-2.5">
+                    <span className="flex w-full items-center justify-between gap-3">
+                      <span>ক্রয়</span>
+                      {getFilterAmountNode("Purchase")}
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="Expense" className="cursor-pointer py-2.5">
+                    <span className="flex w-full items-center justify-between gap-3">
+                      <span>খরচ</span>
+                      {getFilterAmountNode("Expense")}
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="Cash Sale" className="cursor-pointer py-2.5">
+                    <span className="flex w-full items-center justify-between gap-3">
+                      <span>নগদ বিক্রি</span>
+                      {getFilterAmountNode("Cash Sale")}
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="Due Sale" className="cursor-pointer py-2.5">
+                    <span className="flex w-full items-center justify-between gap-3">
+                      <span>বাকি বিক্রি</span>
+                      {getFilterAmountNode("Due Sale")}
+                    </span>
+                  </SelectItem>
+                  <SelectItem value="New Payment" className="cursor-pointer py-2.5">
+                    <span className="flex w-full items-center justify-between gap-3">
+                      <span>নগদ পেমেন্ট</span>
+                      {getFilterAmountNode("New Payment")}
+                    </span>
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
