@@ -278,7 +278,7 @@ const Login = () => {
           <div className="absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-white/10 pointer-events-none" aria-hidden />
 
           <img
-            src="/logo.png"
+            src="/logo.webp"
             alt={APP_NAME}
             className="relative h-[68px] w-[68px] object-contain shadow-md shadow-emerald-950/40 rounded-2xl"
           />
