@@ -292,7 +292,7 @@ const Login = () => {
                       type="button"
                       onClick={() => handleSelectShopType(shop.id)}
                       className={cn(
-                        "relative flex flex-col justify-between p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] h-full min-h-[115px]",
+                        "relative flex flex-col justify-between p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] h-full min-h-[96px]",
                         isSelected
                           ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-600/60 shadow-sm dark:bg-emerald-500/20"
                           : "border-border/80 bg-white/80 hover:bg-white hover:border-emerald-300 dark:bg-white/5 dark:hover:bg-white/10"
@@ -316,13 +316,10 @@ const Login = () => {
                         </div>
                       </div>
 
-                      <div className="mt-2 space-y-0.5">
+                      <div className="mt-2">
                         <span className="font-bold text-[13px] sm:text-sm text-foreground leading-snug line-clamp-1 block">
                           {shop.title}
                         </span>
-                        <p className="text-[10px] sm:text-[11px] text-muted-foreground line-clamp-2 leading-tight">
-                          {shop.description}
-                        </p>
                       </div>
                     </button>
                   );
