@@ -16,6 +16,7 @@ import { APP_NAME } from "@/lib/copy";
 import {
   ONBOARDING_SHOP_TYPES,
   SHOP_TYPE_PRODUCTS,
+  SERVICE_BUSINESS_TYPES,
   type ShopType,
   seedCustomShopProducts,
 } from "@/lib/onboardingData";
@@ -54,6 +55,7 @@ const Login = () => {
   // Flow State
   const [step, setStep] = useState<Step>("step-1-shop");
   const [selectedShopType, setSelectedShopType] = useState<ShopType>("grocery");
+  const [selectedServiceTypeId, setSelectedServiceTypeId] = useState<string>("srv-dental");
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(() => {
     return new Set(SHOP_TYPE_PRODUCTS["grocery"].map((p) => p.id));
   });
@@ -75,10 +77,23 @@ const Login = () => {
     }
   }, [loading, session, from, navigate]);
 
-  // When user switches shop type in Step 1, select all default products for that type
+  // When user switches shop type in Step 1
   const handleSelectShopType = (type: ShopType) => {
     setSelectedShopType(type);
-    setSelectedProductIds(new Set(SHOP_TYPE_PRODUCTS[type].map((p) => p.id)));
+    if (type === "service") {
+      const srv = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId) || SERVICE_BUSINESS_TYPES[0];
+      setSelectedProductIds(new Set(srv.defaultItems.map((p) => p.id)));
+    } else {
+      setSelectedProductIds(new Set(SHOP_TYPE_PRODUCTS[type].map((p) => p.id)));
+    }
+  };
+
+  const handleSelectServiceType = (serviceId: string) => {
+    setSelectedServiceTypeId(serviceId);
+    const srv = SERVICE_BUSINESS_TYPES.find((s) => s.id === serviceId);
+    if (srv) {
+      setSelectedProductIds(new Set(srv.defaultItems.map((p) => p.id)));
+    }
   };
 
   // Toggle individual product selection in Step 2
@@ -188,9 +203,10 @@ const Login = () => {
         }
       } else {
         // New user signup
-        const chosenTemplates = SHOP_TYPE_PRODUCTS[selectedShopType].filter((p) =>
-          selectedProductIds.has(p.id)
-        );
+        const isService = selectedShopType === "service";
+        const chosenTemplates = isService
+          ? (SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId)?.defaultItems || [])
+          : SHOP_TYPE_PRODUCTS[selectedShopType].filter((p) => selectedProductIds.has(p.id));
         seedCustomShopProducts(chosenTemplates, selectedShopType, false);
 
         const { data, error } = await supabase.auth.signUp({
@@ -201,9 +217,12 @@ const Login = () => {
         if (error) {
           setErrors({ form: mapAuthError(error.message) });
         } else if (data.session) {
+          const serviceTitle = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId)?.title;
           toast({
             title: "স্বাগতম!",
-            description: `আপনার দোকান ও ${chosenTemplates.length}টি পণ্য প্রস্তুত করা হয়েছে।`,
+            description: isService
+              ? `আপনার ${serviceTitle || "সেবা"} ব্যবসা প্রস্তুত করা হয়েছে।`
+              : `আপনার দোকান ও ${chosenTemplates.length}টি পণ্য প্রস্তুত করা হয়েছে।`,
           });
           navigate(from, { replace: true });
         } else {
@@ -232,6 +251,8 @@ const Login = () => {
       hasError && "border-destructive text-destructive"
     );
 
+  const isServiceShop = selectedShopType === "service";
+  const selectedServiceInfo = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId) || SERVICE_BUSINESS_TYPES[0];
   const currentProductsList = SHOP_TYPE_PRODUCTS[selectedShopType] || [];
   const currentShopInfo = ONBOARDING_SHOP_TYPES.find((s) => s.id === selectedShopType) || ONBOARDING_SHOP_TYPES[0];
 
@@ -247,9 +268,6 @@ const Login = () => {
           />
           <span className="relative text-xl sm:text-2xl font-bold text-gray-950 dark:text-white leading-tight tracking-tight">
             {APP_NAME}
-          </span>
-          <span className="relative text-xs font-medium text-gray-700 dark:text-emerald-100/80">
-            দোকানের সহজ ডিজিটাল খাতা
           </span>
         </div>
 
@@ -336,100 +354,160 @@ const Login = () => {
             </div>
           )}
 
-          {/* ================= STEP 2: PRODUCT SELECTION ================= */}
+          {/* ================= STEP 2: PRODUCT / SERVICE SELECTION ================= */}
           {step === "step-2-products" && (
             <div className="space-y-3.5">
-              <div className="flex items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5 dark:border-emerald-800/40">
-                <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
-                  <span>{currentShopInfo.emoji}</span>
-                  <span>{currentShopInfo.shortTitle}র পণ্য</span>
-                </h2>
+              {isServiceShop ? (
+                /* Service Business Type Single-Selection */
+                <>
+                  <div className="flex items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5 dark:border-emerald-800/40">
+                    <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
+                      <span>🛠️</span>
+                      <span>সেবার ধরন বেছে নিন</span>
+                    </h2>
 
-                <span
-                  className={cn(
-                    "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold",
-                    selectedProductIds.size >= 1
-                      ? "bg-emerald-600 text-white"
-                      : "bg-rose-600 text-white animate-pulse"
-                  )}
-                >
-                  {selectedProductIds.size}টি নির্বাচিত
-                </span>
-              </div>
+                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold bg-emerald-600 text-white">
+                      ১টি নির্বাচিত
+                    </span>
+                  </div>
 
-              {/* Quick Select All / Deselect All */}
-              <div className="flex items-center justify-between text-xs px-0.5">
-                <span className="text-muted-foreground text-[11px]">
-                  মোট {currentProductsList.length}টি সাধারণ পণ্য
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={selectAllProducts}
-                    className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline"
-                  >
-                    সব নির্বাচন
-                  </button>
-                  <span className="text-muted-foreground/40">•</span>
-                  <button
-                    type="button"
-                    onClick={deselectAllProducts}
-                    className="text-[11px] font-semibold text-rose-600 hover:underline"
-                  >
-                    সব মুছুন
-                  </button>
-                </div>
-              </div>
+                  <p className="text-xs text-muted-foreground">
+                    আপনার ব্যবসার প্রধান সেবার ক্যাটাগরি বেছে নিন:
+                  </p>
 
-              {/* 3-Column Checklist Grid */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[340px] overflow-y-auto p-1 rounded-xl bg-white/40 dark:bg-white/5 border border-emerald-200/40 dark:border-white/10">
-                {currentProductsList.map((product) => {
-                  const isChecked = selectedProductIds.has(product.id);
-                  return (
-                    <button
-                      key={product.id}
-                      type="button"
-                      onClick={() => toggleProduct(product.id)}
-                      className={cn(
-                        "relative flex flex-col justify-between p-2.5 rounded-xl border text-left transition-all duration-150 active:scale-95 select-none",
-                        isChecked
-                          ? "border-emerald-600 bg-emerald-100/70 dark:bg-emerald-500/25 ring-1 ring-emerald-500/50 shadow-sm"
-                          : "border-border/70 bg-white dark:bg-white/5 opacity-75 hover:opacity-100"
-                      )}
-                    >
-                      <div className="flex items-start justify-between gap-1 w-full">
-                        <span className="font-bold text-xs text-foreground leading-tight line-clamp-2">
-                          {product.name}
-                        </span>
-                        <div
+                  {/* 2-Column Service Types Grid (Single-Selection) */}
+                  <div className="grid grid-cols-2 gap-2 max-h-[340px] overflow-y-auto p-1 rounded-xl bg-white/40 dark:bg-white/5 border border-emerald-200/40 dark:border-white/10">
+                    {SERVICE_BUSINESS_TYPES.map((service) => {
+                      const isSelected = selectedServiceTypeId === service.id;
+                      return (
+                        <button
+                          key={service.id}
+                          type="button"
+                          onClick={() => handleSelectServiceType(service.id)}
                           className={cn(
-                            "h-4 w-4 shrink-0 rounded flex items-center justify-center border transition-colors mt-0.5",
-                            isChecked
-                              ? "bg-emerald-600 border-emerald-600 text-white"
-                              : "border-muted-foreground/40 bg-white dark:bg-white/10"
+                            "relative flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-150 active:scale-95 select-none min-h-[58px]",
+                            isSelected
+                              ? "border-emerald-600 bg-emerald-100/70 dark:bg-emerald-500/25 ring-1 ring-emerald-500/50 shadow-sm"
+                              : "border-border/70 bg-white dark:bg-white/5 opacity-80 hover:opacity-100"
                           )}
                         >
-                          {isChecked && <span className="text-[10px] font-bold leading-none">✓</span>}
-                        </div>
-                      </div>
+                          <div className="flex items-center gap-2 min-w-0 pr-1">
+                            <span className="text-xl shrink-0" aria-hidden="true">{service.emoji}</span>
+                            <span className="font-bold text-xs text-foreground leading-tight line-clamp-2">
+                              {service.title}
+                            </span>
+                          </div>
+                          <div
+                            className={cn(
+                              "h-4 w-4 shrink-0 rounded-full border flex items-center justify-center transition-colors",
+                              isSelected
+                                ? "border-emerald-600 bg-emerald-600 text-white"
+                                : "border-muted-foreground/40 bg-white dark:bg-white/10"
+                            )}
+                          >
+                            {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : (
+                /* Standard Products Multi-Selection Checklist */
+                <>
+                  <div className="flex items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5 dark:border-emerald-800/40">
+                    <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
+                      <span>{currentShopInfo.emoji}</span>
+                      <span>{currentShopInfo.shortTitle}র পণ্য</span>
+                    </h2>
 
-                      <div className="mt-2 pt-1 border-t border-emerald-200/40 dark:border-white/10 flex items-center justify-between text-[10px] text-muted-foreground">
-                        <span className="font-semibold text-emerald-800 dark:text-emerald-300">
-                          ৳{product.sellPrice}
-                        </span>
-                        <span className="text-[9px] uppercase tracking-wide opacity-80">
-                          {product.unit}
-                        </span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                    <span
+                      className={cn(
+                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold",
+                        selectedProductIds.size >= 1
+                          ? "bg-emerald-600 text-white"
+                          : "bg-rose-600 text-white animate-pulse"
+                      )}
+                    >
+                      {selectedProductIds.size}টি নির্বাচিত
+                    </span>
+                  </div>
 
-              {selectedProductIds.size === 0 && (
-                <p role="alert" className="text-xs text-rose-600 font-medium text-center bg-rose-50 dark:bg-rose-950/30 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/40">
-                  ⚠️ কমপক্ষে ১টি পণ্য নির্বাচন করুন।
-                </p>
+                  {/* Quick Select All / Deselect All */}
+                  <div className="flex items-center justify-between text-xs px-0.5">
+                    <span className="text-muted-foreground text-[11px]">
+                      মোট {currentProductsList.length}টি সাধারণ পণ্য
+                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={selectAllProducts}
+                        className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline"
+                      >
+                        সব নির্বাচন
+                      </button>
+                      <span className="text-muted-foreground/40">•</span>
+                      <button
+                        type="button"
+                        onClick={deselectAllProducts}
+                        className="text-[11px] font-semibold text-rose-600 hover:underline"
+                      >
+                        সব মুছুন
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* 3-Column Checklist Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[340px] overflow-y-auto p-1 rounded-xl bg-white/40 dark:bg-white/5 border border-emerald-200/40 dark:border-white/10">
+                    {currentProductsList.map((product) => {
+                      const isChecked = selectedProductIds.has(product.id);
+                      return (
+                        <button
+                          key={product.id}
+                          type="button"
+                          onClick={() => toggleProduct(product.id)}
+                          className={cn(
+                            "relative flex flex-col justify-between p-2.5 rounded-xl border text-left transition-all duration-150 active:scale-95 select-none",
+                            isChecked
+                              ? "border-emerald-600 bg-emerald-100/70 dark:bg-emerald-500/25 ring-1 ring-emerald-500/50 shadow-sm"
+                              : "border-border/70 bg-white dark:bg-white/5 opacity-75 hover:opacity-100"
+                          )}
+                        >
+                          <div className="flex items-start justify-between gap-1 w-full">
+                            <span className="font-bold text-xs text-foreground leading-tight line-clamp-2">
+                              {product.name}
+                            </span>
+                            <div
+                              className={cn(
+                                "h-4 w-4 shrink-0 rounded flex items-center justify-center border transition-colors mt-0.5",
+                                isChecked
+                                  ? "bg-emerald-600 border-emerald-600 text-white"
+                                  : "border-muted-foreground/40 bg-white dark:bg-white/10"
+                              )}
+                            >
+                              {isChecked && <span className="text-[10px] font-bold leading-none">✓</span>}
+                            </div>
+                          </div>
+
+                          <div className="mt-2 pt-1 border-t border-emerald-200/40 dark:border-white/10 flex items-center justify-between text-[10px] text-muted-foreground">
+                            <span className="font-semibold text-emerald-800 dark:text-emerald-300">
+                              ৳{product.sellPrice}
+                            </span>
+                            <span className="text-[9px] uppercase tracking-wide opacity-80">
+                              {product.unit}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {selectedProductIds.size === 0 && (
+                    <p role="alert" className="text-xs text-rose-600 font-medium text-center bg-rose-50 dark:bg-rose-950/30 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/40">
+                      ⚠️ কমপক্ষে ১টি পণ্য নির্বাচন করুন।
+                    </p>
+                  )}
+                </>
               )}
 
               {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
@@ -437,9 +515,9 @@ const Login = () => {
                 <Button
                   type="button"
                   size="lg"
-                  disabled={selectedProductIds.size === 0}
+                  disabled={isServiceShop ? !selectedServiceTypeId : selectedProductIds.size === 0}
                   onClick={() => {
-                    if (selectedProductIds.size >= 1) {
+                    if (isServiceShop || selectedProductIds.size >= 1) {
                       setStep("step-3-phone");
                     }
                   }}
@@ -468,13 +546,17 @@ const Login = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between bg-emerald-100/60 dark:bg-emerald-900/30 p-2.5 rounded-2xl border border-emerald-200 dark:border-emerald-800/40">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">{currentShopInfo.emoji}</span>
+                  <span className="text-xl">
+                    {isServiceShop ? selectedServiceInfo.emoji : currentShopInfo.emoji}
+                  </span>
                   <div>
                     <p className="text-xs font-bold text-foreground leading-tight">
-                      {currentShopInfo.shortTitle}
+                      {isServiceShop ? selectedServiceInfo.title : currentShopInfo.shortTitle}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                      {selectedProductIds.size}টি প্রারম্ভিক পণ্য নির্বাচিত
+                      {isServiceShop
+                        ? "সেবামূলক ব্যবসা নির্বাচিত"
+                        : `${selectedProductIds.size}টি প্রারম্ভিক পণ্য নির্বাচিত`}
                     </p>
                   </div>
                 </div>

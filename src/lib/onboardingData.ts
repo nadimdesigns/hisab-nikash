@@ -1,6 +1,6 @@
 import { type UnitCode } from "@/lib/copy";
 
-export type ShopType = "grocery" | "pharmacy" | "tea_stall" | "raw_market" | "other";
+export type ShopType = "grocery" | "pharmacy" | "tea_stall" | "raw_market" | "service" | "other";
 
 export type OnboardingProductTemplate = {
   id: string;
@@ -51,11 +51,114 @@ export const ONBOARDING_SHOP_TYPES: readonly ShopTypeInfo[] = [
     description: "শাকসবজি, আলু, পেঁয়াজ, তাজা মাছ, ব্রয়লার ও দেশি মুরগি",
   },
   {
+    id: "service",
+    title: "সেবাদান ব্যবসা",
+    shortTitle: "সেবা ব্যবসা",
+    emoji: "🛠️",
+    description: "ডেন্টাল, পার্লার, ইলেকট্রিক, এসি, পরিবহন ও নানা সেবা",
+  },
+  {
     id: "other",
     title: "অন্যান্য",
     shortTitle: "অন্যান্য দোকান",
     emoji: "🏪",
     description: "স্টেশনারি, ইলেকট্রনিক্স, উপহার সামগ্রী বা যেকোনো খুচরা দোকান",
+  },
+] as const;
+
+export type ServiceBusinessType = {
+  id: string;
+  title: string;
+  emoji: string;
+  defaultItems: OnboardingProductTemplate[];
+};
+
+export const SERVICE_BUSINESS_TYPES: readonly ServiceBusinessType[] = [
+  {
+    id: "srv-dental",
+    title: "ডেন্টাল / স্বাস্থ্যসেবা",
+    emoji: "🩺",
+    defaultItems: [
+      { id: "srv-d-consult", name: "ডাক্তার কনসালটেশন / ভিজিট", category: "স্বাস্থ্যসেবা", unit: "piece", costPrice: 100, sellPrice: 500, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-d-scale", name: "ডেন্টাল স্কেলিং ও ক্লিনিং", category: "ডেন্টাল", unit: "piece", costPrice: 300, sellPrice: 1200, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-d-fill", name: "দাঁত ফিলিং ও ট্রিটমেন্ট", category: "ডেন্টাল", unit: "piece", costPrice: 400, sellPrice: 1500, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-d-extract", name: "দাঁত তোলা / এক্সট্রাকশন", category: "ডেন্টাল", unit: "piece", costPrice: 200, sellPrice: 800, initialStock: 999, reorderLevel: 5 },
+    ],
+  },
+  {
+    id: "srv-salon",
+    title: "সেলুন / পার্লার",
+    emoji: "✂️",
+    defaultItems: [
+      { id: "srv-s-haircut", name: "চুল কাটা / হেয়ারকাট", category: "হেয়ারকেয়ার", unit: "piece", costPrice: 20, sellPrice: 120, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-s-shave", name: "দাড়ি কাটা / শেভিং", category: "শেভিং", unit: "piece", costPrice: 15, sellPrice: 60, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-s-facial", name: "ফেসিয়াল / স্কিন ট্রিটমেন্ট", category: "স্কিনকেয়ার", unit: "piece", costPrice: 150, sellPrice: 500, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-s-spa", name: "হেয়ার স্পা ও কালার", category: "স্পা", unit: "piece", costPrice: 200, sellPrice: 700, initialStock: 999, reorderLevel: 5 },
+    ],
+  },
+  {
+    id: "srv-electric",
+    title: "ইলেকট্রিক সার্ভিস",
+    emoji: "⚡",
+    defaultItems: [
+      { id: "srv-e-fan", name: "ফ্যান সার্ভিসিং ও ওয়্যারিং", category: "ইলেকট্রিক", unit: "piece", costPrice: 50, sellPrice: 300, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-e-switch", name: "সুইচ ও বোর্ড মেরামত", category: "ইলেকট্রিক", unit: "piece", costPrice: 40, sellPrice: 200, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-e-motor", name: "পানির মোটর মেরামত ও সার্ভিস", category: "মোটর", unit: "piece", costPrice: 200, sellPrice: 800, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-e-light", name: "লাইট ফিটিং ও মেরামত", category: "ইলেকট্রিক", unit: "piece", costPrice: 50, sellPrice: 250, initialStock: 999, reorderLevel: 5 },
+    ],
+  },
+  {
+    id: "srv-ac",
+    title: "এসি সার্ভিস",
+    emoji: "❄️",
+    defaultItems: [
+      { id: "srv-ac-wash", name: "এসি বেসিক ওয়াশ / সার্ভিস", category: "এসি সার্ভিস", unit: "piece", costPrice: 200, sellPrice: 800, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-ac-master", name: "এসি মাস্টার সার্ভিসিং", category: "এসি সার্ভিস", unit: "piece", costPrice: 350, sellPrice: 1500, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-ac-gas", name: "এসি গ্যাস রিফিলিং", category: "এসি মেরামত", unit: "piece", costPrice: 1000, sellPrice: 2500, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-ac-install", name: "এসি ইনস্টলেশন / শিফটিং", category: "এসি ইনস্টলেশন", unit: "piece", costPrice: 500, sellPrice: 2000, initialStock: 999, reorderLevel: 5 },
+    ],
+  },
+  {
+    id: "srv-transport",
+    title: "পরিবহন সেবা",
+    emoji: "🚗",
+    defaultItems: [
+      { id: "srv-t-trip", name: "লোকাল ট্রিপ ভাড়া", category: "ট্রান্সপোর্ট", unit: "piece", costPrice: 500, sellPrice: 1200, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-t-day", name: "দিনব্যাপী গাড়ি রিজার্ভ", category: "রিজার্ভ", unit: "piece", costPrice: 1500, sellPrice: 3500, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-t-goods", name: "পণ্য পরিবহন সেবা", category: "পরিবহন", unit: "piece", costPrice: 800, sellPrice: 2000, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-t-parcel", name: "পার্সেল পিক অ্যান্ড ড্রপ", category: "ডেলিভারি", unit: "piece", costPrice: 50, sellPrice: 150, initialStock: 999, reorderLevel: 5 },
+    ],
+  },
+  {
+    id: "srv-digital",
+    title: "ডিজিটাল সেবা",
+    emoji: "💻",
+    defaultItems: [
+      { id: "srv-dig-form", name: "অনলাইন আবেদন ও ফরম পূরণ", category: "ডিজিটাল", unit: "piece", costPrice: 15, sellPrice: 100, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-dig-print", name: "কম্পিউটার প্রিন্ট ও ফটোকপি", category: "প্রিন্টিং", unit: "piece", costPrice: 5, sellPrice: 20, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-dig-photo", name: "পাসপোর্ট সাইজ ছবি প্রিন্ট", category: "ছবি", unit: "piece", costPrice: 20, sellPrice: 80, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-dig-type", name: "টাইপিং ও ডকুমেন্ট কম্পোজ", category: "কম্পোজ", unit: "piece", costPrice: 30, sellPrice: 150, initialStock: 999, reorderLevel: 5 },
+    ],
+  },
+  {
+    id: "srv-consult",
+    title: "কন্সালটেন্সি",
+    emoji: "📋",
+    defaultItems: [
+      { id: "srv-c-initial", name: "প্রাথমিক পরামর্শ ও অডিট", category: "পরামর্শ", unit: "piece", costPrice: 200, sellPrice: 1000, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-c-doc", name: "কাগজপত্র যাচাই ও ফাইল তৈরি", category: "ডকুমেন্টেশন", unit: "piece", costPrice: 500, sellPrice: 2500, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-c-full", name: "ফুল প্রজেক্ট কনসালটেশন ফি", category: "কনসালটেশন", unit: "piece", costPrice: 1500, sellPrice: 5000, initialStock: 999, reorderLevel: 5 },
+    ],
+  },
+  {
+    id: "srv-other",
+    title: "অন্যান্য",
+    emoji: "🤝",
+    defaultItems: [
+      { id: "srv-o-charge", name: "সাধারণ সেবা ফি", category: "সেবা চার্জ", unit: "piece", costPrice: 100, sellPrice: 500, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-o-visit", name: "ভিজিট ও পরিদর্শন চার্জ", category: "পরিদর্শন", unit: "piece", costPrice: 80, sellPrice: 300, initialStock: 999, reorderLevel: 5 },
+      { id: "srv-o-repair", name: "মেরামত ও টেকনিক্যাল সার্ভিস", category: "মেরামত", unit: "piece", costPrice: 250, sellPrice: 1000, initialStock: 999, reorderLevel: 5 },
+    ],
   },
 ] as const;
 
@@ -134,6 +237,8 @@ export const SHOP_TYPE_PRODUCTS: Record<ShopType, OnboardingProductTemplate[]> =
     { id: "r-chicken-broiler", name: "ব্রয়লার মুরগি (কেজি)", category: "মাংস", unit: "kg", costPrice: 170, sellPrice: 190, initialStock: 50, reorderLevel: 15 },
     { id: "r-dim", name: "ডিম (১ হালি)", category: "ডিম", unit: "hali", costPrice: 42, sellPrice: 50, initialStock: 60, reorderLevel: 15 },
   ],
+
+  service: SERVICE_BUSINESS_TYPES.flatMap((s) => s.defaultItems),
 
   other: [
     { id: "o-khata", name: "খাতা / নোটবুক", category: "স্টেশনারি", unit: "piece", costPrice: 35, sellPrice: 45, initialStock: 60, reorderLevel: 15 },
