@@ -11,6 +11,7 @@ import "@fontsource/anek-bangla/500.css";
 import "@fontsource/anek-bangla/600.css";
 import "@fontsource/anek-bangla/700.css";
 import "@fontsource/anek-bangla/800.css";
+import "@fontsource/oswald/400.css";
 
 import "./index.css";
 

@@ -34,10 +34,14 @@ function buildDemoSession(): { session: Session; user: User } {
  * touching Supabase auth.
  */
 export function useAuth() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
   const [demoActive, setDemoActive] = useState<boolean>(() => isDemoMode());
+  const [session, setSession] = useState<Session | null>(() => {
+    return isDemoMode() ? buildDemoSession().session : null;
+  });
+  const [user, setUser] = useState<User | null>(() => {
+    return isDemoMode() ? buildDemoSession().user : null;
+  });
+  const [loading, setLoading] = useState<boolean>(() => !isDemoMode());
 
   useEffect(() => {
     if (demoActive) {
@@ -48,19 +52,37 @@ export function useAuth() {
       return;
     }
 
+    let isMounted = true;
+    // Timeout safeguard: if Supabase takes more than 1.2s to reply or is offline, unblock loading
+    const timeoutTimer = setTimeout(() => {
+      if (isMounted) setLoading(false);
+    }, 1200);
+
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+      if (!isMounted) return;
+      clearTimeout(timeoutTimer);
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(false);
     });
 
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      setLoading(false);
-    });
+    supabase.auth.getSession()
+      .then(({ data: { session: s } }) => {
+        if (!isMounted) return;
+        clearTimeout(timeoutTimer);
+        setSession(s);
+        setUser(s?.user ?? null);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (isMounted) setLoading(false);
+      });
 
-    return () => sub.subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      clearTimeout(timeoutTimer);
+      sub.subscription.unsubscribe();
+    };
   }, [demoActive]);
 
   // React to demo flag flips elsewhere in the app.
