@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 type NavItem = { title: string; url: string; emoji: string; end?: boolean };
 
 const leftItems: NavItem[] = [
-  { title: "বিক্রয়", url: "/new-sale", emoji: "🛒" },
+  { title: NAV.dashboard, url: "/", emoji: "🏠", end: true },
   { title: NAV.stocks, url: "/stocks", emoji: "📦" },
 ];
 
@@ -17,7 +17,7 @@ const rightItems: NavItem[] = [
 export function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isHome = location.pathname === "/";
+  const isSale = location.pathname.startsWith("/new-sale");
 
   const renderItem = (item: NavItem) => {
     const active = item.end
@@ -29,7 +29,7 @@ export function MobileBottomNav() {
           to={item.url}
           end={item.end}
           className={cn(
-            "group relative flex w-full flex-col items-center justify-center gap-1 py-2 transition-all duration-200 active:scale-95",
+            "group relative flex w-full flex-col items-center justify-center gap-[7px] py-1.5 transition-all duration-200 active:scale-95",
           )}
         >
           {/* Icon capsule */}
@@ -80,15 +80,15 @@ export function MobileBottomNav() {
         <ul className="grid grid-cols-5 items-end">
           {leftItems.map(renderItem)}
 
-          {/* Center Elevated Home Button */}
+          {/* Center Elevated Sale Button */}
           <li className="flex flex-col items-center justify-center pb-1">
             <button
               type="button"
-              onClick={() => navigate("/")}
-              aria-label={NAV.dashboard}
+              onClick={() => navigate("/new-sale")}
+              aria-label="বিক্রয়"
               className={cn(
                 "shimmer-overlay group relative -mt-7 flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full text-white transition-all duration-200 hover:-translate-y-0.5 active:scale-95",
-                isHome
+                isSale
                   ? "bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600"
                   : "bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400",
               )}
@@ -97,20 +97,20 @@ export function MobileBottomNav() {
                 aria-hidden="true"
                 className={cn(
                   "relative z-10 text-xl leading-none select-none transition-transform duration-200",
-                  isHome ? "scale-110" : "group-hover:scale-105",
+                  isSale ? "scale-110" : "group-hover:scale-105",
                 )}
               >
-                🏠
+                🛒
               </span>
               <span className="shimmer-streak" aria-hidden="true" />
             </button>
             <span
               className={cn(
-                "mt-1 text-[11px] leading-none tracking-tight transition-colors duration-200",
-                isHome ? "font-bold text-emerald-300" : "font-medium text-emerald-100/70",
+                "mt-[7px] text-[11px] leading-none tracking-tight transition-colors duration-200",
+                isSale ? "font-bold text-emerald-300" : "font-medium text-emerald-100/70",
               )}
             >
-              {NAV.dashboard}
+              বিক্রয়
             </span>
           </li>
 
