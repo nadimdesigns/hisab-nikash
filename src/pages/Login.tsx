@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
-import { APP_NAME, APP_TAGLINE } from "@/lib/copy";
+import { APP_NAME } from "@/lib/copy";
 import { enableDemoMode, setCachedRole } from "@/lib/demoMode";
 import { seedDemoCustomers } from "@/lib/demoSeed";
 import {
@@ -40,12 +40,12 @@ type FieldErrors = {
   form?: string;
 };
 
-// Flow modes:
-// 1) "onboarding-1": Shop type selection
-// 2) "onboarding-2": 3-column product multi-select checklist (min 1 item)
-// 3) "onboarding-3": Signup form (phone + 4-digit PIN)
-// 4) "direct-login": Direct login for returning users (phone + PIN)
-type ViewMode = "onboarding-1" | "onboarding-2" | "onboarding-3" | "direct-login";
+// 4 Clean Steps:
+// 1) "step-1-shop": Shop Type Selection (2-column grid)
+// 2) "step-2-products": Product Selection (3-column checklist, min 1 item)
+// 3) "step-3-phone": Mobile number input (checks if registered or new)
+// 4) "step-4-pin": PIN input (1 PIN for registered, 2-stage progressive PIN for new)
+type Step = "step-1-shop" | "step-2-products" | "step-3-phone" | "step-4-pin";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -54,21 +54,17 @@ const Login = () => {
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname || "/";
 
   // Flow State
-  const [viewMode, setViewMode] = useState<ViewMode>("onboarding-1");
+  const [step, setStep] = useState<Step>("step-1-shop");
   const [selectedShopType, setSelectedShopType] = useState<ShopType>("grocery");
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(() => {
     return new Set(SHOP_TYPE_PRODUCTS["grocery"].map((p) => p.id));
   });
 
-  // Direct login / returning user state
-  const [directPhone, setDirectPhone] = useState("");
-  const [directPin, setDirectPin] = useState("");
-  const [directStep, setDirectStep] = useState<"phone" | "pin">("phone");
-
-  // Onboarding Step 3 Signup state
-  const [signupPhone, setSignupPhone] = useState("");
-  const [signupPin, setSignupPin] = useState("");
-  const [signupConfirmPin, setSignupConfirmPin] = useState("");
+  // User credentials state
+  const [phone, setPhone] = useState("");
+  const [isExistingAccount, setIsExistingAccount] = useState<boolean | null>(null);
+  const [pin, setPin] = useState("");
+  const [confirmPin, setConfirmPin] = useState("");
 
   const [submitting, setSubmitting] = useState(false);
   const [checkingPhone, setCheckingPhone] = useState(false);
@@ -120,66 +116,111 @@ const Login = () => {
     return msg;
   };
 
-  // Handle Onboarding Step 3 (Signup)
-  const handleOnboardingSignup = async (e: React.FormEvent) => {
+  // Step 3: Handle Phone Submit & Check Account Status
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const parsedPhone = phoneSchema.safeParse(signupPhone);
-    if (!parsedPhone.success) {
-      setErrors({ phone: parsedPhone.error.issues[0]?.message });
+    const parsed = phoneSchema.safeParse(phone);
+    if (!parsed.success) {
+      setErrors({ phone: parsed.error.issues[0]?.message });
       return;
     }
 
-    const parsedPin = pinSchema.safeParse(signupPin);
+    setErrors({});
+    setCheckingPhone(true);
+    try {
+      const { data, error } = await supabase.rpc("hisab_nikash_phone_has_account", {
+        _phone: parsed.data,
+      });
+      if (error) {
+        // Fallback: proceed to PIN setup
+        setIsExistingAccount(false);
+      } else {
+        setIsExistingAccount(!!data);
+      }
+      setPin("");
+      setConfirmPin("");
+      setStep("step-4-pin");
+    } catch {
+      setIsExistingAccount(false);
+      setPin("");
+      setConfirmPin("");
+      setStep("step-4-pin");
+    } finally {
+      setCheckingPhone(false);
+    }
+  };
+
+  // Step 4: Handle PIN verification / Account Creation
+  const handlePinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const parsedPin = pinSchema.safeParse(pin);
     if (!parsedPin.success) {
       setErrors({ pin: parsedPin.error.issues[0]?.message });
       return;
     }
 
-    if (signupConfirmPin !== signupPin) {
-      setErrors({ confirmPin: "পিন দুটি মিলছে না।" });
-      return;
+    // If new account, check confirm PIN
+    if (!isExistingAccount) {
+      if (confirmPin.length !== 4) {
+        setErrors({ confirmPin: "৪ সংখ্যার নিশ্চিতকরণ পিন দিন।" });
+        return;
+      }
+      if (confirmPin !== pin) {
+        setErrors({ confirmPin: "পিন দুটি মিলছে না।" });
+        return;
+      }
     }
 
     setErrors({});
     setSubmitting(true);
 
     try {
-      // 1) Seed the chosen products
-      const chosenTemplates = SHOP_TYPE_PRODUCTS[selectedShopType].filter((p) =>
-        selectedProductIds.has(p.id)
-      );
-      seedCustomShopProducts(chosenTemplates, selectedShopType);
-
-      // 2) Sign up in Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email: authEmailFor(signupPhone),
-        password: authPasswordFor(parsedPin.data),
-      });
-
-      if (error) {
-        setErrors({ form: mapAuthError(error.message) });
-      } else if (data.session) {
-        toast({
-          title: "স্বাগতম!",
-          description: `আপনার অ্যাকাউন্ট ও ${chosenTemplates.length}টি প্রাথমিক পণ্য প্রস্তুত করা হয়েছে।`,
-        });
-        navigate(from, { replace: true });
-      } else {
-        // If already registered, attempt login
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email: authEmailFor(signupPhone),
+      if (isExistingAccount) {
+        // Existing user login
+        const { error } = await supabase.auth.signInWithPassword({
+          email: authEmailFor(phone),
           password: authPasswordFor(parsedPin.data),
         });
-        if (signInError) {
-          setErrors({ form: "এই নম্বরে ইতিমধ্যে অ্যাকাউন্ট আছে। সঠিক পিন দিয়ে লগইন করুন।" });
-          setDirectPhone(signupPhone);
-          setDirectPin(signupPin);
-          setDirectStep("pin");
-          setViewMode("direct-login");
+        if (error) {
+          setErrors({ form: mapAuthError(error.message) });
         } else {
-          toast({ title: "স্বাগতম", description: "লগইন সফল হয়েছে।" });
+          toast({ title: "স্বাগতম", description: "লগইন সফল হয়েছে।" });
           navigate(from, { replace: true });
+        }
+      } else {
+        // New user signup
+        const chosenTemplates = SHOP_TYPE_PRODUCTS[selectedShopType].filter((p) =>
+          selectedProductIds.has(p.id)
+        );
+        seedCustomShopProducts(chosenTemplates, selectedShopType, false);
+
+        const { data, error } = await supabase.auth.signUp({
+          email: authEmailFor(phone),
+          password: authPasswordFor(parsedPin.data),
+        });
+
+        if (error) {
+          setErrors({ form: mapAuthError(error.message) });
+        } else if (data.session) {
+          toast({
+            title: "স্বাগতম!",
+            description: `আপনার দোকান ও ${chosenTemplates.length}টি পণ্য প্রস্তুত করা হয়েছে।`,
+          });
+          navigate(from, { replace: true });
+        } else {
+          // If already registered under Supabase
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: authEmailFor(phone),
+            password: authPasswordFor(parsedPin.data),
+          });
+          if (signInError) {
+            setIsExistingAccount(true);
+            setErrors({ form: "এই নম্বরে ইতিমধ্যে অ্যাকাউন্ট আছে। সঠিক পিন দিন।" });
+          } else {
+            toast({ title: "স্বাগতম", description: "লগইন সফল হয়েছে।" });
+            navigate(from, { replace: true });
+          }
         }
       }
     } finally {
@@ -187,8 +228,8 @@ const Login = () => {
     }
   };
 
-  // Enter demo mode with the user's selected shop type and products
-  const handleOnboardingDemo = () => {
+  // Demo account flow with chosen shop type and products
+  const handleStartDemo = () => {
     const chosenTemplates = SHOP_TYPE_PRODUCTS[selectedShopType].filter((p) =>
       selectedProductIds.has(p.id)
     );
@@ -204,62 +245,6 @@ const Login = () => {
     window.location.replace("/");
   };
 
-  // Direct login: phone check
-  const handleDirectPhoneSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = phoneSchema.safeParse(directPhone);
-    if (!parsed.success) {
-      setErrors({ phone: parsed.error.issues[0]?.message });
-      return;
-    }
-
-    setErrors({});
-    setCheckingPhone(true);
-    try {
-      const { data, error } = await supabase.rpc("hisab_nikash_phone_has_account", {
-        _phone: parsed.data,
-      });
-      if (error) {
-        setErrors({ form: "একটু সমস্যা হয়েছে, আবার চেষ্টা করুন।" });
-        return;
-      }
-      if (!data) {
-        setErrors({ form: "এই নম্বরে কোনো অ্যাকাউন্ট পাওয়া যায়নি। নতুন অ্যাকাউন্ট খুলুন।" });
-        return;
-      }
-      setDirectStep("pin");
-    } finally {
-      setCheckingPhone(false);
-    }
-  };
-
-  // Direct login: PIN submit
-  const handleDirectLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = pinSchema.safeParse(directPin);
-    if (!parsed.success) {
-      setErrors({ pin: parsed.error.issues[0]?.message });
-      return;
-    }
-
-    setErrors({});
-    setSubmitting(true);
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: authEmailFor(directPhone),
-        password: authPasswordFor(parsed.data),
-      });
-      if (error) {
-        setErrors({ form: mapAuthError(error.message) });
-      } else {
-        toast({ title: "স্বাগতম", description: "লগইন সফল হয়েছে।" });
-        navigate(from, { replace: true });
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
   const otpSlotClass = (hasError?: string) =>
     cn(
       "h-auto aspect-square w-full rounded-2xl border border-input bg-white text-lg font-semibold shadow-sm dark:bg-white/10",
@@ -272,81 +257,35 @@ const Login = () => {
   return (
     <main className="min-h-[100svh] w-full bg-background flex flex-col items-center justify-start p-3 sm:p-4 pt-[max(20px,env(safe-area-inset-top))] pb-10 overflow-y-auto">
       <Card className="w-full max-w-lg rounded-[28px] border border-emerald-800/20 shadow-2xl overflow-hidden bg-card transition-all my-0">
-        {/* Splash Header with Logo and Title */}
-        <div className="relative bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 px-5 pt-6 pb-5 flex flex-col items-center gap-2 overflow-hidden text-center">
+        {/* Lean Splash Header without Step Pills */}
+        <div className="relative bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 px-5 pt-6 pb-5 flex flex-col items-center gap-1.5 overflow-hidden text-center">
           <div className="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-white/10 pointer-events-none" aria-hidden />
           <div className="absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-white/10 pointer-events-none" aria-hidden />
 
           <img
             src="/logo.webp"
             alt={APP_NAME}
-            className="relative h-[64px] w-[64px] object-contain shadow-md shadow-emerald-950/40 rounded-2xl"
+            className="relative h-[60px] w-[60px] object-contain shadow-md shadow-emerald-950/40 rounded-2xl"
           />
           <span className="relative text-xl sm:text-2xl font-bold text-white leading-tight tracking-tight">
             {APP_NAME}
           </span>
-          <span className="relative text-xs sm:text-sm text-emerald-100/90 max-w-xs">
-            {viewMode === "direct-login"
-              ? "দোকানের হিসাব দেখতে সরাসরি লগইন করুন"
-              : "সহজ ৩ ধাপে আপনার দোকানের ডিজিটাল খাতা শুরু করুন"}
+          <span className="relative text-xs text-emerald-100/80">
+            দোকানের সহজ ডিজিটাল খাতা
           </span>
-
-          {/* 3 Steps Progress Indicator for Onboarding */}
-          {viewMode !== "direct-login" && (
-            <div className="relative mt-2 flex items-center justify-center gap-2 w-full max-w-xs">
-              {[
-                { step: "onboarding-1", num: "১", label: "দোকানের ধরন" },
-                { step: "onboarding-2", num: "২", label: "পণ্য নির্বাচন" },
-                { step: "onboarding-3", num: "৩", label: "সাইন আপ" },
-              ].map((item, idx) => {
-                const isActive = viewMode === item.step;
-                const isPassed =
-                  (item.step === "onboarding-1" && (viewMode === "onboarding-2" || viewMode === "onboarding-3")) ||
-                  (item.step === "onboarding-2" && viewMode === "onboarding-3");
-
-                return (
-                  <div key={item.step} className="flex-1 flex flex-col items-center gap-1">
-                    <div
-                      className={cn(
-                        "h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-sm",
-                        isActive
-                          ? "bg-white text-emerald-900 ring-2 ring-emerald-300 ring-offset-1 ring-offset-emerald-800 scale-105"
-                          : isPassed
-                            ? "bg-emerald-400 text-emerald-950"
-                            : "bg-white/20 text-white/70"
-                      )}
-                    >
-                      {isPassed ? "✓" : item.num}
-                    </div>
-                    <span
-                      className={cn(
-                        "text-[10px] sm:text-[11px] leading-none whitespace-nowrap transition-colors",
-                        isActive ? "font-bold text-white" : "font-medium text-emerald-100/70"
-                      )}
-                    >
-                      {item.label}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
 
         <CardContent className="bg-emerald-50/70 px-4 sm:px-6 pt-5 pb-6 dark:bg-emerald-950/20">
           {/* ================= STEP 1: SHOP TYPE SELECTION ================= */}
-          {viewMode === "onboarding-1" && (
+          {step === "step-1-shop" && (
             <div className="space-y-4">
-              <div className="text-center space-y-1">
+              <div className="text-center">
                 <h2 className={typography("h4", "text-foreground font-bold")}>
-                  কোন ধরনের দোকান আপনার?
+                  দোকানের ধরন বেছে নিন
                 </h2>
-                <p className="text-xs text-muted-foreground">
-                  সঠিক অপশনটি বেছে নিলে আপনার দোকানের উপযোগী পণ্য আগে থেকেই সাজানো থাকবে।
-                </p>
               </div>
 
-              {/* 5 Shop Type Grid Cards (2 columns on mobile and desktop) */}
+              {/* 5 Shop Type Grid Cards (2 columns) */}
               <div className="grid grid-cols-2 gap-2.5 pt-1">
                 {ONBOARDING_SHOP_TYPES.map((shop) => {
                   const isSelected = selectedShopType === shop.id;
@@ -356,7 +295,7 @@ const Login = () => {
                       type="button"
                       onClick={() => handleSelectShopType(shop.id)}
                       className={cn(
-                        "relative flex flex-col justify-between p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] h-full min-h-[120px]",
+                        "relative flex flex-col justify-between p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] h-full min-h-[115px]",
                         isSelected
                           ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-600/60 shadow-sm dark:bg-emerald-500/20"
                           : "border-border/80 bg-white/80 hover:bg-white hover:border-emerald-300 dark:bg-white/5 dark:hover:bg-white/10"
@@ -380,7 +319,7 @@ const Login = () => {
                         </div>
                       </div>
 
-                      <div className="mt-2.5 space-y-0.5">
+                      <div className="mt-2 space-y-0.5">
                         <span className="font-bold text-[13px] sm:text-sm text-foreground leading-snug line-clamp-1 block">
                           {shop.title}
                         </span>
@@ -393,65 +332,60 @@ const Login = () => {
                 })}
               </div>
 
-              <div className="pt-2 space-y-2.5">
+              {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
+              <div className="pt-2 space-y-2">
                 <Button
                   type="button"
                   size="lg"
-                  onClick={() => setViewMode("onboarding-2")}
+                  onClick={() => setStep("step-2-products")}
                   className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md shadow-emerald-700/20 hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
                 >
-                  পরবর্তী ধাপ: পণ্য নির্বাচন ➔
+                  পরবর্তী ধাপ ➔
                 </Button>
 
-                <div className="text-center pt-1">
-                  <button
+                <div className="flex justify-center">
+                  <Button
                     type="button"
+                    variant="ghost"
+                    size="sm"
                     onClick={() => {
-                      setViewMode("direct-login");
-                      setDirectStep("phone");
+                      setStep("step-3-phone");
                       setErrors({});
                     }}
-                    className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:underline inline-flex items-center gap-1"
+                    className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:bg-transparent hover:underline"
                   >
-                    ইতিমধ্যে অ্যাকাউন্ট আছে? <span>সরাসরি লগইন করুন</span>
-                  </button>
+                    ইতিমধ্যে অ্যাকাউন্ট আছে? সরাসরি লগইন করুন
+                  </Button>
                 </div>
               </div>
             </div>
           )}
 
-          {/* ================= STEP 2: 3-COLUMN PRODUCT CHECKLIST ================= */}
-          {viewMode === "onboarding-2" && (
+          {/* ================= STEP 2: PRODUCT SELECTION ================= */}
+          {step === "step-2-products" && (
             <div className="space-y-3.5">
               <div className="flex items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5 dark:border-emerald-800/40">
-                <div>
-                  <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
-                    <span>{currentShopInfo.emoji}</span>
-                    <span>{currentShopInfo.shortTitle}র পণ্য নির্বাচন</span>
-                  </h2>
-                  <p className="text-[11px] text-muted-foreground">
-                    আপনার দোকানে বিক্রি হওয়া পণ্যগুলোতে টিক দিন (কমপক্ষে ১টি পণ্য আবশ্যক)।
-                  </p>
-                </div>
+                <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
+                  <span>{currentShopInfo.emoji}</span>
+                  <span>{currentShopInfo.shortTitle}র পণ্য</span>
+                </h2>
 
-                <div className="text-right shrink-0">
-                  <span
-                    className={cn(
-                      "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold",
-                      selectedProductIds.size >= 1
-                        ? "bg-emerald-600 text-white"
-                        : "bg-rose-600 text-white animate-pulse"
-                    )}
-                  >
-                    {selectedProductIds.size}টি নির্বাচিত
-                  </span>
-                </div>
+                <span
+                  className={cn(
+                    "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold",
+                    selectedProductIds.size >= 1
+                      ? "bg-emerald-600 text-white"
+                      : "bg-rose-600 text-white animate-pulse"
+                  )}
+                >
+                  {selectedProductIds.size}টি নির্বাচিত
+                </span>
               </div>
 
               {/* Quick Select All / Deselect All */}
               <div className="flex items-center justify-between text-xs px-0.5">
                 <span className="text-muted-foreground text-[11px]">
-                  মোট {currentProductsList.length}টি সাধারণ পণ্যের তালিকা
+                  মোট {currentProductsList.length}টি সাধারণ পণ্য
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -519,39 +453,43 @@ const Login = () => {
 
               {selectedProductIds.size === 0 && (
                 <p role="alert" className="text-xs text-rose-600 font-medium text-center bg-rose-50 dark:bg-rose-950/30 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/40">
-                  ⚠️ পরবর্তী ধাপে যেতে কমপক্ষে ১টি পণ্য নির্বাচন করুন।
+                  ⚠️ কমপক্ষে ১টি পণ্য নির্বাচন করুন।
                 </p>
               )}
 
-              {/* Navigation Actions */}
-              <div className="pt-1 flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setViewMode("onboarding-1")}
-                  className="rounded-2xl shrink-0 px-4"
-                >
-                  ⬅️ পূর্ববর্তী
-                </Button>
+              {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
+              <div className="pt-2 space-y-2">
                 <Button
                   type="button"
                   size="lg"
                   disabled={selectedProductIds.size === 0}
                   onClick={() => {
                     if (selectedProductIds.size >= 1) {
-                      setViewMode("onboarding-3");
+                      setStep("step-3-phone");
                     }
                   }}
-                  className="flex-1 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md shadow-emerald-700/20 hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                  className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md shadow-emerald-700/20 hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
                 >
-                  পরবর্তী ধাপ: সাইন আপ ➔
+                  পরবর্তী ধাপ ➔
                 </Button>
+
+                <div className="flex justify-center">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setStep("step-1-shop")}
+                    className="text-xs text-muted-foreground hover:text-foreground hover:bg-transparent"
+                  >
+                    ← পূর্ববর্তী ধাপে যান
+                  </Button>
+                </div>
               </div>
             </div>
           )}
 
-          {/* ================= STEP 3: SIGNUP FORM ================= */}
-          {viewMode === "onboarding-3" && (
+          {/* ================= STEP 3: PHONE NUMBER ================= */}
+          {step === "step-3-phone" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between bg-emerald-100/60 dark:bg-emerald-900/30 p-2.5 rounded-2xl border border-emerald-200 dark:border-emerald-800/40">
                 <div className="flex items-center gap-2">
@@ -567,25 +505,24 @@ const Login = () => {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setViewMode("onboarding-2")}
+                  onClick={() => setStep("step-2-products")}
                   className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:underline px-2 py-1"
                 >
                   পরিবর্তন ✏️
                 </button>
               </div>
 
-              <form onSubmit={handleOnboardingSignup} className="space-y-3.5" noValidate>
-                {/* Mobile Number */}
+              <form onSubmit={handlePhoneSubmit} className="space-y-3.5" noValidate>
                 <div className="space-y-1.5">
-                  <Label htmlFor="signup-phone" className={typography("body-strong")}>
+                  <Label htmlFor="phone" className={typography("body-strong")}>
                     মোবাইল নম্বর
                   </Label>
                   <div className="flex">
-                    <span className="inline-flex h-11 shrink-0 select-none items-center rounded-l-2xl border border-r-0 border-input bg-white px-3 text-sm font-semibold text-muted-foreground dark:bg-white/10">
+                    <span className="inline-flex h-12 shrink-0 select-none items-center rounded-l-2xl border border-r-0 border-input bg-white px-3.5 text-sm font-semibold text-muted-foreground dark:bg-white/10">
                       +88
                     </span>
                     <Input
-                      id="signup-phone"
+                      id="phone"
                       type="text"
                       inputMode="numeric"
                       pattern="[0-9]*"
@@ -593,17 +530,17 @@ const Login = () => {
                       autoFocus
                       maxLength={11}
                       placeholder="01XXXXXXXXX"
-                      value={signupPhone}
+                      value={phone}
                       onChange={(e) => {
                         let v = e.target.value.replace(/\D/g, "");
                         if (v.length === 10 && v[0] !== "0") v = `0${v}`;
                         v = v.slice(0, 11);
-                        setSignupPhone(v);
+                        setPhone(v);
                         if (errors.phone || errors.form)
                           setErrors((prev) => ({ ...prev, phone: undefined, form: undefined }));
                       }}
                       className={cn(
-                        "h-11 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10",
+                        "h-12 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10",
                         (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive"
                       )}
                     />
@@ -613,90 +550,37 @@ const Login = () => {
                   )}
                 </div>
 
-                {/* 4-digit PIN */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="signup-pin" className={typography("body-strong")}>
-                    ৪ সংখ্যার নতুন পিন সেট করুন
-                  </Label>
-                  <InputOTP
-                    id="signup-pin"
-                    maxLength={4}
-                    value={signupPin}
-                    onChange={(v) => {
-                      setSignupPin(v);
-                      if (errors.pin || errors.form)
-                        setErrors((prev) => ({ ...prev, pin: undefined, form: undefined }));
-                    }}
-                    pattern="^[0-9]+$"
-                    inputMode="numeric"
-                  >
-                    <InputOTPGroup className="w-full grid grid-cols-4 gap-2.5">
-                      <InputOTPSlot index={0} className={otpSlotClass(errors.pin)} />
-                      <InputOTPSlot index={1} className={otpSlotClass(errors.pin)} />
-                      <InputOTPSlot index={2} className={otpSlotClass(errors.pin)} />
-                      <InputOTPSlot index={3} className={otpSlotClass(errors.pin)} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                  {errors.pin && (
-                    <p className={typography("muted", "text-destructive text-xs")}>{errors.pin}</p>
-                  )}
-                </div>
-
-                {/* Confirm PIN */}
-                <div className="space-y-1.5">
-                  <Label htmlFor="signup-confirm-pin" className={typography("body-strong")}>
-                    পিন নিশ্চিত করুন
-                  </Label>
-                  <InputOTP
-                    id="signup-confirm-pin"
-                    maxLength={4}
-                    value={signupConfirmPin}
-                    onChange={(v) => {
-                      setSignupConfirmPin(v);
-                      if (errors.confirmPin || errors.form)
-                        setErrors((prev) => ({ ...prev, confirmPin: undefined, form: undefined }));
-                    }}
-                    pattern="^[0-9]+$"
-                    inputMode="numeric"
-                  >
-                    <InputOTPGroup className="w-full grid grid-cols-4 gap-2.5">
-                      <InputOTPSlot index={0} className={otpSlotClass(errors.confirmPin)} />
-                      <InputOTPSlot index={1} className={otpSlotClass(errors.confirmPin)} />
-                      <InputOTPSlot index={2} className={otpSlotClass(errors.confirmPin)} />
-                      <InputOTPSlot index={3} className={otpSlotClass(errors.confirmPin)} />
-                    </InputOTPGroup>
-                  </InputOTP>
-                  {errors.confirmPin && (
-                    <p className={typography("muted", "text-destructive text-xs")}>{errors.confirmPin}</p>
-                  )}
-                </div>
-
                 {errors.form && (
                   <p role="alert" className={typography("muted", "text-destructive text-xs text-center")}>
                     {errors.form}
                   </p>
                 )}
 
-                <div className="pt-2 flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setViewMode("onboarding-2")}
-                    className="rounded-2xl shrink-0 px-4"
-                  >
-                    ⬅️ পূর্ববর্তী
-                  </Button>
+                {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
+                <div className="pt-2 space-y-2">
                   <Button
                     type="submit"
                     size="lg"
-                    disabled={submitting}
-                    className="flex-1 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                    disabled={checkingPhone}
+                    className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
                   >
-                    {submitting ? "প্রস্তুত হচ্ছে…" : "অ্যাকাউন্ট তৈরি করুন ও শুরু করুন"}
+                    {checkingPhone ? "যাচাই হচ্ছে…" : "পরবর্তী ধাপ ➔"}
                   </Button>
+
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setStep("step-2-products")}
+                      className="text-xs text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    >
+                      ← পূর্ববর্তী ধাপে যান
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Demo fallback */}
+                {/* Demo option */}
                 <div className="space-y-2 pt-2">
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center" aria-hidden>
@@ -713,125 +597,41 @@ const Login = () => {
                     type="button"
                     variant="outline"
                     className="w-full gap-2 rounded-2xl text-xs sm:text-sm font-semibold border-emerald-300 dark:border-emerald-800"
-                    onClick={handleOnboardingDemo}
+                    onClick={handleStartDemo}
                   >
                     <span aria-hidden="true">▶️</span>
                     ডেমো হিসেবে এখনই শুরু করুন (লগইন ছাড়া)
                   </Button>
                 </div>
-
-                <div className="text-center pt-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setViewMode("direct-login");
-                      setDirectStep("phone");
-                      setErrors({});
-                    }}
-                    className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:underline inline-flex items-center gap-1"
-                  >
-                    ইতিমধ্যে অ্যাকাউন্ট আছে? <span>সরাসরি লগইন করুন</span>
-                  </button>
-                </div>
               </form>
             </div>
           )}
 
-          {/* ================= DIRECT LOGIN VIEW (FOR RETURNING USERS) ================= */}
-          {viewMode === "direct-login" && (
+          {/* ================= STEP 4: PIN VERIFICATION / CREATION ================= */}
+          {step === "step-4-pin" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between pb-1 border-b border-emerald-200/60 dark:border-emerald-800/40">
-                <h2 className="text-sm font-bold text-foreground">সরাসরি লগইন</h2>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setViewMode("onboarding-1");
-                    setErrors({});
-                  }}
-                  className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:underline flex items-center gap-1"
-                >
-                  <span>✨ নতুন অনবোর্ডিং শুরু করুন</span>
-                </button>
+              <div className="text-center space-y-1">
+                <h2 className={typography("h4", "text-foreground font-bold")}>
+                  {isExistingAccount ? "পিন নম্বর দিন" : "নতুন পিন সেট করুন"}
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  +88{phone}
+                </p>
               </div>
 
-              {directStep === "phone" ? (
-                <form onSubmit={handleDirectPhoneSubmit} className="space-y-3.5" noValidate>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="direct-phone" className={typography("body-strong")}>
-                      মোবাইল নম্বর
-                    </Label>
-                    <div className="flex">
-                      <span className="inline-flex h-12 shrink-0 select-none items-center rounded-l-2xl border border-r-0 border-input bg-white px-3.5 text-sm font-semibold text-muted-foreground dark:bg-white/10">
-                        +88
-                      </span>
-                      <Input
-                        id="direct-phone"
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        autoComplete="tel-national"
-                        autoFocus
-                        maxLength={11}
-                        placeholder="01XXXXXXXXX"
-                        value={directPhone}
-                        onChange={(e) => {
-                          let v = e.target.value.replace(/\D/g, "");
-                          if (v.length === 10 && v[0] !== "0") v = `0${v}`;
-                          v = v.slice(0, 11);
-                          setDirectPhone(v);
-                          if (errors.phone || errors.form)
-                            setErrors((prev) => ({ ...prev, phone: undefined, form: undefined }));
-                        }}
-                        className={cn(
-                          "h-12 rounded-l-none rounded-r-2xl bg-white text-[15px] dark:bg-white/10",
-                          (errors.phone || errors.form) && "border-destructive focus-visible:ring-destructive"
-                        )}
-                      />
-                    </div>
-                    {errors.phone && (
-                      <p className={typography("muted", "text-destructive text-xs")}>{errors.phone}</p>
-                    )}
-                  </div>
-
-                  {errors.form && (
-                    <p role="alert" className={typography("muted", "text-destructive text-xs text-center")}>
-                      {errors.form}
-                    </p>
-                  )}
-
-                  <Button
-                    type="submit"
-                    size="lg"
-                    disabled={checkingPhone}
-                    className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
-                  >
-                    {checkingPhone ? "যাচাই হচ্ছে…" : "পরবর্তী"}
-                  </Button>
-                </form>
-              ) : (
-                <form onSubmit={handleDirectLogin} className="space-y-3.5" noValidate>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDirectStep("phone");
-                      setDirectPin("");
-                      setErrors({});
-                    }}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
-                  >
-                    <span>⬅️ +88{directPhone} পরিবর্তন করুন</span>
-                  </button>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="direct-pin" className={typography("body-strong")}>
-                      আপনার ৪ সংখ্যার পিন দিন
+              <form onSubmit={handlePinSubmit} className="space-y-4" noValidate>
+                {isExistingAccount ? (
+                  /* Existing user: Single PIN input */
+                  <div className="space-y-2">
+                    <Label htmlFor="pin" className={typography("body-strong")}>
+                      আপনার ৪ সংখ্যার পিন
                     </Label>
                     <InputOTP
-                      id="direct-pin"
+                      id="pin"
                       maxLength={4}
-                      value={directPin}
+                      value={pin}
                       onChange={(v) => {
-                        setDirectPin(v);
+                        setPin(v);
                         if (errors.pin || errors.form)
                           setErrors((prev) => ({ ...prev, pin: undefined, form: undefined }));
                       }}
@@ -850,23 +650,111 @@ const Login = () => {
                       <p className={typography("muted", "text-destructive text-xs")}>{errors.pin}</p>
                     )}
                   </div>
+                ) : (
+                  /* New user: Progressive 2-stage PIN (1st PIN entered -> then reveal Confirm PIN underneath) */
+                  <div className="space-y-3.5">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="pin" className={typography("body-strong")}>
+                        ৪ সংখ্যার নতুন পিন
+                      </Label>
+                      <InputOTP
+                        id="pin"
+                        maxLength={4}
+                        value={pin}
+                        onChange={(v) => {
+                          setPin(v);
+                          if (errors.pin || errors.form)
+                            setErrors((prev) => ({ ...prev, pin: undefined, form: undefined }));
+                        }}
+                        pattern="^[0-9]+$"
+                        inputMode="numeric"
+                        autoFocus
+                      >
+                        <InputOTPGroup className="w-full grid grid-cols-4 gap-3">
+                          <InputOTPSlot index={0} className={otpSlotClass(errors.pin)} />
+                          <InputOTPSlot index={1} className={otpSlotClass(errors.pin)} />
+                          <InputOTPSlot index={2} className={otpSlotClass(errors.pin)} />
+                          <InputOTPSlot index={3} className={otpSlotClass(errors.pin)} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                      {errors.pin && (
+                        <p className={typography("muted", "text-destructive text-xs")}>{errors.pin}</p>
+                      )}
+                    </div>
 
-                  {errors.form && (
-                    <p role="alert" className={typography("muted", "text-destructive text-xs text-center")}>
-                      {errors.form}
-                    </p>
-                  )}
+                    {/* Step 4b: Confirm PIN revealed smoothly only when first PIN is complete (4 digits) */}
+                    {pin.length === 4 && (
+                      <div className="space-y-1.5 pt-1 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <Label htmlFor="confirmPin" className={typography("body-strong")}>
+                          পিন নিশ্চিত করুন
+                        </Label>
+                        <InputOTP
+                          id="confirmPin"
+                          maxLength={4}
+                          value={confirmPin}
+                          onChange={(v) => {
+                            setConfirmPin(v);
+                            if (errors.confirmPin || errors.form)
+                              setErrors((prev) => ({ ...prev, confirmPin: undefined, form: undefined }));
+                          }}
+                          pattern="^[0-9]+$"
+                          inputMode="numeric"
+                          autoFocus
+                        >
+                          <InputOTPGroup className="w-full grid grid-cols-4 gap-3">
+                            <InputOTPSlot index={0} className={otpSlotClass(errors.confirmPin)} />
+                            <InputOTPSlot index={1} className={otpSlotClass(errors.confirmPin)} />
+                            <InputOTPSlot index={2} className={otpSlotClass(errors.confirmPin)} />
+                            <InputOTPSlot index={3} className={otpSlotClass(errors.confirmPin)} />
+                          </InputOTPGroup>
+                        </InputOTP>
+                        {errors.confirmPin && (
+                          <p className={typography("muted", "text-destructive text-xs")}>{errors.confirmPin}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
 
+                {errors.form && (
+                  <p role="alert" className={typography("muted", "text-destructive text-xs text-center")}>
+                    {errors.form}
+                  </p>
+                )}
+
+                {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
+                <div className="pt-2 space-y-2">
                   <Button
                     type="submit"
                     size="lg"
-                    disabled={submitting}
+                    disabled={submitting || (!isExistingAccount && (pin.length !== 4 || confirmPin.length !== 4))}
                     className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
                   >
-                    {submitting ? "লগইন হচ্ছে…" : "লগইন করুন"}
+                    {submitting
+                      ? "প্রক্রিয়াকরণ হচ্ছে…"
+                      : isExistingAccount
+                        ? "লগইন করুন ➔"
+                        : "অ্যাকাউন্ট তৈরি করুন ➔"}
                   </Button>
-                </form>
-              )}
+
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setStep("step-3-phone");
+                        setPin("");
+                        setConfirmPin("");
+                        setErrors({});
+                      }}
+                      className="text-xs text-muted-foreground hover:text-foreground hover:bg-transparent"
+                    >
+                      ← নম্বর পরিবর্তন করুন
+                    </Button>
+                  </div>
+                </div>
+              </form>
             </div>
           )}
         </CardContent>
