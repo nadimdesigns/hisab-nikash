@@ -17,6 +17,7 @@ import { typography } from "@/lib/typography";
 import { ProductPickerSheet } from "@/components/ProductPickerSheet";
 import { QtyStepper } from "@/components/QtyStepper";
 import { loadProfiles, PROFILES_KEY } from "@/lib/customerProfiles";
+import { unitLabel } from "@/lib/copy";
 
 export default function NewInvoiceCard({ className, title = "Cash Sale" }: { className?: string; title?: string }) {
   const { products, recordSale, sales } = useShop();
@@ -244,12 +245,13 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
           </div>
           <div className="col-span-6">
             <label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-              পরিমাণ
+              পরিমাণ{pickedProduct ? ` (${unitLabel(pickedProduct.unit)})` : ""}
             </label>
             <QtyStepper
               value={qty}
               onChange={handleQtyChange}
               unit={pickedProduct?.unit}
+              showUnit={false}
               className="h-[46px] rounded-xl bg-white dark:bg-white/10"
             />
           </div>

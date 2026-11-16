@@ -13,6 +13,11 @@ type Props = {
    * old whole-number behaviour.
    */
   unit?: UnitCode;
+  /**
+   * Whether to display the unit text inside the stepper field.
+   * Defaults to true.
+   */
+  showUnit?: boolean;
   min?: number;
   max?: number;
   step?: number;
@@ -24,6 +29,7 @@ export function QtyStepper({
   value,
   onChange,
   unit,
+  showUnit = true,
   min,
   max,
   step,
@@ -117,9 +123,12 @@ export function QtyStepper({
           onChange={handleInputChange}
           onBlur={handleInputBlur}
           aria-label={ariaLabel}
-          className="h-full w-14 min-w-0 border-0 bg-transparent text-center text-sm font-bold text-foreground tabular-nums focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className={cn(
+            "h-full min-w-0 border-0 bg-transparent text-center text-sm font-bold text-foreground tabular-nums focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+            showUnit && def ? "w-14" : "w-full"
+          )}
         />
-        {def && (
+        {showUnit && def && (
           <span className="shrink-0 text-xs font-semibold text-muted-foreground select-none" aria-hidden>
             {def.label}
           </span>
