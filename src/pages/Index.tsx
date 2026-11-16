@@ -192,7 +192,7 @@ const Index = () => {
           )}
         </section>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 lg:grid-cols-4">
           {hydrated ? (
             <>
               <StatCard emoji="💵" gradient="emerald" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} delay={340} />
@@ -452,12 +452,14 @@ function QuickAction({
 function StatCardSkeleton() {
   return (
     <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" aria-busy="true" aria-label="Loading">
-      <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
-        <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
-          <Skeleton className="h-12 w-12 shrink-0 rounded-[100px] md:h-14 md:w-14" />
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <Skeleton className="h-3 w-20" />
-            <Skeleton className="h-5 w-24" />
+      <CardContent className="p-3 sm:p-4 md:p-5">
+        <div className="flex flex-col justify-between gap-2.5 sm:gap-3">
+          <div className="flex items-center justify-between gap-1.5">
+            <Skeleton className="h-3.5 w-16" />
+            <Skeleton className="h-9 w-9 sm:h-11 sm:w-11 shrink-0 rounded-[100px]" />
+          </div>
+          <div className="space-y-1">
+            <Skeleton className="h-5 sm:h-6 w-20 sm:w-24" />
           </div>
         </div>
       </CardContent>
@@ -495,15 +497,17 @@ function StatCard({
       style={{ animationDelay: `${delay}ms` }}
       className={`home-card-appear group rounded-2xl transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${s.card}`}
     >
-      <CardContent className="p-3 pl-[22px] md:p-5 md:pl-5 md:pt-3">
-        <div className="flex flex-row-reverse items-center gap-2.5 md:flex-row md:gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-2xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 md:h-14 md:w-14">
-            <span aria-hidden="true">{emoji}</span>
+      <CardContent className="p-3 sm:p-4 md:p-5">
+        <div className="flex flex-col justify-between gap-2.5 sm:gap-3">
+          <div className="flex items-center justify-between gap-1.5">
+            <p className={typography("stat-label", "truncate text-xs sm:text-[13px] font-medium text-foreground/75")}>{label}</p>
+            <div className="flex h-9 w-9 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 text-lg sm:text-2xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10">
+              <span aria-hidden="true">{emoji}</span>
+            </div>
           </div>
-          <div className="flex min-w-0 flex-1 flex-col">
-            <p className={typography("stat-label", "truncate")}>{label}</p>
-            <p aria-hidden="true" className={typography("h4", "mt-1 truncate md:-mt-0")}>{value}</p>
-            {sub && <p className={typography("stat-sub", "mt-0.5 truncate")}>{sub}</p>}
+          <div className="min-w-0">
+            <p aria-hidden="true" className={typography("h4", "truncate text-base sm:text-xl font-bold")}>{value}</p>
+            {sub && <p className={typography("stat-sub", "mt-0.5 truncate text-[11px]")}>{sub}</p>}
           </div>
         </div>
         {tone === "warn" && (
