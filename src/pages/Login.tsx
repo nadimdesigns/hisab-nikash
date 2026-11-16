@@ -457,8 +457,8 @@ const Login = () => {
                     </div>
                   </div>
 
-                  {/* 3-Column Checklist Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[340px] overflow-y-auto p-1 rounded-xl bg-white/40 dark:bg-white/5 border border-emerald-200/40 dark:border-white/10">
+                  {/* Simple Plain Text Checkmark Options (3 Columns) */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2 gap-y-1 max-h-[340px] overflow-y-auto p-2.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-emerald-200/50 dark:border-white/10">
                     {currentProductsList.map((product) => {
                       const isChecked = selectedProductIds.has(product.id);
                       return (
@@ -467,36 +467,23 @@ const Login = () => {
                           type="button"
                           onClick={() => toggleProduct(product.id)}
                           className={cn(
-                            "relative flex flex-col justify-between p-2.5 rounded-xl border text-left transition-all duration-150 active:scale-95 select-none",
-                            isChecked
-                              ? "border-emerald-600 bg-emerald-100/70 dark:bg-emerald-500/25 ring-1 ring-emerald-500/50 shadow-sm"
-                              : "border-border/70 bg-white dark:bg-white/5 opacity-75 hover:opacity-100"
+                            "flex items-center gap-2 py-1.5 px-2 rounded-lg text-left transition-colors select-none hover:bg-emerald-500/10 active:scale-[0.98]",
+                            isChecked ? "text-foreground font-semibold" : "text-muted-foreground font-normal"
                           )}
                         >
-                          <div className="flex items-start justify-between gap-1 w-full">
-                            <span className="font-bold text-xs text-foreground leading-tight line-clamp-2">
-                              {product.name}
-                            </span>
-                            <div
-                              className={cn(
-                                "h-4 w-4 shrink-0 rounded flex items-center justify-center border transition-colors mt-0.5",
-                                isChecked
-                                  ? "bg-emerald-600 border-emerald-600 text-white"
-                                  : "border-muted-foreground/40 bg-white dark:bg-white/10"
-                              )}
-                            >
-                              {isChecked && <span className="text-[10px] font-bold leading-none">✓</span>}
-                            </div>
+                          <div
+                            className={cn(
+                              "h-4 w-4 shrink-0 rounded flex items-center justify-center border transition-colors",
+                              isChecked
+                                ? "bg-emerald-600 border-emerald-600 text-white"
+                                : "border-muted-foreground/40 bg-white dark:bg-white/10"
+                            )}
+                          >
+                            {isChecked && <span className="text-[10px] font-bold leading-none">✓</span>}
                           </div>
-
-                          <div className="mt-2 pt-1 border-t border-emerald-200/40 dark:border-white/10 flex items-center justify-between text-[10px] text-muted-foreground">
-                            <span className="font-semibold text-emerald-800 dark:text-emerald-300">
-                              ৳{product.sellPrice}
-                            </span>
-                            <span className="text-[9px] uppercase tracking-wide opacity-80">
-                              {product.unit}
-                            </span>
-                          </div>
+                          <span className="text-xs leading-snug line-clamp-1">
+                            {product.name}
+                          </span>
                         </button>
                       );
                     })}
