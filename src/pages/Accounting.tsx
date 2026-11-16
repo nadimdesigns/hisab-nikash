@@ -350,10 +350,10 @@ export default function Accounting() {
   };
 
   return (
-    <AppLayout title={tab === "payment" ? "টাকা জমা" : tab === "purchase" ? "নতুন ক্রয় / খরচ" : "হিসাব"}>
+    <AppLayout title={tab === "payment" ? "টাকা জমা" : tab === "purchase" ? "ক্রয় / খরচ" : "হিসাব"}>
       <div className="space-y-4">
         <div className="home-card-appear flex items-center gap-2">
-          {/* Pill Tab Switcher: সব হিসাব | টাকা জমা | নতুন ক্রয় / খরচ */}
+          {/* Pill Tab Switcher: সব হিসাব | টাকা জমা | ক্রয় / খরচ */}
           <div
             role="tablist"
             aria-label="হিসাব ও লেনদেন ট্যাব"
@@ -410,7 +410,7 @@ export default function Accounting() {
                   : "text-foreground/75 hover:text-foreground",
               )}
             >
-              <span className="truncate">নতুন ক্রয় / খরচ</span>
+              <span className="truncate">ক্রয় / খরচ</span>
               <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
                 {purchases.length}
               </span>
@@ -616,7 +616,7 @@ export default function Accounting() {
                 <div className="flex items-center gap-1.5 rounded-full border border-rose-200 bg-white px-3 py-1.5 dark:border-rose-500/20 dark:bg-white/10">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-rose-500" />
                   <span className="text-xs font-bold uppercase tracking-tight text-rose-600 dark:text-rose-300">
-                    নতুন ক্রয় / খরচ
+                    ক্রয় / খরচ
                   </span>
                 </div>
               </div>
