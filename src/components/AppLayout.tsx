@@ -42,7 +42,7 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
             {/* Live Digital Clock centered */}
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
               <span
-                className="text-[22px] font-normal leading-none tracking-wide text-white tabular-nums select-none"
+                className="text-[16px] font-normal leading-none tracking-wide text-white tabular-nums select-none"
                 style={{ fontFamily: "'Oswald', sans-serif" }}
               >
                 {format(time, "hh:mm:ss a")}
