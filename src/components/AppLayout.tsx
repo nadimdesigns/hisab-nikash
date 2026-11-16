@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { openProductQuickSearch } from "./ProductQuickSearch";
 import { typography } from "@/lib/typography";
 import { useAuth } from "@/lib/auth";
-import { formatDate } from "@/lib/format";
+import { format } from "date-fns";
 
 export default function AppLayout({ children, title }: { children: ReactNode; title: string }) {
   const { user } = useAuth();
@@ -43,9 +43,9 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
             <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
               <span
                 className="font-mono text-xs sm:text-sm md:text-base font-semibold tracking-wider text-white tabular-nums select-none"
-                style={{ fontFamily: "'Courier New', Courier, monospace, 'Anek Bangla', sans-serif" }}
+                style={{ fontFamily: "'Courier New', Courier, monospace" }}
               >
-                {formatDate(time, "hh:mm:ss a")}
+                {format(time, "hh:mm:ss a")}
               </span>
             </div>
             <div className="ml-auto flex items-center gap-1">
