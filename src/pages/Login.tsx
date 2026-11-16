@@ -77,7 +77,7 @@ const Login = () => {
     }
   }, [loading, session, from, navigate]);
 
-  // When user switches shop type in Step 1
+  // When user switches shop type in Step 1, immediately proceed to Step 2
   const handleSelectShopType = (type: ShopType) => {
     setSelectedShopType(type);
     if (type === "service") {
@@ -86,14 +86,17 @@ const Login = () => {
     } else {
       setSelectedProductIds(new Set(SHOP_TYPE_PRODUCTS[type].map((p) => p.id)));
     }
+    setStep("step-2-products");
   };
 
+  // When user selects a service business type in Step 2, immediately proceed to Step 3
   const handleSelectServiceType = (serviceId: string) => {
     setSelectedServiceTypeId(serviceId);
     const srv = SERVICE_BUSINESS_TYPES.find((s) => s.id === serviceId);
     if (srv) {
       setSelectedProductIds(new Set(srv.defaultItems.map((p) => p.id)));
     }
+    setStep("step-3-phone");
   };
 
   // Toggle individual product selection in Step 2
@@ -325,31 +328,20 @@ const Login = () => {
                 })}
               </div>
 
-              {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
-              <div className="pt-2 space-y-2">
+              {/* Direct login link */}
+              <div className="pt-2 flex justify-center">
                 <Button
                   type="button"
-                  size="lg"
-                  onClick={() => setStep("step-2-products")}
-                  className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md shadow-emerald-700/20 hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setStep("step-3-phone");
+                    setErrors({});
+                  }}
+                  className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:bg-transparent hover:underline"
                 >
-                  পরবর্তী ধাপ ➔
+                  ইতিমধ্যে অ্যাকাউন্ট আছে? সরাসরি লগইন করুন
                 </Button>
-
-                <div className="flex justify-center">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setStep("step-3-phone");
-                      setErrors({});
-                    }}
-                    className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:bg-transparent hover:underline"
-                  >
-                    ইতিমধ্যে অ্যাকাউন্ট আছে? সরাসরি লগইন করুন
-                  </Button>
-                </div>
               </div>
             </div>
           )}
@@ -497,21 +489,23 @@ const Login = () => {
                 </>
               )}
 
-              {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
+              {/* Action Buttons: Primary CTA for multi-select + Center-aligned Ghost Back Button */}
               <div className="pt-2 space-y-2">
-                <Button
-                  type="button"
-                  size="lg"
-                  disabled={isServiceShop ? !selectedServiceTypeId : selectedProductIds.size === 0}
-                  onClick={() => {
-                    if (isServiceShop || selectedProductIds.size >= 1) {
-                      setStep("step-3-phone");
-                    }
-                  }}
-                  className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md shadow-emerald-700/20 hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
-                >
-                  পরবর্তী ধাপ ➔
-                </Button>
+                {!isServiceShop && (
+                  <Button
+                    type="button"
+                    size="lg"
+                    disabled={selectedProductIds.size === 0}
+                    onClick={() => {
+                      if (selectedProductIds.size >= 1) {
+                        setStep("step-3-phone");
+                      }
+                    }}
+                    className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md shadow-emerald-700/20 hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                  >
+                    পরবর্তী ধাপ ➔
+                  </Button>
+                )}
 
                 <div className="flex justify-center">
                   <Button
