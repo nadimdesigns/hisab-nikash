@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import InventoryPanel from "@/components/inventory/InventoryPanel";
@@ -123,6 +123,39 @@ export default function Inventory() {
     return map;
   }, [products]);
 
+  const tabListRef = useRef<HTMLDivElement>(null);
+
+  const categoryOptions = useMemo(() => [
+    { value: "all", label: "সব ক্যাটাগরি", count: products.length },
+    ...categories.map((c) => ({ value: c, label: c, count: categoryCounts.get(c) ?? 0 })),
+  ], [products.length, categories, categoryCounts]);
+
+  // Auto-scroll so that any active pill (except the 1st "সব ক্যাটাগরি") appears as the 2nd visible pill
+  useEffect(() => {
+    const container = tabListRef.current;
+    if (!container) return;
+
+    const activeIndex = categoryOptions.findIndex((opt) => opt.value === category);
+    if (activeIndex <= 0) {
+      container.scrollTo({ left: 0, behavior: "smooth" });
+      return;
+    }
+
+    const frameId = requestAnimationFrame(() => {
+      const buttons = container.querySelectorAll<HTMLButtonElement>("button[role='tab']");
+      const prevButton = buttons[activeIndex - 1];
+      if (prevButton) {
+        const prevOffset = prevButton.offsetParent === container
+          ? prevButton.offsetLeft
+          : prevButton.offsetLeft - container.offsetLeft;
+        const targetScroll = prevOffset - 4; // Account for container padding (p-1 = 4px)
+        container.scrollTo({ left: Math.max(0, targetScroll), behavior: "smooth" });
+      }
+    });
+
+    return () => cancelAnimationFrame(frameId);
+  }, [category, categoryOptions]);
+
   const filtersActive =
     query !== "" ||
     category !== "all" ||
@@ -202,15 +235,13 @@ export default function Inventory() {
           <div className="flex items-center gap-2">
             {/* Horizontal Scrolling Pill Tab Bar for Categories */}
             <div
+              ref={tabListRef}
               role="tablist"
               aria-label="ক্যাটাগরি"
               style={{ animationDelay: "60ms" }}
-              className="home-card-appear flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto rounded-full bg-emerald-100/60 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:bg-emerald-500/15"
+              className="home-card-appear relative flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto rounded-full bg-emerald-100/60 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:bg-emerald-500/15"
             >
-              {[
-                { value: "all", label: "সব ক্যাটাগরি", count: products.length },
-                ...categories.map((c) => ({ value: c, label: c, count: categoryCounts.get(c) ?? 0 })),
-              ].map((opt) => {
+              {categoryOptions.map((opt) => {
                 const active = category === opt.value;
                 return (
                   <button
