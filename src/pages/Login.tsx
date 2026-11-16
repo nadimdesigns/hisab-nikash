@@ -13,8 +13,6 @@ import { toast } from "@/hooks/use-toast";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/copy";
-import { enableDemoMode, setCachedRole } from "@/lib/demoMode";
-import { seedDemoCustomers } from "@/lib/demoSeed";
 import {
   ONBOARDING_SHOP_TYPES,
   SHOP_TYPE_PRODUCTS,
@@ -226,23 +224,6 @@ const Login = () => {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  // Demo account flow with chosen shop type and products
-  const handleStartDemo = () => {
-    const chosenTemplates = SHOP_TYPE_PRODUCTS[selectedShopType].filter((p) =>
-      selectedProductIds.has(p.id)
-    );
-    seedCustomShopProducts(chosenTemplates, selectedShopType, true);
-    enableDemoMode();
-    setCachedRole(null);
-    seedDemoCustomers();
-    window.dispatchEvent(new Event("pharmasee-demo-changed"));
-    toast({
-      title: "ডেমো মোড চালু হয়েছে",
-      description: `${ONBOARDING_SHOP_TYPES.find((s) => s.id === selectedShopType)?.shortTitle} এবং ${chosenTemplates.length}টি পণ্য লোড করা হয়েছে।`,
-    });
-    window.location.replace("/");
   };
 
   const otpSlotClass = (hasError?: string) =>
@@ -575,30 +556,6 @@ const Login = () => {
                       ← পূর্ববর্তী ধাপে যান
                     </Button>
                   </div>
-                </div>
-
-                {/* Demo option */}
-                <div className="space-y-2 pt-2">
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center" aria-hidden>
-                      <span className="w-full border-t border-border" />
-                    </div>
-                    <div className="relative flex justify-center">
-                      <span className={typography("muted", "bg-emerald-50/70 dark:bg-emerald-950 px-2 text-xs")}>
-                        অথবা
-                      </span>
-                    </div>
-                  </div>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full gap-2 rounded-2xl text-xs sm:text-sm font-semibold border-emerald-300 dark:border-emerald-800"
-                    onClick={handleStartDemo}
-                  >
-                    <span aria-hidden="true">▶️</span>
-                    ডেমো হিসেবে এখনই শুরু করুন (লগইন ছাড়া)
-                  </Button>
                 </div>
               </form>
             </div>
