@@ -270,17 +270,17 @@ const Login = () => {
   const currentShopInfo = ONBOARDING_SHOP_TYPES.find((s) => s.id === selectedShopType) || ONBOARDING_SHOP_TYPES[0];
 
   return (
-    <main className="fixed inset-0 h-[100svh] w-full bg-background flex items-center justify-center p-3 sm:p-4 overflow-y-auto [padding-top:max(0.75rem,env(safe-area-inset-top))] [padding-bottom:max(0.75rem,env(safe-area-inset-bottom))]">
-      <Card className="w-full max-w-lg rounded-[28px] border border-emerald-800/20 shadow-2xl overflow-hidden bg-card transition-all">
+    <main className="min-h-[100svh] w-full bg-background flex flex-col items-center justify-start p-3 sm:p-4 pt-[max(20px,env(safe-area-inset-top))] pb-10 overflow-y-auto">
+      <Card className="w-full max-w-lg rounded-[28px] border border-emerald-800/20 shadow-2xl overflow-hidden bg-card transition-all my-0">
         {/* Splash Header with Logo and Title */}
-        <div className="relative bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 px-5 pt-7 pb-6 flex flex-col items-center gap-2 overflow-hidden text-center">
+        <div className="relative bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 px-5 pt-6 pb-5 flex flex-col items-center gap-2 overflow-hidden text-center">
           <div className="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-white/10 pointer-events-none" aria-hidden />
           <div className="absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-white/10 pointer-events-none" aria-hidden />
 
           <img
             src="/logo.webp"
             alt={APP_NAME}
-            className="relative h-[68px] w-[68px] object-contain shadow-md shadow-emerald-950/40 rounded-2xl"
+            className="relative h-[64px] w-[64px] object-contain shadow-md shadow-emerald-950/40 rounded-2xl"
           />
           <span className="relative text-xl sm:text-2xl font-bold text-white leading-tight tracking-tight">
             {APP_NAME}
@@ -346,8 +346,8 @@ const Login = () => {
                 </p>
               </div>
 
-              {/* 5 Shop Type Grid Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+              {/* 5 Shop Type Grid Cards (2 columns on mobile and desktop) */}
+              <div className="grid grid-cols-2 gap-2.5 pt-1">
                 {ONBOARDING_SHOP_TYPES.map((shop) => {
                   const isSelected = selectedShopType === shop.id;
                   return (
@@ -356,36 +356,37 @@ const Login = () => {
                       type="button"
                       onClick={() => handleSelectShopType(shop.id)}
                       className={cn(
-                        "relative flex items-start gap-3 p-3.5 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98]",
+                        "relative flex flex-col justify-between p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] h-full min-h-[120px]",
                         isSelected
                           ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-600/60 shadow-sm dark:bg-emerald-500/20"
                           : "border-border/80 bg-white/80 hover:bg-white hover:border-emerald-300 dark:bg-white/5 dark:hover:bg-white/10"
                       )}
                     >
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-2xl shadow-inner">
-                        <span aria-hidden="true">{shop.emoji}</span>
-                      </div>
-                      <div className="flex-1 min-w-0 pr-4">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-bold text-sm text-foreground leading-snug">
-                            {shop.title}
-                          </span>
+                      <div className="flex items-start justify-between w-full">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-2xl shadow-inner">
+                          <span aria-hidden="true">{shop.emoji}</span>
                         </div>
-                        <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">
-                          {shop.description}
-                        </p>
+
+                        {/* Radio / Check indicator */}
+                        <div
+                          className={cn(
+                            "h-4 w-4 rounded-full border flex items-center justify-center transition-colors mt-0.5 shrink-0",
+                            isSelected
+                              ? "border-emerald-600 bg-emerald-600 text-white"
+                              : "border-muted-foreground/40 bg-transparent"
+                          )}
+                        >
+                          {isSelected && <span className="text-[10px] leading-none font-bold">✓</span>}
+                        </div>
                       </div>
 
-                      {/* Radio / Check indicator */}
-                      <div
-                        className={cn(
-                          "absolute top-3 right-3 h-4 w-4 rounded-full border flex items-center justify-center transition-colors",
-                          isSelected
-                            ? "border-emerald-600 bg-emerald-600 text-white"
-                            : "border-muted-foreground/40 bg-transparent"
-                        )}
-                      >
-                        {isSelected && <span className="text-[10px] leading-none font-bold">✓</span>}
+                      <div className="mt-2.5 space-y-0.5">
+                        <span className="font-bold text-[13px] sm:text-sm text-foreground leading-snug line-clamp-1 block">
+                          {shop.title}
+                        </span>
+                        <p className="text-[10px] sm:text-[11px] text-muted-foreground line-clamp-2 leading-tight">
+                          {shop.description}
+                        </p>
                       </div>
                     </button>
                   );
