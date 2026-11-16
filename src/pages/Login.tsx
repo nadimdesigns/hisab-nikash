@@ -256,21 +256,18 @@ const Login = () => {
 
   return (
     <main className="min-h-[100svh] w-full bg-background flex flex-col items-center justify-start p-3 sm:p-4 pt-[max(20px,env(safe-area-inset-top))] pb-10 overflow-y-auto">
-      <Card className="w-full max-w-lg rounded-[28px] border border-emerald-800/20 shadow-2xl overflow-hidden bg-card transition-all my-0">
-        {/* Lean Splash Header without Step Pills */}
-        <div className="relative bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-800 px-5 pt-6 pb-5 flex flex-col items-center gap-1.5 overflow-hidden text-center">
-          <div className="absolute -top-10 -right-10 h-36 w-36 rounded-full bg-white/10 pointer-events-none" aria-hidden />
-          <div className="absolute -bottom-14 -left-12 h-40 w-40 rounded-full bg-white/10 pointer-events-none" aria-hidden />
-
+      <Card className="w-full max-w-lg rounded-[28px] border border-emerald-200 dark:border-emerald-800/30 shadow-xl overflow-hidden bg-card transition-all my-0">
+        {/* Top Header: Tint Green matching Nogod Bikroy card with black texts and no decorative circles */}
+        <div className="relative bg-gradient-to-br from-emerald-100 to-emerald-50 border-b border-emerald-200 px-5 pt-6 pb-5 flex flex-col items-center gap-1.5 text-center dark:from-emerald-950/50 dark:to-emerald-900/20 dark:border-emerald-800/40">
           <img
             src="/logo.webp"
             alt={APP_NAME}
-            className="relative h-[60px] w-[60px] object-contain shadow-md shadow-emerald-950/40 rounded-2xl"
+            className="relative h-[60px] w-[60px] object-contain shadow-sm rounded-2xl"
           />
-          <span className="relative text-xl sm:text-2xl font-bold text-white leading-tight tracking-tight">
+          <span className="relative text-xl sm:text-2xl font-bold text-gray-950 dark:text-white leading-tight tracking-tight">
             {APP_NAME}
           </span>
-          <span className="relative text-xs text-emerald-100/80">
+          <span className="relative text-xs font-medium text-gray-700 dark:text-emerald-100/80">
             দোকানের সহজ ডিজিটাল খাতা
           </span>
         </div>
