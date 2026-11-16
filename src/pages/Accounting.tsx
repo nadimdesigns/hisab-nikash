@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useShop, useShopHydrated, type PurchaseItem, type SaleItem } from "@/store/shop";
-import { loadPayments, PAYMENTS_KEY, type PaymentEntry } from "@/lib/customerPaymentsLog";
+import { appendPayment, loadPayments, PAYMENTS_KEY, type PaymentEntry } from "@/lib/customerPaymentsLog";
 import { applyCustomerPayment, DUES_KEY } from "@/lib/customerPayments";
 import { loadProfiles, PROFILES_KEY } from "@/lib/customerProfiles";
 import { isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
@@ -150,47 +150,59 @@ export default function Accounting() {
       .sort((a, b) => b.due - a.due || a.name.localeCompare(b.name, "bn"));
   }, [customerDueMap]);
 
-  const selectedCustomerDue = payCustomer ? (customerDueMap.get(payCustomer) ?? 0) : 0;
+  const hasCustomer = Boolean(payCustomer && payCustomer.trim() && payCustomer !== "none");
+  const selectedCustomerDue = hasCustomer ? (customerDueMap.get(payCustomer) ?? 0) : 0;
 
   const submitPayment = () => {
     if (isReadOnly()) {
       notifyReadOnlyBlocked();
       return;
     }
-    if (!payCustomer.trim()) {
-      return toast({ title: "একজন কাস্টমার নির্বাচন করুন", variant: "destructive" });
-    }
     const amount = parseFloat(payAmount);
     if (!Number.isFinite(amount) || amount <= 0) {
       return toast({ title: "সঠিক টাকার পরিমাণ দিন", variant: "destructive" });
     }
-    if (selectedCustomerDue <= 0) {
-      return toast({ title: "এই কাস্টমারের কোনো বকেয়া নেই", variant: "destructive" });
-    }
-    if (amount > selectedCustomerDue + 0.005) {
-      return toast({
-        title: "পরিমাণ বকেয়ার বেশি",
-        description: `${payCustomer} এর বকেয়া ${currency(selectedCustomerDue)}।`,
-        variant: "destructive",
+
+    const customerName = hasCustomer ? payCustomer.trim() : "অন্যান্য";
+
+    if (hasCustomer) {
+      if (selectedCustomerDue <= 0) {
+        return toast({ title: "এই কাস্টমারের কোনো বকেয়া নেই", variant: "destructive" });
+      }
+      if (amount > selectedCustomerDue + 0.005) {
+        return toast({
+          title: "পরিমাণ বকেয়ার বেশি",
+          description: `${customerName} এর বকেয়া ${currency(selectedCustomerDue)}।`,
+          variant: "destructive",
+        });
+      }
+      applyCustomerPayment(
+        customerName,
+        amount,
+        {
+          sales,
+          dues,
+          updateSale,
+          setDues: (next) => setDues(next),
+        },
+        payNote,
+      );
+    } else {
+      appendPayment({
+        customer: "অন্যান্য",
+        amount,
+        allocatedToDues: 0,
+        note: payNote?.trim() || undefined,
       });
     }
-    const applied = applyCustomerPayment(
-      payCustomer,
-      amount,
-      {
-        sales,
-        dues,
-        updateSale,
-        setDues: (next) => setDues(next),
-      },
-      payNote,
-    );
+
     setPayments(loadPayments());
+    setPayCustomer("");
     setPayAmount("");
     setPayNote("");
     toast({
       title: "টাকা জমা সংরক্ষিত হয়েছে",
-      description: `${currency(applied)} ${payCustomer} এর হিসাবে জমা হয়েছে।`,
+      description: `${currency(amount)} ${customerName} এর হিসাবে জমা হয়েছে।`,
     });
     setTab("list");
   };
@@ -272,7 +284,7 @@ export default function Accounting() {
         id: `payment-${pay.id}`,
         type: "New Payment",
         date: pay.date,
-        reference: pay.customer || "—",
+        reference: pay.customer || "অন্যান্য",
         summary: pay.note ? `পেমেন্ট · ${pay.note}` : "নগদ পেমেন্ট",
         amount: pay.amount,
       });
@@ -515,29 +527,25 @@ export default function Accounting() {
             <div className="space-y-4 px-5 pb-6 sm:px-6">
               <div>
                 <Label className="mb-1.5 ml-1 block text-xs font-semibold text-muted-foreground">
-                  কাস্টমার নির্বাচন করুন
+                  কাস্টমার নির্বাচন (ঐচ্ছিক)
                 </Label>
                 <Select value={payCustomer} onValueChange={setPayCustomer}>
                   <SelectTrigger className="h-12 rounded-2xl bg-white dark:bg-white/10">
-                    <SelectValue placeholder="কাস্টমার বাছাই করুন..." />
+                    <SelectValue placeholder="কাস্টমার বাছাই করুন (ঐচ্ছিক)..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {customerDueOptions.length === 0 ? (
-                      <div className={typography("body-muted", "px-3 py-2")}>
-                        এখনো কোনো কাস্টমার নেই।
-                      </div>
-                    ) : (
+                    <SelectItem value="none">অন্যান্য (নির্দিষ্ট কাস্টমার ছাড়া)</SelectItem>
+                    {customerDueOptions.length > 0 &&
                       customerDueOptions.map((c) => (
                         <SelectItem key={c.name} value={c.name}>
                           {c.name} {c.due > 0 ? `(বাকি ${currency(c.due)})` : "(পরিশোধিত)"}
                         </SelectItem>
-                      ))
-                    )}
+                      ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              {payCustomer && (
+              {hasCustomer && (
                 <div className="flex items-center justify-between rounded-2xl bg-white/80 px-4 py-3 dark:bg-white/10">
                   <span className="text-xs font-semibold text-muted-foreground">
                     বর্তমান বকেয়া
