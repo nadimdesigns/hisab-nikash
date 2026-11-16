@@ -115,19 +115,26 @@ const Index = () => {
           ))}
         </div>
 
-        {hydrated ? (
-          <BalanceCard net={stats.periodNet} income={stats.periodIncome} expense={stats.periodExpense} />
-        ) : (
-          <BalanceCardSkeleton />
-        )}
+        {/* Hero Section: Credit Card on Left + Quick Actions on Right (on Desktop) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 lg:gap-5 items-stretch">
+          <div className="lg:col-span-5 flex justify-center lg:justify-start">
+            {hydrated ? (
+              <BalanceCard net={stats.periodNet} income={stats.periodIncome} expense={stats.periodExpense} />
+            ) : (
+              <BalanceCardSkeleton />
+            )}
+          </div>
 
-        <div className="grid grid-cols-3 gap-1.5">
-          <QuickAction emoji="🛒" label="নতুন বিক্রি" to="/new-sale" tint="emerald" delay={100} />
-          <QuickAction emoji="👤" label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" delay={150} />
-          <QuickAction emoji="🧾" label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" delay={200} />
-          <QuickAction emoji="⏳" label="বাকি বিক্রি" to="/new-sale?mode=credit" tint="rose" delay={250} />
-          <QuickAction emoji="💰" label="টাকা জমা" to="/accounting?tab=payment" tint="emerald" delay={300} />
-          <QuickAction emoji="📦" label="পণ্য যোগ" to="/stocks?new=1" tint="emerald" delay={350} />
+          <div className="lg:col-span-7">
+            <div className="grid grid-cols-3 gap-1.5 sm:gap-2.5 h-full">
+              <QuickAction emoji="🛒" label="নতুন বিক্রি" to="/new-sale" tint="emerald" delay={100} />
+              <QuickAction emoji="👤" label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" delay={150} />
+              <QuickAction emoji="🧾" label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" delay={200} />
+              <QuickAction emoji="⏳" label="বাকি বিক্রি" to="/new-sale?mode=credit" tint="rose" delay={250} />
+              <QuickAction emoji="💰" label="টাকা জমা" to="/accounting?tab=payment" tint="emerald" delay={300} />
+              <QuickAction emoji="📦" label="পণ্য যোগ" to="/stocks?new=1" tint="emerald" delay={350} />
+            </div>
+          </div>
         </div>
 
         {/* Recent activity (Hisab-Kitab "Recent activity" section) */}
@@ -336,7 +343,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
       style={{ animationDelay: "50ms" }}
-      className="home-hero-appear group relative aspect-[16/9] w-full overflow-hidden rounded-[24px] bg-[linear-gradient(140deg,#000d05_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#000d05_100%)] p-4 text-left text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="home-hero-appear group relative flex flex-col justify-between aspect-[16/10] sm:aspect-[1.586/1] w-full max-w-[440px] overflow-hidden rounded-[24px] border border-emerald-500/20 bg-[linear-gradient(140deg,#000d05_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#000d05_100%)] p-4 sm:p-5 text-left text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Glowing wave lines (50% reduced opacity) */}
       <svg className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
@@ -358,7 +365,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
 
       <div className="relative flex items-start justify-between">
         {/* EMV-style chip */}
-        <span className="flex h-7 w-10 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40 transition-transform duration-300 group-hover:scale-105">
+        <span className="flex h-7 w-10 sm:h-8 sm:w-11 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40 transition-transform duration-300 group-hover:scale-105">
           <span className="flex flex-col gap-[3px]">
             <span className="h-px w-6 bg-amber-900/50" />
             <span className="h-px w-6 bg-amber-900/50" />
@@ -371,28 +378,29 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
         </span>
       </div>
 
-      <div className="relative mt-2 flex items-center justify-between">
-        <p className="text-[13px] font-semibold tracking-wide [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">হিসাব নিকাশ</p>
-        <p className="text-[10px] uppercase tracking-wider text-white/70">Net Balance · Tap</p>
+      <div className="relative my-auto py-1 sm:py-2">
+        <div className="flex items-center justify-between">
+          <p className="text-[12px] sm:text-[13px] font-semibold tracking-wide [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">হিসাব নিকাশ</p>
+          <p className="text-[10px] uppercase tracking-wider text-white/70">Net Balance · Tap</p>
+        </div>
+        <p className="relative mt-0.5 sm:mt-1 text-[26px] sm:text-[30px] font-extrabold leading-none tracking-tight tabular-nums transition-transform duration-200 group-active:scale-[0.98] [text-shadow:0_1px_0_rgba(255,255,255,0.28),0_2px_2px_rgba(0,0,0,0.35),0_6px_16px_rgba(0,0,0,0.35)]">
+          {revealed ? currency(net) : "৳ ••••"}
+        </p>
       </div>
 
-      <p className="relative mt-1 text-[26px] font-extrabold leading-none tracking-tight tabular-nums transition-transform duration-200 group-active:scale-[0.98] [text-shadow:0_1px_0_rgba(255,255,255,0.28),0_2px_2px_rgba(0,0,0,0.35),0_6px_16px_rgba(0,0,0,0.35)]">
-        {revealed ? currency(net) : "৳ ••••"}
-      </p>
-
       {/* Income / Expense split — inline horizontal */}
-      <div className="relative mt-3 grid grid-cols-2 gap-2">
-        <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
+      <div className="relative grid grid-cols-2 gap-2">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2 rounded-xl bg-white/10 px-2.5 py-1.5 sm:px-3 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
           <p className="flex items-center gap-1 text-[11px] text-white/70">
             <span aria-hidden="true" className="text-xs leading-none select-none">↗️</span> আয়
           </p>
-          <p className="text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(income) : "৳ ••••"}</p>
+          <p className="text-xs sm:text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(income) : "৳ ••••"}</p>
         </div>
-        <div className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-1.5 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2 rounded-xl bg-white/10 px-2.5 py-1.5 sm:px-3 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
           <p className="flex items-center gap-1 text-[11px] text-white/70">
             <span aria-hidden="true" className="text-xs leading-none select-none">↙️</span> খরচ
           </p>
-          <p className="text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(expense) : "৳ ••••"}</p>
+          <p className="text-xs sm:text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(expense) : "৳ ••••"}</p>
         </div>
       </div>
     </button>
@@ -401,7 +409,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
 
 function BalanceCardSkeleton() {
   return (
-    <Skeleton aria-busy="true" aria-label="Loading" className="aspect-[16/9] w-full rounded-[24px]" />
+    <Skeleton aria-busy="true" aria-label="Loading" className="aspect-[16/10] sm:aspect-[1.586/1] w-full max-w-[440px] rounded-[24px]" />
   );
 }
 
@@ -428,15 +436,15 @@ function QuickAction({
     <Link
       to={to}
       style={{ animationDelay: `${delay}ms` }}
-      className={`home-card-appear group flex flex-col items-center gap-2 rounded-2xl p-4 text-center transition-all duration-200 hover:-translate-y-1 active:scale-[0.95] ${t.bg}`}
+      className={`home-card-appear group flex flex-col items-center justify-center gap-1.5 sm:gap-2 rounded-2xl p-2.5 sm:p-4 text-center transition-all duration-200 hover:-translate-y-1 active:scale-[0.95] ${t.bg}`}
     >
       <span
         aria-hidden="true"
-        className="flex h-11 w-11 items-center justify-center rounded-[100px] bg-white/60 text-xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10"
+        className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-[100px] bg-white/60 text-lg sm:text-2xl leading-none select-none transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10"
       >
         {emoji}
       </span>
-      <span className="text-xs font-medium text-foreground leading-tight">{label}</span>
+      <span className="text-xs sm:text-[13px] font-semibold sm:font-medium text-foreground leading-tight">{label}</span>
     </Link>
   );
 }
