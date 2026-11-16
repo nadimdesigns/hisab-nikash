@@ -68,3 +68,10 @@
 ## ৬. পরবর্তীতে যুক্ত হওয়া Orphan Files (`main` ব্রাঞ্চ থেকে মুভ করা হয়েছে)
 - `src/pages/Expenses.tsx` (`Accounting.tsx`-এর সাথে একীভূত হওয়ায় আলাদা পেজের আর প্রয়োজন নেই)
 - `src/components/ui/table.tsx` (সমস্ত টেবিল টিন্ট লিস্টিং কার্ডে রূপান্তরিত হওয়ায় অব্যবহৃত)
+
+## ৭. নতুন যুক্ত হওয়া Orphan Components, Assets & Utilities (`main` ব্রাঞ্চ থেকে মুভ করা হয়েছে)
+- `src/components/ThemeToggle.tsx` (থিম টগল সরাসরি `Account.tsx`-এ পিল সুইচার হিসেবে যুক্ত হওয়ায় এই হেডার বাটন কম্পোনেন্টটি অব্যবহৃত)
+- `public/fonts/oswald-latin-400.woff2` (Oswald ফন্টটি এখন সরাসরি `@fontsource/oswald` প্যাকেজের মাধ্যমে বান্ডেল হওয়ায় পাবলিক ফোল্ডারের ফাইলটি অপ্রয়োজনীয়)
+- `src/lib/settings.ts` (`SmoothScrollToggle` পূর্বেই সরানো হয়েছিল, অবশিষ্ট অব্যবহৃত `readSmoothScrollPref` ক্লিনআপ করা হয়েছে)
+- `src/App.tsx` এর অব্যবহৃত রুট: `/reports` ও `/expenses` (সরাসরি `/accounting`-এ হ্যান্ডেল হওয়ায় অপ্রয়োজনীয়)
+
