@@ -4,6 +4,7 @@ import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import * as SelectPrimitive from "@radix-ui/react-select";
 import {
   Select,
   SelectContent,
@@ -351,68 +352,132 @@ export default function Accounting() {
   return (
     <AppLayout title={tab === "payment" ? "টাকা জমা" : tab === "purchase" ? "নতুন ক্রয় / খরচ" : "হিসাব"}>
       <div className="space-y-4">
-        {/* Pill Tab Switcher: সব হিসাব | টাকা জমা | নতুন ক্রয় / খরচ */}
-        <div
-          role="tablist"
-          aria-label="হিসাব ও লেনদেন ট্যাব"
-          className={cn(
-            "home-card-appear grid grid-cols-3 gap-1.5 rounded-full p-1 transition-colors",
-            tab === "purchase"
-              ? "bg-rose-100/70 dark:bg-rose-500/15"
-              : "bg-emerald-100/60 dark:bg-emerald-500/15",
-          )}
-        >
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "list"}
-            onClick={() => setTab("list")}
+        <div className="home-card-appear flex items-center gap-2">
+          {/* Pill Tab Switcher: সব হিসাব | টাকা জমা | নতুন ক্রয় / খরচ */}
+          <div
+            role="tablist"
+            aria-label="হিসাব ও লেনদেন ট্যাব"
             className={cn(
-              "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
-              tab === "list"
-                ? "bg-emerald-900 text-white"
-                : "text-foreground/75 hover:text-foreground",
-            )}
-          >
-            <span className="truncate">সব হিসাব</span>
-            <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
-              {allTransactionsList.length}
-            </span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "payment"}
-            onClick={() => setTab("payment")}
-            className={cn(
-              "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
-              tab === "payment"
-                ? "bg-emerald-900 text-white"
-                : "text-foreground/75 hover:text-foreground",
-            )}
-          >
-            <span className="truncate">টাকা জমা</span>
-            <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
-              {payments.length}
-            </span>
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === "purchase"}
-            onClick={() => setTab("purchase")}
-            className={cn(
-              "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
+              "grid min-w-0 flex-1 grid-cols-3 gap-1.5 rounded-full p-1 transition-colors",
               tab === "purchase"
-                ? "bg-rose-600 text-white"
-                : "text-foreground/75 hover:text-foreground",
+                ? "bg-rose-100/70 dark:bg-rose-500/15"
+                : "bg-emerald-100/60 dark:bg-emerald-500/15",
             )}
           >
-            <span className="truncate">নতুন ক্রয় / খরচ</span>
-            <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
-              {purchases.length}
-            </span>
-          </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "list"}
+              onClick={() => setTab("list")}
+              className={cn(
+                "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
+                tab === "list"
+                  ? "bg-emerald-900 text-white"
+                  : "text-foreground/75 hover:text-foreground",
+              )}
+            >
+              <span className="truncate">সব হিসাব</span>
+              <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+                {allTransactionsList.length}
+              </span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "payment"}
+              onClick={() => setTab("payment")}
+              className={cn(
+                "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
+                tab === "payment"
+                  ? "bg-emerald-900 text-white"
+                  : "text-foreground/75 hover:text-foreground",
+              )}
+            >
+              <span className="truncate">টাকা জমা</span>
+              <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+                {payments.length}
+              </span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === "purchase"}
+              onClick={() => setTab("purchase")}
+              className={cn(
+                "flex items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold transition-colors sm:px-3 sm:text-sm",
+                tab === "purchase"
+                  ? "bg-rose-600 text-white"
+                  : "text-foreground/75 hover:text-foreground",
+              )}
+            >
+              <span className="truncate">নতুন ক্রয় / খরচ</span>
+              <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+                {purchases.length}
+              </span>
+            </button>
+          </div>
+
+          <Select
+            value={allTypeFilter}
+            onValueChange={(v) => {
+              setAllTypeFilter(v as "all" | AllTxnType);
+              if (tab !== "list") setTab("list");
+            }}
+          >
+            <SelectPrimitive.Trigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="relative h-11 w-11 shrink-0 rounded-full border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                aria-label="ফিল্টার খুলুন"
+              >
+                <span aria-hidden="true" className="text-base leading-none select-none">⚙️</span>
+                {allTypeFilter !== "all" && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white ring-2 ring-background">
+                    ১
+                  </span>
+                )}
+              </Button>
+            </SelectPrimitive.Trigger>
+            <SelectContent align="end" className="w-[calc(100vw-2rem)] max-w-xs sm:max-w-sm">
+              <SelectItem value="all" className="cursor-pointer py-2.5">
+                <span className="flex w-full items-center justify-between gap-3">
+                  <span>সব ধরনের</span>
+                  {getFilterAmountNode("all")}
+                </span>
+              </SelectItem>
+              <SelectItem value="Purchase" className="cursor-pointer py-2.5">
+                <span className="flex w-full items-center justify-between gap-3">
+                  <span>ক্রয়</span>
+                  {getFilterAmountNode("Purchase")}
+                </span>
+              </SelectItem>
+              <SelectItem value="Expense" className="cursor-pointer py-2.5">
+                <span className="flex w-full items-center justify-between gap-3">
+                  <span>খরচ</span>
+                  {getFilterAmountNode("Expense")}
+                </span>
+              </SelectItem>
+              <SelectItem value="Cash Sale" className="cursor-pointer py-2.5">
+                <span className="flex w-full items-center justify-between gap-3">
+                  <span>নগদ বিক্রি</span>
+                  {getFilterAmountNode("Cash Sale")}
+                </span>
+              </SelectItem>
+              <SelectItem value="Due Sale" className="cursor-pointer py-2.5">
+                <span className="flex w-full items-center justify-between gap-3">
+                  <span>বাকি বিক্রি</span>
+                  {getFilterAmountNode("Due Sale")}
+                </span>
+              </SelectItem>
+              <SelectItem value="New Payment" className="cursor-pointer py-2.5">
+                <span className="flex w-full items-center justify-between gap-3">
+                  <span>নগদ পেমেন্ট</span>
+                  {getFilterAmountNode("New Payment")}
+                </span>
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {tab === "payment" ? (
@@ -663,54 +728,7 @@ export default function Accounting() {
         ) : (
           /* ===== সব হিসাব তালিকা ===== */
           <>
-            <div
-              style={{ animationDelay: "60ms" }}
-              className="home-card-appear flex w-full items-center gap-2"
-            >
-              <Select value={allTypeFilter} onValueChange={(v) => setAllTypeFilter(v as "all" | AllTxnType)}>
-                <SelectTrigger className="h-12 w-full flex-1 gap-2 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 py-2 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-foreground md:h-10 [&>span]:flex [&>span]:flex-1 [&>span]:w-full [&>span]:items-center [&>span]:justify-between [&>span]:!line-clamp-none">
-                  <SelectValue placeholder="সব ধরনের" />
-                </SelectTrigger>
-                <SelectContent className="w-[calc(100vw-2rem)] max-w-sm sm:max-w-md">
-                  <SelectItem value="all" className="cursor-pointer py-2.5">
-                    <span className="flex w-full items-center justify-between gap-3">
-                      <span>সব ধরনের</span>
-                      {getFilterAmountNode("all")}
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="Purchase" className="cursor-pointer py-2.5">
-                    <span className="flex w-full items-center justify-between gap-3">
-                      <span>ক্রয়</span>
-                      {getFilterAmountNode("Purchase")}
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="Expense" className="cursor-pointer py-2.5">
-                    <span className="flex w-full items-center justify-between gap-3">
-                      <span>খরচ</span>
-                      {getFilterAmountNode("Expense")}
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="Cash Sale" className="cursor-pointer py-2.5">
-                    <span className="flex w-full items-center justify-between gap-3">
-                      <span>নগদ বিক্রি</span>
-                      {getFilterAmountNode("Cash Sale")}
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="Due Sale" className="cursor-pointer py-2.5">
-                    <span className="flex w-full items-center justify-between gap-3">
-                      <span>বাকি বিক্রি</span>
-                      {getFilterAmountNode("Due Sale")}
-                    </span>
-                  </SelectItem>
-                  <SelectItem value="New Payment" className="cursor-pointer py-2.5">
-                    <span className="flex w-full items-center justify-between gap-3">
-                      <span>নগদ পেমেন্ট</span>
-                      {getFilterAmountNode("New Payment")}
-                    </span>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
 
             <div className="space-y-2">
               {!hydrated ? (
