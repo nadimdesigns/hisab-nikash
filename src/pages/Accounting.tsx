@@ -377,9 +377,11 @@ export default function Accounting() {
               )}
             >
               <span className="truncate">সব হিসাব</span>
-              <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
-                {allTransactionsList.length}
-              </span>
+              {tab === "list" && (
+                <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+                  {allTransactionsList.length}
+                </span>
+              )}
             </button>
             <button
               type="button"
@@ -394,9 +396,11 @@ export default function Accounting() {
               )}
             >
               <span className="truncate">টাকা জমা</span>
-              <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
-                {payments.length}
-              </span>
+              {tab === "payment" && (
+                <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+                  {payments.length}
+                </span>
+              )}
             </button>
             <button
               type="button"
@@ -411,9 +415,11 @@ export default function Accounting() {
               )}
             >
               <span className="truncate">ক্রয় / খরচ</span>
-              <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
-                {purchases.length}
-              </span>
+              {tab === "purchase" && (
+                <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+                  {purchases.length}
+                </span>
+              )}
             </button>
           </div>
 

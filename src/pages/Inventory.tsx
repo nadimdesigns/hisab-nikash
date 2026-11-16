@@ -227,9 +227,11 @@ export default function Inventory() {
                     )}
                   >
                     <span>{opt.label}</span>
-                    <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
-                      {opt.count}
-                    </span>
+                    {active && (
+                      <span className="inline-flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-white/25 px-1 text-[11px] font-bold leading-none tabular-nums">
+                        {opt.count}
+                      </span>
+                    )}
                   </button>
                 );
               })}
