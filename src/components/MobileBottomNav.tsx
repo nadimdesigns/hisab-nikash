@@ -96,8 +96,8 @@ export function MobileBottomNav() {
               <span
                 aria-hidden="true"
                 className={cn(
-                  "relative z-10 text-[26px] font-black leading-none select-none transition-all duration-200",
-                  isSale ? "scale-110 text-yellow-300" : "text-white group-hover:scale-105",
+                  "relative z-10 text-[26px] font-black leading-none text-white select-none transition-all duration-200",
+                  isSale ? "scale-110" : "group-hover:scale-105",
                 )}
               >
                 ৳
@@ -107,7 +107,7 @@ export function MobileBottomNav() {
             <span
               className={cn(
                 "mt-[7px] text-[11px] leading-none tracking-tight transition-colors duration-200",
-                isSale ? "font-bold text-yellow-300" : "font-medium text-emerald-100/70",
+                isSale ? "font-bold text-white" : "font-medium text-emerald-100/70",
               )}
             >
               বিক্রয়
