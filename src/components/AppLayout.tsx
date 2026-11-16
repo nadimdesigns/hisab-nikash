@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
@@ -9,9 +9,17 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { openProductQuickSearch } from "./ProductQuickSearch";
 import { typography } from "@/lib/typography";
 import { useAuth } from "@/lib/auth";
+import { formatDate } from "@/lib/format";
 
 export default function AppLayout({ children, title }: { children: ReactNode; title: string }) {
   const { user } = useAuth();
+  const [time, setTime] = useState<Date>(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const initialsSource =
     (user?.user_metadata?.full_name as string | undefined) ||
     (user?.user_metadata?.name as string | undefined) ||
@@ -25,11 +33,21 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
           <AppSidebar />
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-emerald-900/40 bg-[rgba(3,28,18,0.92)] text-sidebar-foreground px-4 pt-[5px] shadow-sm backdrop-blur-xl md:pt-0">
+          <header className="sticky top-0 z-30 relative flex h-14 items-center gap-3 border-b border-emerald-900/40 bg-[rgba(3,28,18,0.92)] text-sidebar-foreground px-4 pt-[5px] shadow-sm backdrop-blur-xl md:pt-0">
             <div className="hidden md:block">
               <SidebarTrigger />
             </div>
-            <h1 className={typography("h3", "shrink-0 text-sidebar-foreground")}>{title}</h1>
+            <h1 className={typography("h3", "max-w-[130px] sm:max-w-none truncate shrink-0 text-sidebar-foreground")}>{title}</h1>
+
+            {/* Live Digital Clock centered */}
+            <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+              <span
+                className="font-mono text-xs sm:text-sm md:text-base font-semibold tracking-wider text-white tabular-nums select-none"
+                style={{ fontFamily: "'Courier New', Courier, monospace, 'Anek Bangla', sans-serif" }}
+              >
+                {formatDate(time, "hh:mm:ss a")}
+              </span>
+            </div>
             <div className="ml-auto flex items-center gap-1">
               <Button
                 variant="ghost"

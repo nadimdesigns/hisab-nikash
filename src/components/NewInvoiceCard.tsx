@@ -176,7 +176,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
       }
     >
       {/* Header */}
-      <div className="flex items-center justify-between gap-3 px-5 pt-5 pb-2 sm:px-6">
+      <div className="flex items-center justify-between gap-3 px-5 pt-5 pb-5 sm:px-6">
         <div>
           <h2 className={typography("h4", "m-0 leading-tight")}>{formatDate(now, "MMMM d, yyyy")}</h2>
         </div>
@@ -186,12 +186,6 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
             {tone.pillLabel}
           </span>
         </div>
-      </div>
-
-      {/* Time */}
-      <div className="mb-5 flex items-center gap-2 px-5 text-muted-foreground sm:px-6">
-        <span aria-hidden="true" className="text-xs leading-none select-none">🕒</span>
-        <span className="text-xs font-medium tabular-nums">{formatDate(now, "h:mm:ss a")}</span>
       </div>
 
       {/* Inputs */}
