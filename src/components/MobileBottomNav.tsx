@@ -93,15 +93,16 @@ export function MobileBottomNav() {
                   : "bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400",
               )}
             >
-              <span
+              <svg
+                viewBox="0 0 24 24"
                 aria-hidden="true"
                 className={cn(
-                  "relative z-10 text-[26px] font-black leading-none text-white select-none transition-all duration-200",
+                  "relative z-10 h-7 w-7 fill-white select-none transition-all duration-200",
                   isSale ? "scale-110" : "group-hover:scale-105",
                 )}
               >
-                ৳
-              </span>
+                <path d="M12.32 20.75Q9.82 20.75 8.4 19.63Q6.99 18.51 6.99 16.17V8.05H9.99V16.14Q9.99 17.3 10.61 17.82Q11.23 18.33 12.33 18.33Q13.08 18.33 13.62 18.06Q14.16 17.79 14.53 17.36Q14.74 17.12 14.88 16.84Q15.03 16.57 15.1 16.29Q15.18 16.01 15.18 15.75Q15.18 15.18 14.8 14.88Q14.42 14.59 13.55 14.59Q13.12 14.59 12.68 14.62Q12.24 14.65 11.78 14.69L11.96 12.37Q12.45 12.34 12.89 12.32Q13.34 12.29 13.86 12.29Q15.97 12.29 17.03 13.11Q18.09 13.93 18.09 15.55Q18.09 16.01 17.99 16.51Q17.89 17.02 17.7 17.51Q17.51 18.01 17.18 18.46Q16.49 19.5 15.26 20.12Q14.03 20.75 12.32 20.75ZM5.2 10.33 5.04 8.02H18.9L19.07 10.33ZM6.98 8.25V6.91Q6.98 6.31 6.7 5.98Q6.42 5.64 5.8 5.64H5.09L4.93 3.25H5.79Q7.85 3.25 8.92 4.12Q9.99 4.99 9.99 6.91V8.25Z" />
+              </svg>
               <span className="shimmer-streak" aria-hidden="true" />
             </button>
             <span
