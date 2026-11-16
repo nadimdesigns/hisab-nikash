@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Oswald';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('/fonts/oswald-latin-400.woff2') format('woff2');
+}
+
 /* PharmaSee design system — clean medical dashboard.
    All colors MUST be HSL. */
 
