@@ -35,3 +35,4 @@ dist-ssr
 .vercel
 .env*
 hermes-tmp
+dist-apk

@@ -1,16 +1,25 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import { IS_APK, LIVE_ORIGIN } from "@/lib/appTarget";
 
 /**
- * Keeps every open tab/app on the latest deployment without a manual refresh.
+ * Keeps every open tab / installed app on the latest deployment without a manual refresh.
  *
- * Each build ships /version.json ({ version }) and bakes the same id into the
- * bundle (__APP_VERSION__). The app compares the two: on start-up, when it
- * returns to the foreground, and every POLL_MS. A newer build triggers a full
- * reload after clearing Cache Storage / service workers. To avoid wiping a
- * half-filled form, a reload that is found while the user is active waits for
- * the next navigation, for the app to be backgrounded, or for 20s of idleness
- * with no field focused.
+ * Each deploy of main publishes two builds that share one version id:
+ *  - the live site, with /version.json ({ version }),
+ *  - the Android bundle, with /apk/version.json ({ version, url, minNative }) and a zip.
+ * The running build knows its own id (__APP_VERSION__) and compares it with the published
+ * one on start-up, when it returns to the foreground and every POLL_MS.
+ *
+ *  - web: a newer build clears Cache Storage / service workers and reloads.
+ *  - apk: the bundle zip is downloaded in the background through the Capacitor updater
+ *    (src/targets/apk/otaUpdate.ts), staged for the next launch, and switched to right away
+ *    at a safe moment. The packaged build keeps working offline; no download is attempted
+ *    while offline.
+ *
+ * To avoid wiping a half-filled form, a switch found while the user is active waits for the
+ * next navigation, for the app to be backgrounded, or for 20s of idleness with no field
+ * focused. A one-minute guard prevents reload loops.
  */
 
 const POLL_MS = 30_000;
@@ -18,29 +27,39 @@ const IDLE_MS = 20_000;
 const LOOP_GUARD_KEY = "hisab-nikash-update-reload";
 const LOOP_GUARD_MS = 60_000;
 
-async function fetchLatestVersion(): Promise<string | null> {
+export type LatestBuild = { version: string; url?: string; minNative?: string };
+
+async function fetchLatest(): Promise<LatestBuild | null> {
+  // The APK is served from the device, so it has to ask the live site (absolute URL).
+  const url = IS_APK ? `${LIVE_ORIGIN}/apk/version.json` : "/version.json";
   try {
-    const res = await fetch(`/version.json?t=${Date.now()}`, {
+    const res = await fetch(`${url}?t=${Date.now()}`, {
       cache: "no-store",
       headers: { "Cache-Control": "no-cache" },
     });
     if (!res.ok) return null;
     const data = await res.json();
-    return typeof data?.version === "string" ? data.version : null;
+    if (typeof data?.version !== "string") return null;
+    return { version: data.version, url: data.url, minNative: data.minNative };
   } catch {
     return null; // offline or blocked: stay on the current build
   }
 }
 
-async function clearCachesAndReload(latest: string) {
-  // Don't loop if the CDN keeps serving a stale shell after a reload.
+function shouldSkipRepeat(version: string): boolean {
+  // Don't loop if a stale shell keeps coming back after a reload / switch.
   try {
     const last = JSON.parse(sessionStorage.getItem(LOOP_GUARD_KEY) ?? "null");
-    if (last && last.version === latest && Date.now() - last.at < LOOP_GUARD_MS) return;
-    sessionStorage.setItem(LOOP_GUARD_KEY, JSON.stringify({ version: latest, at: Date.now() }));
+    if (last && last.version === version && Date.now() - last.at < LOOP_GUARD_MS) return true;
+    sessionStorage.setItem(LOOP_GUARD_KEY, JSON.stringify({ version, at: Date.now() }));
   } catch {
     /* ignore */
   }
+  return false;
+}
+
+async function clearCachesAndReload(latest: LatestBuild) {
+  if (shouldSkipRepeat(latest.version)) return;
   try {
     if ("caches" in window) {
       const keys = await caches.keys();
@@ -56,6 +75,26 @@ async function clearCachesAndReload(latest: string) {
   window.location.reload();
 }
 
+/** Downloads the new bundle (apk) / nothing to prepare (web). Returns false if it cannot be applied. */
+async function prepare(latest: LatestBuild): Promise<boolean> {
+  // `__IS_APK__` (not IS_APK) so the web build drops the Capacitor code entirely.
+  if (__IS_APK__) {
+    const ota = await import("@/targets/apk/otaUpdate");
+    return ota.stageBundle(latest);
+  }
+  return true;
+}
+
+async function apply(latest: LatestBuild) {
+  if (__IS_APK__) {
+    if (shouldSkipRepeat(latest.version)) return;
+    const ota = await import("@/targets/apk/otaUpdate");
+    await ota.switchToStaged(latest);
+    return;
+  }
+  await clearCachesAndReload(latest);
+}
+
 function isEditing(): boolean {
   const el = document.activeElement as HTMLElement | null;
   if (!el) return false;
@@ -65,12 +104,15 @@ function isEditing(): boolean {
 
 export function useAppUpdater() {
   const { pathname } = useLocation();
-  const pending = useRef<string | null>(null);
+  const pending = useRef<LatestBuild | null>(null);
   const lastActive = useRef(Date.now());
   const firstPath = useRef(pathname);
 
   useEffect(() => {
     if (import.meta.env.DEV || __APP_VERSION__ === "dev") return;
+
+    // APK: tell the updater this bundle started fine (otherwise it rolls back to the previous one).
+    if (__IS_APK__) void import("@/targets/apk/otaUpdate").then((ota) => ota.markReady());
 
     const markActive = () => {
       lastActive.current = Date.now();
@@ -79,26 +121,27 @@ export function useAppUpdater() {
     events.forEach((e) => window.addEventListener(e, markActive, { passive: true }));
 
     const check = async (atStartup = false) => {
-      const latest = await fetchLatestVersion();
-      if (!latest || latest === __APP_VERSION__) {
+      const latest = await fetchLatest();
+      if (!latest || latest.version === __APP_VERSION__) {
         pending.current = null;
         return;
       }
+      if (!(await prepare(latest))) return; // e.g. needs a newer APK, or the download failed
       pending.current = latest;
       // Nothing typed yet at start-up, or the app is in the background: safe now.
-      if (atStartup || document.hidden) void clearCachesAndReload(latest);
+      if (atStartup || document.hidden) void apply(latest);
     };
 
-    const maybeReloadWhenIdle = () => {
+    const maybeApplyWhenIdle = () => {
       if (!pending.current) return;
       if (document.hidden || (!isEditing() && Date.now() - lastActive.current > IDLE_MS)) {
-        void clearCachesAndReload(pending.current);
+        void apply(pending.current);
       }
     };
 
     void check(true);
     const poll = window.setInterval(() => {
-      void check().then(maybeReloadWhenIdle);
+      void check().then(maybeApplyWhenIdle);
     }, POLL_MS);
     const onVisible = () => {
       if (!document.hidden) void check(true);
@@ -118,6 +161,6 @@ export function useAppUpdater() {
   useEffect(() => {
     if (pathname === firstPath.current) return;
     firstPath.current = pathname;
-    if (pending.current) void clearCachesAndReload(pending.current);
+    if (pending.current) void apply(pending.current);
   }, [pathname]);
 }
