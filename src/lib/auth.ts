@@ -109,7 +109,19 @@ export function useAuth() {
   return { session, user, loading };
 }
 
+/**
+ * Set on sign-out so the login screen opens straight on the phone step instead
+ * of replaying the shop-type onboarding. sessionStorage (not router state) so it
+ * also survives the page reload that demo-mode sign-out triggers.
+ */
+export const SKIP_ONBOARDING_KEY = "hisab-nikash-skip-onboarding";
+
 export async function signOut(): Promise<void> {
+  try {
+    sessionStorage.setItem(SKIP_ONBOARDING_KEY, "1");
+  } catch {
+    /* storage unavailable: fall back to the normal onboarding */
+  }
   setCachedRole(null);
   cachedSession = null;
   if (isDemoMode()) {

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
-import { useAuth } from "@/lib/auth";
+import { useAuth, SKIP_ONBOARDING_KEY } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 
 import { toast } from "@/hooks/use-toast";
@@ -66,7 +66,21 @@ const Login = () => {
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname || "/";
 
   // Flow State
-  const [step, setStep] = useState<Step>("step-1-shop");
+  // After a sign-out go straight to the phone step (step 3), not shop-type onboarding.
+  const [step, setStep] = useState<Step>(() => {
+    try {
+      return sessionStorage.getItem(SKIP_ONBOARDING_KEY) ? "step-3-phone" : "step-1-shop";
+    } catch {
+      return "step-1-shop";
+    }
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem(SKIP_ONBOARDING_KEY);
+    } catch {
+      /* ignore */
+    }
+  }, []);
   const [selectedShopType, setSelectedShopType] = useState<ShopType>("grocery");
   const [selectedServiceTypeId, setSelectedServiceTypeId] = useState<string>("srv-dental");
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(() => {
