@@ -70,7 +70,7 @@ export function MobileBottomNav() {
       aria-label="প্রধান নেভিগেশন"
       className="fixed inset-x-0 bottom-0 z-50 border-t border-brand-700/40 px-2 pt-1.5 backdrop-blur-2xl md:hidden"
       style={{
-        background: "linear-gradient(180deg, rgba(6, 44, 30, 0.82) 0%, rgba(2, 20, 13, 0.88) 100%)",
+        background: "linear-gradient(180deg, rgba(6, 28, 66, 0.84) 0%, rgba(2, 12, 34, 0.9) 100%)",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
         paddingBottom: "max(env(safe-area-inset-bottom), 6px)",
