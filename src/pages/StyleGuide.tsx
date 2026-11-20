@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTheme } from "next-themes";
 import { toast as sonnerToast } from "sonner";
 import { toast } from "@/hooks/use-toast";
@@ -50,7 +50,7 @@ function useCssVar(name: string) {
 
 function Section({ id, title, description, children }: { id: string; title: string; description?: string; children: ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-20 space-y-5">
+    <section id={id} className="space-y-5">
       <div className="space-y-1">
         <h2 className={typography("h2")}>{title}</h2>
         {description && <p className={typography("body-muted")}>{description}</p>}
@@ -161,29 +161,105 @@ export default function StyleGuide() {
   const [otp, setOtp] = useState("");
   const [picked, setPicked] = useState("grocery");
 
+  // --- Section navigation: smooth scroll to the exact section, below the sticky bar ---
+  const headerRef = useRef<HTMLElement | null>(null);
+  const [active, setActive] = useState("");
+  const lockUntil = useRef(0);
+
+  const goTo = (id: string, smooth = true) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const headerH = headerRef.current?.offsetHeight ?? 0;
+    setActive(id);
+    lockUntil.current = Date.now() + 1000; // let the smooth scroll finish before the scroll-spy takes over
+    const top = el.getBoundingClientRect().top + window.scrollY - headerH - 12;
+    window.scrollTo({ top: Math.max(0, top), behavior: smooth ? "smooth" : "auto" });
+    window.history.replaceState(null, "", `#${id}`);
+  };
+
+  // Scroll-spy: highlight the section currently under the bar.
+  useEffect(() => {
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      if (Date.now() < lockUntil.current) return;
+      const line = (headerRef.current?.offsetHeight ?? 0) + 24;
+      let current = "";
+      for (const [id] of NAV) {
+        const el = document.getElementById(id);
+        if (el && el.getBoundingClientRect().top <= line) current = id;
+      }
+      setActive(current);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    update();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  // Deep link (/style-guide#typography), on load and when the hash changes: jump straight to that section.
+  useEffect(() => {
+    const jump = () => {
+      const id = window.location.hash.slice(1);
+      if (id && NAV.some(([n]) => n === id)) requestAnimationFrame(() => goTo(id, false));
+    };
+    jump();
+    window.addEventListener("hashchange", jump);
+    return () => window.removeEventListener("hashchange", jump);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="min-h-[100svh] bg-background text-foreground">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2.5">
-          <div className="flex items-center gap-2">
+      <header ref={headerRef} className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:gap-4">
+          <div className="flex shrink-0 items-center gap-2">
             <BrandLogo className="h-8 w-8" />
             <span className="text-[15px] font-bold">Style Guide</span>
           </div>
-          <nav className="flex flex-1 flex-wrap items-center gap-1">
+          <nav aria-label="Sections" className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-1 sm:px-0">
             {NAV.map(([id, label]) => (
-              <a key={id} href={`#${id}`} className="rounded-full px-3 py-1 text-[13px] font-semibold text-muted-foreground hover:bg-accent hover:text-accent-foreground">
+              <a
+                key={id}
+                href={`#${id}`}
+                aria-current={active === id ? "true" : undefined}
+                onClick={(e) => {
+                  e.preventDefault();
+                  goTo(id);
+                }}
+                className={cn(
+                  "shrink-0 rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-colors",
+                  active === id
+                    ? "border-transparent bg-primary text-primary-foreground shadow-sm"
+                    : "border-border bg-card text-foreground hover:border-brand-300 hover:bg-accent",
+                )}
+              >
                 {label}
               </a>
             ))}
           </nav>
-          <div className="flex items-center gap-1 rounded-full border border-border p-0.5">
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-5xl space-y-14 px-4 py-6 pb-24">
+        <div className="flex items-center justify-start gap-2">
+          <span className="text-[13px] font-semibold text-muted-foreground">Theme</span>
+          <div role="group" aria-label="Theme mode" className="inline-flex gap-1 rounded-full border border-border bg-card p-0.5">
             {(["light", "dark", "system"] as const).map((t) => (
               <button
                 key={t}
                 type="button"
+                aria-pressed={theme === t}
                 onClick={() => setTheme(t)}
                 className={cn(
-                  "rounded-full px-3 py-1 text-[12px] font-semibold capitalize",
+                  "rounded-full px-3.5 py-1 text-[13px] font-semibold capitalize transition-colors",
                   theme === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -192,9 +268,7 @@ export default function StyleGuide() {
             ))}
           </div>
         </div>
-      </header>
 
-      <main className="mx-auto max-w-5xl space-y-14 px-4 py-8 pb-24">
         <div className="space-y-2">
           <h1 className={typography("h1")}>{APP_NAME} Style Guide</h1>
           <p className={typography("body-muted")}>
