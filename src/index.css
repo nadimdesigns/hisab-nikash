@@ -220,6 +220,41 @@
     mix-blend-mode: screen;
   }
 
+  /* Balance card sheen: a soft diagonal highlight that glides slowly from the top-left corner to
+     the bottom-right corner, rests off-card for a moment, then loops. The 300% background is moved
+     from 100% 100% (band off the top-left) to 0% 0% (band off the bottom-right). */
+  @keyframes balance-sheen {
+    0%   { background-position: 100% 100%; }
+    74%  { background-position: 0% 0%; }
+    100% { background-position: 0% 0%; }
+  }
+  .balance-sheen {
+    --balance-sheen-color: rgba(255, 255, 255, 0.34);
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background-image: linear-gradient(
+      135deg,
+      transparent 0%,
+      transparent 37%,
+      var(--balance-sheen-color) 50%,
+      transparent 63%,
+      transparent 100%
+    );
+    background-size: 300% 300%;
+    background-repeat: no-repeat;
+    background-position: 100% 100%;
+    animation: balance-sheen 8s ease-in-out infinite;
+    mix-blend-mode: screen;
+  }
+  .dark .balance-sheen {
+    --balance-sheen-color: rgba(255, 228, 150, 0.5);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .balance-sheen { animation: none; }
+  }
+
   /* Hide the scrollbar track/thumb while keeping the element scrollable
      (wheel, touch, keyboard). Use on a container that already sets
      overflow-auto/-scroll. */
