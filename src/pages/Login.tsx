@@ -312,7 +312,7 @@ const Login = () => {
         {/* Top Header: icon + app name side by side (icon 1.3x, not clipped), tint blue */}
         <div className="relative bg-gradient-to-br from-brand-100 to-brand-50 border-b border-brand-200 px-5 pt-5 pb-5 flex flex-row items-center justify-center gap-3 text-center dark:from-brand-950/50 dark:to-brand-900/20 dark:border-brand-800/40">
           <img
-            src="/logo.webp?v=2"
+            src="/logo.webp?v=3"
             alt={APP_NAME}
             className="relative h-[78px] w-[78px] shrink-0 object-contain"
           />
