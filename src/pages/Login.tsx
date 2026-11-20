@@ -288,7 +288,7 @@ const Login = () => {
         {/* Top Header: Tint Green matching Nogod Bikroy card with black texts and no decorative circles */}
         <div className="relative bg-gradient-to-br from-brand-100 to-brand-50 border-b border-brand-200 px-5 pt-6 pb-5 flex flex-col items-center gap-1.5 text-center dark:from-brand-950/50 dark:to-brand-900/20 dark:border-brand-800/40">
           <img
-            src="/logo.webp"
+            src="/logo.webp?v=2"
             alt={APP_NAME}
             className="relative h-[60px] w-[60px] object-contain shadow-sm rounded-2xl"
           />
@@ -307,8 +307,8 @@ const Login = () => {
                 </h2>
               </div>
 
-              {/* 5 Shop Type Grid Cards (2 columns) */}
-              <div className="grid grid-cols-2 gap-2.5 pt-1">
+              {/* Shop type list: one full-width card per row, icon left, check circle right (vertically centered) */}
+              <div className="grid grid-cols-1 gap-2.5 pt-1">
                 {ONBOARDING_SHOP_TYPES.map((shop) => {
                   const isSelected = selectedShopType === shop.id;
                   return (
@@ -317,34 +317,30 @@ const Login = () => {
                       type="button"
                       onClick={() => handleSelectShopType(shop.id)}
                       className={cn(
-                        "relative flex flex-col justify-between p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] h-full min-h-[96px]",
+                        "relative flex w-full items-center gap-3 p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] min-h-[64px]",
                         isSelected
                           ? "border-brand-600 bg-brand-500/15 ring-2 ring-brand-600/60 dark:bg-brand-500/20"
                           : "border-border/80 bg-white/80 hover:bg-white hover:border-brand-300 dark:bg-white/5 dark:hover:bg-white/10"
                       )}
                     >
-                      <div className="flex items-start justify-between w-full">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/50 text-2xl">
-                          <span aria-hidden="true">{shop.emoji}</span>
-                        </div>
-
-                        {/* Radio / Check indicator */}
-                        <div
-                          className={cn(
-                            "h-4 w-4 rounded-full border flex items-center justify-center transition-colors mt-0.5 shrink-0",
-                            isSelected
-                              ? "border-brand-600 bg-brand-600 text-white"
-                              : "border-muted-foreground/40 bg-transparent"
-                          )}
-                        >
-                          {isSelected && <span className="text-[10px] leading-none font-bold">✓</span>}
-                        </div>
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/50 text-2xl">
+                        <span aria-hidden="true">{shop.emoji}</span>
                       </div>
 
-                      <div className="mt-2">
-                        <span className="font-bold text-[13px] sm:text-sm text-foreground leading-snug line-clamp-1 block">
-                          {shop.title}
-                        </span>
+                      <span className="min-w-0 flex-1 font-bold text-sm sm:text-base text-foreground leading-snug line-clamp-2">
+                        {shop.title}
+                      </span>
+
+                      {/* Radio / Check indicator, right middle */}
+                      <div
+                        className={cn(
+                          "h-5 w-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                          isSelected
+                            ? "border-brand-600 bg-brand-600 text-white"
+                            : "border-muted-foreground/40 bg-transparent"
+                        )}
+                      >
+                        {isSelected && <span className="text-[11px] leading-none font-bold">✓</span>}
                       </div>
                     </button>
                   );
