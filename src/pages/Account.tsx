@@ -1,66 +1,61 @@
+import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { typography } from "@/lib/typography";
+import { signOut, useAuth } from "@/lib/auth";
+import { toast } from "@/hooks/use-toast";
+import { useIsAdmin } from "@/lib/useIsAdmin";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { useShop } from "@/store/shop";
-import { toast } from "@/hooks/use-toast";
+import UserManagement from "@/components/account/UserManagement";
 
 const Account = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const { theme, setTheme } = useTheme();
-  const { resetAll, products, sales, purchases } = useShop();
 
-  const handleResetData = () => {
-    if (window.confirm("আপনি কি নিশ্চিত যে সমস্ত তথ্য রিসেট করতে চান? এটি আপনার ডিভাইসের পণ্য ও হিসাব পূর্বাবস্থায় ফিরিয়ে আনবে।")) {
-      resetAll();
-      toast({ title: "তথ্য রিসেট সফল", description: "ডিফল্ট তথ্য লোড করা হয়েছে।" });
-    }
+  const handleLogout = async () => {
+    await signOut();
+    toast({ title: "সাইন আউট হয়েছে", description: "আপনি সাইন আউট হয়েছেন।" });
+    navigate("/login", { replace: true });
   };
 
+  const displayName =
+    (user?.user_metadata?.full_name as string | undefined) ||
+    (user?.user_metadata?.name as string | undefined) ||
+    (user?.email?.split("@")[0] ?? "") ||
+    "ব্যবহারকারী";
+  const avatarUrl = user?.user_metadata?.avatar_url as string | undefined;
+  const initials = displayName.slice(0, 2).toUpperCase();
+
   return (
-    <AppLayout title="সেটিংস ও তথ্য">
+    <AppLayout title="অ্যাকাউন্ট">
       <div className="space-y-6">
         <Card className="home-hero-appear max-w-xl rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
           <CardHeader className="flex flex-row items-center gap-4 space-y-0">
             <Avatar className="h-14 w-14">
-              <AvatarFallback className="bg-emerald-700 text-white font-bold text-lg">
-                হি
+              {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
+              <AvatarFallback className="bg-primary text-primary-foreground font-semibold">
+                {initials}
               </AvatarFallback>
             </Avatar>
             <div>
-              <CardTitle>হিসাব নিকাশ</CardTitle>
-              <CardDescription>অফলাইন ডিজিটাল খাতা (Android Native)</CardDescription>
+              <CardTitle>{displayName}</CardTitle>
+              <CardDescription>হিসাব নিকাশ অ্যাকাউন্ট</CardDescription>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1">
-              <p className={typography("body-muted")}>ডাটা স্টোরেজ মোড</p>
-              <p className={typography("body-strong", "text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5")}>
-                <span>💾</span> ডিভাইস লোকাল স্টোরেজ (সম্পূর্ণ অফলাইন)
-              </p>
-              <p className="text-xs text-muted-foreground pt-0.5">
-                কোনো ক্লাউড বা ইন্টারনেট কানেকশন প্রয়োজন নেই। আপনার যোগ করা সকল পণ্য, বিক্রি ও বাকি হিসাব সরাসরি এই মোবাইলের মেমরিতে সেভ হচ্ছে।
+              <p className={typography("body-muted")}>মোবাইল নম্বর</p>
+              <p className={typography("body-strong", "tabular-nums")}>
+                📱 {user?.email?.split("@")[0] ?? "—"}
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2 pt-1 text-center">
-              <div className="rounded-xl bg-white/70 dark:bg-white/5 p-2.5 border border-emerald-200/60 dark:border-white/10">
-                <span className="text-xs text-muted-foreground block">মোট পণ্য</span>
-                <span className="text-base font-bold text-foreground">{products.length}</span>
-              </div>
-              <div className="rounded-xl bg-white/70 dark:bg-white/5 p-2.5 border border-emerald-200/60 dark:border-white/10">
-                <span className="text-xs text-muted-foreground block">মোট বিক্রি</span>
-                <span className="text-base font-bold text-foreground">{sales.length}</span>
-              </div>
-              <div className="rounded-xl bg-white/70 dark:bg-white/5 p-2.5 border border-emerald-200/60 dark:border-white/10">
-                <span className="text-xs text-muted-foreground block">মোট ক্রয়</span>
-                <span className="text-base font-bold text-foreground">{purchases.length}</span>
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-1">
               <p className={typography("body-muted")}>অ্যাপ থিম</p>
               <div
                 role="tablist"
@@ -95,18 +90,15 @@ const Account = () => {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-emerald-200/60 dark:border-white/10">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleResetData}
-                className="text-xs text-rose-600 border-rose-200 hover:bg-rose-50 dark:border-rose-900/50 dark:hover:bg-rose-950/30"
-              >
-                🔄 প্রাথমিক ডেমো তথ্যে রিসেট করুন
+            <div className="pt-2">
+              <Button variant="destructive" onClick={handleLogout}>
+                লগ আউট
               </Button>
             </div>
           </CardContent>
         </Card>
+
+        {isAdmin && <UserManagement currentUserId={user?.id} />}
       </div>
     </AppLayout>
   );

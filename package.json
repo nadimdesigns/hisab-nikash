@@ -14,9 +14,6 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@capacitor/android": "^8.5.2",
-    "@capacitor/cli": "^8.5.2",
-    "@capacitor/core": "^8.5.2",
     "@fontsource/anek-bangla": "^5.3.0",
     "@fontsource/oswald": "^5.1.0",
     "@hookform/resolvers": "^3.10.0",
