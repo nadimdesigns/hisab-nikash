@@ -299,14 +299,14 @@ const Login = () => {
   return (
     <main className="min-h-[100svh] w-full bg-background flex flex-col items-center justify-start p-3 sm:p-4 pt-[max(20px,env(safe-area-inset-top))] pb-10 overflow-y-auto">
       <Card className="w-full max-w-lg rounded-[28px] border border-brand-200 dark:border-brand-800/30 overflow-hidden bg-card transition-all my-0">
-        {/* Top Header: Tint Green matching Nogod Bikroy card with black texts and no decorative circles */}
-        <div className="relative bg-gradient-to-br from-brand-100 to-brand-50 border-b border-brand-200 px-5 pt-6 pb-5 flex flex-col items-center gap-1.5 text-center dark:from-brand-950/50 dark:to-brand-900/20 dark:border-brand-800/40">
+        {/* Top Header: icon + app name side by side (icon 1.3x, not clipped), tint blue */}
+        <div className="relative bg-gradient-to-br from-brand-100 to-brand-50 border-b border-brand-200 px-5 pt-5 pb-5 flex flex-row items-center justify-center gap-3 text-center dark:from-brand-950/50 dark:to-brand-900/20 dark:border-brand-800/40">
           <img
             src="/logo.webp?v=2"
             alt={APP_NAME}
-            className="relative h-[60px] w-[60px] object-contain shadow-sm rounded-2xl"
+            className="relative h-[78px] w-[78px] shrink-0 object-contain"
           />
-          <span className="relative text-xl sm:text-2xl font-bold text-gray-950 dark:text-white leading-tight tracking-tight">
+          <span className="relative whitespace-nowrap text-xl sm:text-2xl font-bold text-gray-950 dark:text-white leading-tight tracking-tight">
             {APP_NAME}
           </span>
         </div>
