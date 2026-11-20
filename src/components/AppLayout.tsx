@@ -6,7 +6,7 @@ import { MobileBottomNav } from "./MobileBottomNav";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { openProductQuickSearch } from "./ProductQuickSearch";
+import { openProductQuickSearch } from "@/lib/quickSearchEvents";
 import { typography } from "@/lib/typography";
 import { useAuth } from "@/lib/auth";
 import { format } from "date-fns";

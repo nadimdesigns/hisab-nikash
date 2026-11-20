@@ -1,12 +1,11 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import RequireAuth from "./components/RequireAuth";
-import { ProductQuickSearch } from "./components/ProductQuickSearch";
 import { ScrollToTop } from "./components/ScrollToTop";
 
 const Index = lazy(() => import("./pages/Index.tsx"));
@@ -18,6 +17,21 @@ const Accounting = lazy(() => import("./pages/Accounting.tsx"));
 const Account = lazy(() => import("./pages/Account.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Login = lazy(() => import("./pages/Login.tsx"));
+// Quick-search pulls in fuse.js, date-fns and the whole shop store, so it is
+// loaded off the critical path and never on the login screen.
+const ProductQuickSearch = lazy(() =>
+  import("./components/ProductQuickSearch").then((m) => ({ default: m.ProductQuickSearch })),
+);
+
+const GlobalQuickSearch = () => {
+  const { pathname } = useLocation();
+  if (pathname === "/login") return null;
+  return (
+    <Suspense fallback={null}>
+      <ProductQuickSearch />
+    </Suspense>
+  );
+};
 
 const PageFallback = () => (
   <div className="flex h-[100svh] items-center justify-center bg-background">
@@ -35,7 +49,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
-          <ProductQuickSearch />
+          <GlobalQuickSearch />
           <Suspense fallback={<PageFallback />}>
             <Routes>
               <Route path="/login" element={<Login />} />

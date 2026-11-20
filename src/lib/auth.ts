@@ -29,6 +29,14 @@ function buildDemoSession(): { session: Session; user: User } {
 }
 
 /**
+ * Last known session, shared across hook instances. Every route mounts its own
+ * `RequireAuth`, so without this each page navigation would restart in the
+ * "loading" state and flash a spinner while the session is re-read.
+ * `undefined` = not resolved yet, `null` = resolved as signed out.
+ */
+let cachedSession: Session | null | undefined;
+
+/**
  * React hook returning the current Supabase session and user.
  * When demo mode is active, returns a synthetic demo session instead of
  * touching Supabase auth.
@@ -36,12 +44,12 @@ function buildDemoSession(): { session: Session; user: User } {
 export function useAuth() {
   const [demoActive, setDemoActive] = useState<boolean>(() => isDemoMode());
   const [session, setSession] = useState<Session | null>(() => {
-    return isDemoMode() ? buildDemoSession().session : null;
+    return isDemoMode() ? buildDemoSession().session : (cachedSession ?? null);
   });
   const [user, setUser] = useState<User | null>(() => {
-    return isDemoMode() ? buildDemoSession().user : null;
+    return isDemoMode() ? buildDemoSession().user : (cachedSession?.user ?? null);
   });
-  const [loading, setLoading] = useState<boolean>(() => !isDemoMode());
+  const [loading, setLoading] = useState<boolean>(() => !isDemoMode() && cachedSession === undefined);
 
   useEffect(() => {
     if (demoActive) {
@@ -61,6 +69,7 @@ export function useAuth() {
     const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
       if (!isMounted) return;
       clearTimeout(timeoutTimer);
+      cachedSession = s;
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(false);
@@ -70,6 +79,7 @@ export function useAuth() {
       .then(({ data: { session: s } }) => {
         if (!isMounted) return;
         clearTimeout(timeoutTimer);
+        cachedSession = s;
         setSession(s);
         setUser(s?.user ?? null);
         setLoading(false);
@@ -101,6 +111,7 @@ export function useAuth() {
 
 export async function signOut(): Promise<void> {
   setCachedRole(null);
+  cachedSession = null;
   if (isDemoMode()) {
     disableDemoMode();
     window.dispatchEvent(new Event("pharmasee-demo-changed"));
