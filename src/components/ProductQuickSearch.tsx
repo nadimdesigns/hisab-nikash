@@ -12,15 +12,9 @@ import { typography, BODY_TEXT } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { loadDrafts, saveDraft } from "@/lib/drafts";
 import { loadProfiles } from "@/lib/customerProfiles";
+import { OPEN_QUICK_SEARCH_EVENT as OPEN_EVENT } from "@/lib/quickSearchEvents";
 
-const OPEN_EVENT = "medishop-open-quick-search";
 const ANEK_FONT = { fontFamily: "'Anek Bangla', sans-serif" };
-
-/** Programmatically open the global product/customer quick-search dialog. */
-export function openProductQuickSearch() {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new Event(OPEN_EVENT));
-}
 
 type QuickCustomer = { name: string; tx: number };
 

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,12 +6,13 @@ import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { isDemoMode } from "@/lib/demoMode";
 import { unitLabel } from "@/lib/copy";
+
+const SalesChart = lazy(() => import("@/components/SalesChart"));
 
 const Index = () => {
   const { products, sales, purchases } = useShop();
@@ -216,29 +217,9 @@ const Index = () => {
           </CardHeader>
           <CardContent className="h-[280px]">
             {hydrated ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.4} />
-                      <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="hsl(var(--border))" strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickLine={false} axisLine={false} />
-                  <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} tickLine={false} axisLine={false} />
-                  <Tooltip
-                    contentStyle={{
-                      background: "hsl(var(--popover))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: 8,
-                      fontSize: 12,
-                    }}
-                    formatter={(v: number) => currency(v)}
-                  />
-                  <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#rev)" />
-                </AreaChart>
-              </ResponsiveContainer>
+              <Suspense fallback={<Skeleton className="h-full w-full" />}>
+                <SalesChart data={chartData} />
+              </Suspense>
             ) : (
               <Skeleton className="h-full w-full" />
             )}
