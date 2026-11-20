@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,10 +15,11 @@ const NewSale = lazy(() => import("./pages/NewSale.tsx"));
 const Customers = lazy(() => import("./pages/Customers.tsx"));
 const CustomerDetails = lazy(() => import("./pages/CustomerDetails.tsx"));
 const Accounting = lazy(() => import("./pages/Accounting.tsx"));
-const Account = lazy(() => import("./pages/Account.tsx"));
+// The Android bundle has its own Account page (local data, no login) and no login / style-guide screens.
+const Account = lazy(() => (__IS_APK__ ? import("./targets/apk/Account.tsx") : import("./pages/Account.tsx")));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const Login = lazy(() => import("./pages/Login.tsx"));
-const StyleGuide = lazy(() => import("./pages/StyleGuide.tsx"));
+const Login = __IS_APK__ ? null : lazy(() => import("./pages/Login.tsx"));
+const StyleGuide = __IS_APK__ ? null : lazy(() => import("./pages/StyleGuide.tsx"));
 // Quick-search pulls in fuse.js, date-fns and the whole shop store, so it is
 // loaded off the critical path and never on the login screen.
 const ProductQuickSearch = lazy(() =>
@@ -61,8 +62,9 @@ const App = () => (
           <GlobalQuickSearch />
           <Suspense fallback={<PageFallback />}>
             <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/style-guide" element={<StyleGuide />} />
+              {/* APK: always signed in as the local user, so /login just goes home */}
+              <Route path="/login" element={Login ? <Login /> : <Navigate to="/" replace />} />
+              {StyleGuide && <Route path="/style-guide" element={<StyleGuide />} />}
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
               <Route path="/stocks" element={<RequireAuth><Inventory /></RequireAuth>} />
               <Route path="/new-sale" element={<RequireAuth><NewSale /></RequireAuth>} />
