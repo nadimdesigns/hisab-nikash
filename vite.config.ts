@@ -38,6 +38,18 @@ const versionFile = () => {
   };
 };
 
+// The web page hints the browser to open the Supabase connection early. The Android bundle is
+// offline and has no Supabase at all, so drop that hint from its index.html.
+const stripSupabasePreconnect = () => ({
+  name: "strip-supabase-preconnect",
+  apply: "build" as const,
+  transformIndexHtml(html: string) {
+    return APP_TARGET === "apk"
+      ? html.replace(/^[ \t]*<link rel="preconnect" href="https:\/\/[^"]*supabase\.co"[^>]*>\r?\n/m, "")
+      : html;
+  },
+});
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
@@ -52,7 +64,7 @@ export default defineConfig(({ mode }) => ({
     // A plain boolean literal, so the bundler can drop whichever target's code is unused.
     __IS_APK__: JSON.stringify(APP_TARGET === "apk"),
   },
-  plugins: [react(), mode === "development" && componentTagger(), versionFile()].filter(Boolean),
+  plugins: [react(), mode === "development" && componentTagger(), versionFile(), stripSupabasePreconnect()].filter(Boolean),
   resolve: {
     alias: [...apkAliases, { find: "@", replacement: path.resolve(__dirname, "./src") }],
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime", "@tanstack/react-query", "@tanstack/query-core"],

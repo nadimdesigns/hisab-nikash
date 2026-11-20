@@ -34,51 +34,55 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <header
-            className="sticky top-0 z-30 relative flex h-14 items-center gap-3 border-b border-brand-700/40 text-sidebar-foreground px-4 pt-[5px] backdrop-blur-2xl md:pt-0"
+            className="sticky top-0 z-30 border-b border-brand-700/40 text-sidebar-foreground backdrop-blur-2xl"
             style={{
+              // The bar's background runs under the status bar / notch (edge-to-edge); its content sits below it.
+              paddingTop: "env(safe-area-inset-top)",
               background: "linear-gradient(180deg, rgba(6, 28, 66, 0.84) 0%, rgba(2, 12, 34, 0.9) 100%)",
               backdropFilter: "blur(20px)",
               WebkitBackdropFilter: "blur(20px)",
             }}
           >
-            <div className="hidden md:block">
-              <SidebarTrigger />
-            </div>
-            <h1 className={typography("h3", "whitespace-nowrap shrink-0 text-sidebar-foreground")}>{title}</h1>
+            <div className="relative flex h-14 items-center gap-3 px-4 pt-[5px] md:pt-0">
+              <div className="hidden md:block">
+                <SidebarTrigger />
+              </div>
+              <h1 className={typography("h3", "whitespace-nowrap shrink-0 text-sidebar-foreground")}>{title}</h1>
 
-            {/* Live Digital Clock centered */}
-            <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-              <span
-                className="text-[16px] font-normal leading-none tracking-wide text-white tabular-nums select-none"
-                style={{ fontFamily: "'Oswald', sans-serif" }}
-              >
-                {format(time, "hh:mm:ss a")}
-              </span>
-            </div>
-            <div className="ml-auto flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={openProductQuickSearch}
-                aria-label="Search products"
-                title="Search products (⌘K)"
-              >
-                <span aria-hidden="true" className="text-base leading-none select-none">🔍</span>
-              </Button>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button asChild variant="ghost" size="icon" aria-label="Open account">
-                    <Link to="/account">
-                      <Avatar className="h-7 w-7">
-                        <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">Account</TooltipContent>
-              </Tooltip>
+              {/* Live Digital Clock centered */}
+              <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+                <span
+                  className="text-[16px] font-normal leading-none tracking-wide text-white tabular-nums select-none"
+                  style={{ fontFamily: "'Oswald', sans-serif" }}
+                >
+                  {format(time, "hh:mm:ss a")}
+                </span>
+              </div>
+              <div className="ml-auto flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={openProductQuickSearch}
+                  aria-label="Search products"
+                  title="Search products (⌘K)"
+                >
+                  <span aria-hidden="true" className="text-base leading-none select-none">🔍</span>
+                </Button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button asChild variant="ghost" size="icon" aria-label="Open account">
+                      <Link to="/account">
+                        <Avatar className="h-7 w-7">
+                          <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Link>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom">Account</TooltipContent>
+                </Tooltip>
+              </div>
             </div>
           </header>
           <main className="min-w-0 flex-1 p-4 pb-24 md:p-6 md:pb-6">

@@ -9,8 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
-import { isDemoMode } from "@/lib/demoMode";
 import { unitLabel } from "@/lib/copy";
+import { BalanceCard } from "@/components/BalanceCard";
 
 const SalesChart = lazy(() => import("@/components/SalesChart"));
 
@@ -315,79 +315,6 @@ const Index = () => {
  * rich blue gradient, glossy premium 3D finish (sheen overlay + embossed
  * digits), tap to reveal the amount, and a bottom Income / Expense split.
  */
-function BalanceCard({ net, income, expense }: { net: number; income: number; expense: number }) {
-  // Demo account: show the seeded amounts immediately (never blank/masked).
-  const [revealed, setRevealed] = useState(isDemoMode());
-  return (
-    <button
-      type="button"
-      onClick={() => setRevealed((v) => !v)}
-      aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
-      style={{ animationDelay: "50ms" }}
-      className="home-hero-appear group relative flex flex-col justify-between aspect-[16/10] sm:aspect-[1.586/1] w-full max-w-[440px] overflow-hidden rounded-[24px] border border-brand-500/20 bg-[linear-gradient(140deg,#00091f_0%,#0a3a9e_30%,#0075fb_52%,#0a3a9e_74%,#00091f_100%)] p-4 sm:p-5 text-left text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      {/* Glowing wave lines (50% reduced opacity) */}
-      <svg className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
-        <path d="M0 150 Q 50 115, 100 150 T 200 150 T 300 150 T 400 150" stroke="rgba(255,255,255,0.14)" strokeWidth="2.5" fill="none" />
-        <path d="M0 185 Q 50 150, 100 185 T 200 185 T 300 185 T 400 185" stroke="rgba(255,255,255,0.075)" strokeWidth="2" fill="none" />
-        <path d="M0 220 Q 50 190, 100 220 T 200 220 T 300 220 T 400 220" stroke="rgba(255,255,255,0.045)" strokeWidth="2" fill="none" />
-      </svg>
-
-      {/* Glossy premium sheen (static) */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(115deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 28%, transparent 45%, transparent 70%, rgba(255,255,255,0.16) 88%, rgba(255,255,255,0.30) 100%)",
-        }}
-        aria-hidden
-      />
-      <div className="pointer-events-none absolute -top-16 -right-16 h-48 w-48 rounded-full bg-white/20 blur-2xl" aria-hidden />
-
-      <div className="relative flex items-start justify-between">
-        {/* EMV-style chip */}
-        <span className="flex h-7 w-10 sm:h-8 sm:w-11 items-center justify-center rounded-md bg-gradient-to-br from-amber-300 to-amber-500 shadow-inner shadow-amber-900/40 transition-transform duration-300 group-hover:scale-105">
-          <span className="flex flex-col gap-[3px]">
-            <span className="h-px w-6 bg-amber-900/50" />
-            <span className="h-px w-6 bg-amber-900/50" />
-            <span className="h-px w-6 bg-amber-900/50" />
-          </span>
-        </span>
-        <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide backdrop-blur-sm">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-300" />
-          Active
-        </span>
-      </div>
-
-      <div className="relative my-auto py-1 sm:py-2">
-        <div className="flex items-center justify-between">
-          <p className="text-[12px] sm:text-[13px] font-semibold tracking-wide [text-shadow:0_1px_2px_rgba(0,0,0,0.35)]">হিসাব নিকাশ</p>
-          <p className="text-[10px] uppercase tracking-wider text-white/70">Net Balance · Tap</p>
-        </div>
-        <p className="relative mt-0.5 sm:mt-1 text-[26px] sm:text-[30px] font-extrabold leading-none tracking-tight tabular-nums transition-transform duration-200 group-active:scale-[0.98] [text-shadow:0_1px_0_rgba(255,255,255,0.28),0_2px_2px_rgba(0,0,0,0.35),0_6px_16px_rgba(0,0,0,0.35)]">
-          {revealed ? currency(net) : "৳ ••••"}
-        </p>
-      </div>
-
-      {/* Income / Expense split — inline horizontal */}
-      <div className="relative grid grid-cols-2 gap-2">
-        <div className="flex items-center justify-between gap-1.5 sm:gap-2 rounded-xl bg-white/10 px-2.5 py-1.5 sm:px-3 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
-          <p className="flex items-center gap-1 text-[11px] text-white/70">
-            <span aria-hidden="true" className="text-xs leading-none select-none">↗️</span> আয়
-          </p>
-          <p className="text-xs sm:text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(income) : "৳ ••••"}</p>
-        </div>
-        <div className="flex items-center justify-between gap-1.5 sm:gap-2 rounded-xl bg-white/10 px-2.5 py-1.5 sm:px-3 backdrop-blur-sm ring-1 ring-white/15 transition-colors group-hover:bg-white/15">
-          <p className="flex items-center gap-1 text-[11px] text-white/70">
-            <span aria-hidden="true" className="text-xs leading-none select-none">↙️</span> খরচ
-          </p>
-          <p className="text-xs sm:text-sm font-bold tabular-nums [text-shadow:0_1px_3px_rgba(0,0,0,0.3)]">{revealed ? currency(expense) : "৳ ••••"}</p>
-        </div>
-      </div>
-    </button>
-  );
-}
-
 function BalanceCardSkeleton() {
   return (
     <Skeleton aria-busy="true" aria-label="Loading" className="aspect-[16/10] sm:aspect-[1.586/1] w-full max-w-[440px] rounded-[24px]" />

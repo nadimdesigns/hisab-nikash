@@ -27,6 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { BrandLogo } from "@/components/BrandLogo";
 import { QtyStepper } from "@/components/QtyStepper";
+import { BalanceCard } from "@/components/BalanceCard";
 import { typography, TYPOGRAPHY, type TypographyVariant } from "@/lib/typography";
 import { APP_NAME } from "@/lib/copy";
 import { cn } from "@/lib/utils";
@@ -67,7 +68,7 @@ function Block({ title, note, children, className }: { title: string; note?: str
         <h3 className={typography("h4")}>{title}</h3>
         {note && <code className={typography("code", "text-muted-foreground")}>{note}</code>}
       </div>
-      <div className={cn("rounded-2xl border border-border bg-card p-4", className)}>{children}</div>
+      <div className={cn("rounded-2xl border border-brand-200 bg-brand-50 dark:border-border dark:bg-card p-4", className)}>{children}</div>
     </div>
   );
 }
@@ -98,7 +99,7 @@ const SEMANTIC_TOKENS: Array<{ token: string; label: string; fg?: string }> = [
 function TokenSwatch({ token, label, fg }: { token: string; label: string; fg?: string }) {
   const value = useCssVar(`--${token}`);
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
+    <div className="overflow-hidden rounded-xl border border-brand-200 bg-brand-50 dark:border-border dark:bg-card">
       <div
         className="flex h-16 items-end p-2 text-xs font-semibold"
         style={{ background: `hsl(var(--${token}))`, color: fg ? `hsl(var(--${fg}))` : undefined }}
@@ -218,10 +219,10 @@ export default function StyleGuide() {
 
   return (
     <div className="min-h-[100svh] bg-background text-foreground">
-      <header ref={headerRef} className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur">
+      <header ref={headerRef} className="sticky top-0 z-40 border-b border-brand-200 bg-brand-100/95 backdrop-blur dark:border-border dark:bg-background/95">
         <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-2.5 sm:flex-row sm:items-center sm:gap-4">
           <div className="flex shrink-0 items-center gap-2">
-            <BrandLogo className="h-8 w-8" />
+            <BrandLogo className="h-12 w-12" />
             <span className="text-[15px] font-bold">Style Guide</span>
           </div>
           <nav aria-label="Sections" className="scrollbar-none -mx-4 flex gap-2 overflow-x-auto px-4 sm:mx-0 sm:flex-1 sm:px-0">
@@ -238,7 +239,7 @@ export default function StyleGuide() {
                   "shrink-0 rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-colors",
                   active === id
                     ? "border-transparent bg-primary text-primary-foreground shadow-sm"
-                    : "border-border bg-card text-foreground hover:border-brand-300 hover:bg-accent",
+                    : "border-brand-200 bg-brand-50 text-foreground hover:border-brand-300 hover:bg-brand-100 dark:border-border dark:bg-card dark:hover:bg-accent",
                 )}
               >
                 {label}
@@ -251,7 +252,7 @@ export default function StyleGuide() {
       <main className="mx-auto max-w-5xl space-y-14 px-4 py-6 pb-24">
         <div className="flex items-center justify-start gap-2">
           <span className="text-[13px] font-semibold text-muted-foreground">Theme</span>
-          <div role="group" aria-label="Theme mode" className="inline-flex gap-1 rounded-full border border-border bg-card p-0.5">
+          <div role="group" aria-label="Theme mode" className="inline-flex gap-1 rounded-full border border-brand-200 bg-brand-50 dark:border-border dark:bg-card p-0.5">
             {(["light", "dark", "system"] as const).map((t) => (
               <button
                 key={t}
@@ -279,7 +280,7 @@ export default function StyleGuide() {
 
         {/* ------------------------------ BRAND ------------------------------ */}
         <Section id="brand" title="Brand" description="Logo / app icon (transparent WebP) at the sizes used in the app.">
-          <div className="flex flex-wrap items-end gap-6 rounded-2xl border border-border bg-card p-5">
+          <div className="flex flex-wrap items-end gap-6 rounded-2xl border border-brand-200 bg-brand-50 dark:border-border dark:bg-card p-5">
             {[24, 40, 78, 128].map((px) => (
               <div key={px} className="space-y-1.5 text-center">
                 <img src="/logo.webp?v=3" alt={APP_NAME} width={px} height={px} className="mx-auto object-contain" />
@@ -306,9 +307,9 @@ export default function StyleGuide() {
           <Block title="Brand scale" note="brand-50 … brand-950 (tailwind.config.ts)">
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
               {BRAND_SCALE.map(([step, hex]) => (
-                <div key={step} className="overflow-hidden rounded-xl border border-border">
+                <div key={step} className="overflow-hidden rounded-xl border border-brand-200 dark:border-border">
                   <div className="h-14" style={{ background: hex }} />
-                  <div className="bg-card p-2">
+                  <div className="bg-brand-50 p-2 dark:bg-card">
                     <p className="text-[13px] font-semibold leading-tight">brand-{step}</p>
                     <p className="font-mono text-[11px] text-muted-foreground">{hex}</p>
                   </div>
@@ -368,7 +369,7 @@ export default function StyleGuide() {
             {(Object.keys(TYPOGRAPHY) as TypographyVariant[]).map((variant) => {
               const spec = TYPE_SPECS[variant];
               return (
-                <div key={variant} className="rounded-2xl border border-border bg-card p-4">
+                <div key={variant} className="rounded-2xl border border-brand-200 bg-brand-50 dark:border-border dark:bg-card p-4">
                   <div className="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                     <Badge variant="secondary">{variant}</Badge>
                     <code className={typography("code", "text-muted-foreground")}>{TYPOGRAPHY[variant]}</code>
@@ -484,6 +485,20 @@ export default function StyleGuide() {
             </div>
           </Block>
 
+          <Block title="Balance card" note="components/BalanceCard · light = blue, dark = premium gold, slow diagonal sheen">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <p className="font-mono text-[11px] text-muted-foreground">light theme</p>
+                <BalanceCard net={125400} income={182000} expense={56600} defaultRevealed />
+              </div>
+              {/* a `.dark` ancestor switches every dark: variant, so the gold card shows next to the blue one */}
+              <div className="dark space-y-2">
+                <p className="font-mono text-[11px] text-muted-foreground">dark theme</p>
+                <BalanceCard net={125400} income={182000} expense={56600} defaultRevealed />
+              </div>
+            </div>
+          </Block>
+
           <Block title="Card · Avatar · Skeleton · Separator">
             <div className="grid gap-4 md:grid-cols-2">
               <Card className="rounded-2xl">
@@ -534,14 +549,14 @@ export default function StyleGuide() {
           </Block>
 
           <Block title="Table" note=".table-global · dark blue header row">
-            <div className="overflow-x-auto rounded-xl border border-border">
+            <div className="overflow-x-auto rounded-xl border border-brand-200 dark:border-border">
               <table className="table-global w-full text-sm">
                 <thead>
                   <tr className="[&>th]:px-3 [&>th]:py-2 [&>th]:text-left">
                     <th>পণ্য</th><th>পরিমাণ</th><th className="text-right">দাম</th>
                   </tr>
                 </thead>
-                <tbody className="[&>tr>td]:px-3 [&>tr>td]:py-2 [&>tr]:border-t [&>tr]:border-border">
+                <tbody className="[&>tr>td]:px-3 [&>tr>td]:py-2 [&>tr]:border-t [&>tr]:border-brand-200 dark:[&>tr]:border-border">
                   <tr><td>মিনিকেট চাল</td><td>২৫০ কেজি</td><td className="text-right">৳ ৭৬</td></tr>
                   <tr><td>মসুর ডাল</td><td>৯০ কেজি</td><td className="text-right">৳ ১২০</td></tr>
                 </tbody>
