@@ -142,10 +142,10 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
               const isAdmin = u.role === "admin";
               const initials = (u.display_name ?? u.email ?? "U").slice(0, 2).toUpperCase();
               return (
-                <li key={u.id} className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] sm:px-5 sm:py-[22px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+                <li key={u.id} className="flex items-center gap-3 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 px-4 py-[18px] sm:px-5 sm:py-[22px] dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5">
                   <Avatar className="h-10 w-10 shrink-0 rounded-[100px]">
                     {u.avatar_url && <AvatarImage src={u.avatar_url} alt={u.display_name ?? ""} />}
-                    <AvatarFallback className="rounded-[100px] bg-white/60 text-emerald-600 text-xs font-semibold dark:bg-white/10 dark:text-emerald-300">
+                    <AvatarFallback className="rounded-[100px] bg-white/60 text-brand-600 text-xs font-semibold dark:bg-white/10 dark:text-brand-300">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -155,7 +155,7 @@ export default function UserManagement({ currentUserId }: { currentUserId?: stri
                         {u.display_name ?? u.email ?? "নামহীন"}
                       </p>
                       {isAdmin && (
-                        <Badge variant="secondary" className="gap-1 bg-white text-emerald-700 dark:bg-white/10 dark:text-emerald-300">
+                        <Badge variant="secondary" className="gap-1 bg-white text-brand-700 dark:bg-white/10 dark:text-brand-300">
                           <span aria-hidden="true" className="text-xs leading-none select-none">🛡️</span>
                           অ্যাডমিন
                         </Badge>

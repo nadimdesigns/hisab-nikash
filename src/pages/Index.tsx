@@ -107,8 +107,8 @@ const Index = () => {
               className={cn(
                 "home-card-appear shrink-0 rounded-full px-4 py-1.5 text-[13px] font-medium transition-all duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 period === k
-                  ? "bg-emerald-900 text-white"
-                  : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-900 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-emerald-200"
+                  ? "bg-brand-900 text-white"
+                  : "border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 text-brand-900 hover:from-brand-200/70 hover:to-brand-100/70 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5 dark:text-brand-200"
               )}
             >
               {l}
@@ -128,12 +128,12 @@ const Index = () => {
 
           <div className="lg:col-span-7">
             <div className="grid grid-cols-3 gap-2.5 sm:gap-3 md:gap-4 h-full">
-              <QuickAction emoji="🛒" label="নতুন বিক্রি" to="/new-sale" tint="emerald" delay={100} />
-              <QuickAction emoji="👤" label="নতুন কাস্টমার" to="/customers?new=1" tint="emerald" delay={150} />
+              <QuickAction emoji="🛒" label="নতুন বিক্রি" to="/new-sale" tint="brand" delay={100} />
+              <QuickAction emoji="👤" label="নতুন কাস্টমার" to="/customers?new=1" tint="brand" delay={150} />
               <QuickAction emoji="🧾" label="খরচ যোগ করুন" to="/accounting?new=1" tint="rose" delay={200} />
               <QuickAction emoji="⏳" label="বাকি বিক্রি" to="/new-sale?mode=credit" tint="rose" delay={250} />
-              <QuickAction emoji="💰" label="টাকা জমা" to="/accounting?tab=payment" tint="emerald" delay={300} />
-              <QuickAction emoji="📦" label="পণ্য যোগ" to="/stocks?new=1" tint="emerald" delay={350} />
+              <QuickAction emoji="💰" label="টাকা জমা" to="/accounting?tab=payment" tint="brand" delay={300} />
+              <QuickAction emoji="📦" label="পণ্য যোগ" to="/stocks?new=1" tint="brand" delay={350} />
             </div>
           </div>
         </div>
@@ -142,7 +142,7 @@ const Index = () => {
         <section>
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-base font-bold">সাম্প্রতিক লেনদেন</h2>
-            <Link to="/customers" className="text-[13px] font-medium text-emerald-600 hover:underline">সব দেখুন</Link>
+            <Link to="/customers" className="text-[13px] font-medium text-brand-600 hover:underline">সব দেখুন</Link>
           </div>
           {!hydrated ? (
             <Skeleton className="h-[76px] w-full rounded-2xl" />
@@ -163,7 +163,7 @@ const Index = () => {
                       "home-card-appear group flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98]",
                       isDue
                         ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-                        : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                        : "border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5",
                     )}
                   >
                     <span
@@ -181,7 +181,7 @@ const Index = () => {
                         "text-sm font-bold tabular-nums",
                         isDue
                           ? "text-rose-600 dark:text-rose-400"
-                          : "text-emerald-600 dark:text-emerald-400",
+                          : "text-brand-600 dark:text-brand-400",
                       )}
                     >
                       {isDue ? "" : "+"}{currency(s.total)}
@@ -196,9 +196,9 @@ const Index = () => {
         <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 lg:grid-cols-4">
           {hydrated ? (
             <>
-              <StatCard emoji="💵" gradient="emerald" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} delay={340} />
-              <StatCard emoji="📈" gradient="emerald" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} delay={400} />
-              <StatCard emoji="📦" gradient="emerald" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} delay={460} />
+              <StatCard emoji="💵" gradient="brand" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} delay={340} />
+              <StatCard emoji="📈" gradient="brand" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} delay={400} />
+              <StatCard emoji="📦" gradient="brand" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} delay={460} />
               <StatCard emoji="⚠️" gradient="rose" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} delay={520} />
             </>
           ) : (
@@ -210,7 +210,7 @@ const Index = () => {
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <Card
           style={{ animationDelay: "440ms" }}
-          className="home-card-appear lg:col-span-2 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 transition-transform duration-200 hover:-translate-y-0.5 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+          className="home-card-appear lg:col-span-2 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 transition-transform duration-200 hover:-translate-y-0.5 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
         >
           <CardHeader>
             <CardTitle>গত ১৪ দিনের বিক্রি</CardTitle>
@@ -254,16 +254,16 @@ const Index = () => {
                   <li
                     key={p.id}
                     style={{ animationDelay: `${480 + idx * 55}ms` }}
-                    className="home-card-appear group flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                    className="home-card-appear group flex items-center gap-3 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
                   >
-                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 font-semibold text-emerald-600 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 dark:text-emerald-300")}>
+                    <div className={typography("body", "flex h-11 w-11 shrink-0 items-center justify-center rounded-[100px] bg-white/60 font-semibold text-brand-600 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 dark:bg-white/10 dark:text-brand-300")}>
                       {idx + 1}
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className={typography("body-strong", "truncate")}>{p.name}</p>
                       <p className={typography("body-muted")}>{currency(p.revenue)} বিক্রি</p>
                     </div>
-                    <Badge variant="secondary" className="bg-white text-emerald-700 dark:bg-white/10 dark:text-emerald-300">{bnNumber(p.qty)} বিক্রি</Badge>
+                    <Badge variant="secondary" className="bg-white text-brand-700 dark:bg-white/10 dark:text-brand-300">{bnNumber(p.qty)} বিক্রি</Badge>
                   </li>
                 ))}
               </ul>
@@ -324,7 +324,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
       style={{ animationDelay: "50ms" }}
-      className="home-hero-appear group relative flex flex-col justify-between aspect-[16/10] sm:aspect-[1.586/1] w-full max-w-[440px] overflow-hidden rounded-[24px] border border-emerald-500/20 bg-[linear-gradient(140deg,#000d05_0%,#0b5a3d_30%,#059669_52%,#0a5c3c_74%,#000d05_100%)] p-4 sm:p-5 text-left text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="home-hero-appear group relative flex flex-col justify-between aspect-[16/10] sm:aspect-[1.586/1] w-full max-w-[440px] overflow-hidden rounded-[24px] border border-brand-500/20 bg-[linear-gradient(140deg,#00091f_0%,#0a3a9e_30%,#0075fb_52%,#0a3a9e_74%,#00091f_100%)] p-4 sm:p-5 text-left text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.98] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       {/* Glowing wave lines (50% reduced opacity) */}
       <svg className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
@@ -354,7 +354,7 @@ function BalanceCard({ net, income, expense }: { net: number; income: number; ex
           </span>
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-white/20 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide backdrop-blur-sm">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-300" />
+          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-300" />
           Active
         </span>
       </div>
@@ -395,7 +395,7 @@ function BalanceCardSkeleton() {
 }
 
 const QUICK_TINTS = {
-  emerald: { bg: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" },
+  brand: { bg: "border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5" },
   rose: { bg: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5" },
 } as const;
 
@@ -432,7 +432,7 @@ function QuickAction({
 
 function StatCardSkeleton() {
   return (
-    <Card className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" aria-busy="true" aria-label="Loading">
+    <Card className="rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5" aria-busy="true" aria-label="Loading">
       <CardContent className="p-3 sm:p-4 md:p-5">
         <div className="flex flex-col justify-between gap-2.5 sm:gap-3">
           <div className="flex items-center justify-between gap-1.5">
@@ -458,7 +458,7 @@ function StatCard({
   delay = 0,
 }: {
   emoji: string;
-  gradient: "emerald" | "rose";
+  gradient: "brand" | "rose";
   label: string;
   value: string;
   sub?: string;
@@ -466,9 +466,9 @@ function StatCard({
   delay?: number;
 }) {
   // Permanent Branding Rule:
-  // Revenue / Healthy = emerald tint, Expense / Due / Low Stock = rose tint.
+  // Revenue / Healthy = brand-blue tint, Expense / Due / Low Stock = rose tint.
   const STYLE = {
-    emerald: { card: "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5" },
+    brand: { card: "border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5" },
     rose: { card: "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5" },
   } as const;
   const s = STYLE[gradient];

@@ -352,7 +352,7 @@ export default function Accounting() {
         className={cn(
           "shrink-0 text-xs sm:text-sm font-bold tabular-nums",
           isRevenue
-            ? "text-emerald-700 dark:text-emerald-300"
+            ? "text-brand-700 dark:text-brand-300"
             : "text-rose-600 dark:text-rose-400",
         )}
       >
@@ -373,7 +373,7 @@ export default function Accounting() {
               "flex min-w-0 flex-1 items-stretch gap-1 rounded-full p-1 transition-colors",
               tab === "purchase"
                 ? "bg-rose-100/70 dark:bg-rose-500/15"
-                : "bg-emerald-100/60 dark:bg-emerald-500/15",
+                : "bg-brand-100/60 dark:bg-brand-500/15",
             )}
           >
             <button
@@ -384,7 +384,7 @@ export default function Accounting() {
               className={cn(
                 "flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold transition-all sm:px-3 sm:py-2.5 sm:text-sm",
                 tab === "list"
-                  ? "flex-[1.2] bg-emerald-900 text-white shadow-sm"
+                  ? "flex-[1.2] bg-brand-900 text-white shadow-sm"
                   : "flex-1 text-foreground/75 hover:text-foreground",
               )}
             >
@@ -403,7 +403,7 @@ export default function Accounting() {
               className={cn(
                 "flex shrink-0 items-center justify-center gap-1 rounded-full px-2 py-2 text-xs font-semibold transition-all sm:px-3 sm:py-2.5 sm:text-sm",
                 tab === "payment"
-                  ? "flex-[1.2] bg-emerald-900 text-white shadow-sm"
+                  ? "flex-[1.2] bg-brand-900 text-white shadow-sm"
                   : "flex-1 text-foreground/75 hover:text-foreground",
               )}
             >
@@ -446,12 +446,12 @@ export default function Accounting() {
               <Button
                 variant="outline"
                 size="icon"
-                className="relative h-11 w-11 shrink-0 rounded-full border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                className="relative h-11 w-11 shrink-0 rounded-full border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 hover:from-brand-200/70 hover:to-brand-100/70 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
                 aria-label="ফিল্টার খুলুন"
               >
                 <span aria-hidden="true" className="text-base leading-none select-none">⚙️</span>
                 {allTypeFilter !== "all" && (
-                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white ring-2 ring-background">
+                  <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand-600 px-1 text-[10px] font-bold text-white ring-2 ring-background">
                     ১
                   </span>
                 )}
@@ -502,7 +502,7 @@ export default function Accounting() {
           /* ===== Inline টাকা জমা Form (Tint Green) ===== */
           <div
             style={{ animationDelay: "60ms" }}
-            className="home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5"
+            className="home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-brand-200 dark:border-brand-500/25 bg-gradient-to-br from-brand-100 to-brand-50 dark:from-brand-500/15 dark:to-brand-500/5"
           >
             <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
               <div>
@@ -510,9 +510,9 @@ export default function Accounting() {
                   {formatDate(now, "MMMM d, yyyy")}
                 </h2>
               </div>
-              <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 dark:border-emerald-500/20 dark:bg-white/10">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                <span className="text-xs font-bold uppercase tracking-tight text-emerald-700 dark:text-emerald-300">
+              <div className="flex items-center gap-1.5 rounded-full border border-brand-200 bg-white px-3 py-1.5 dark:border-brand-500/20 dark:bg-white/10">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-brand-500" />
+                <span className="text-xs font-bold uppercase tracking-tight text-brand-700 dark:text-brand-300">
                   টাকা জমা
                 </span>
               </div>
@@ -555,7 +555,7 @@ export default function Accounting() {
                       "text-sm font-bold tabular-nums",
                       selectedCustomerDue > 0
                         ? "text-rose-600 dark:text-rose-400"
-                        : "text-emerald-700 dark:text-emerald-300",
+                        : "text-brand-700 dark:text-brand-300",
                     )}
                   >
                     {currency(selectedCustomerDue)}
@@ -583,7 +583,7 @@ export default function Accounting() {
                       type="button"
                       variant="outline"
                       onClick={() => setPayAmount(String(selectedCustomerDue))}
-                      className="h-12 shrink-0 rounded-2xl bg-white px-4 font-semibold text-emerald-700 hover:bg-white dark:bg-white/10 dark:text-emerald-300"
+                      className="h-12 shrink-0 rounded-2xl bg-white px-4 font-semibold text-brand-700 hover:bg-white dark:bg-white/10 dark:text-brand-300"
                     >
                       পুরো বকেয়া
                     </Button>
@@ -607,7 +607,7 @@ export default function Accounting() {
                 type="button"
                 onClick={submitPayment}
                 size="lg"
-                className="w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                className="w-full gap-2 rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-bold text-white transition-transform hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
               >
                 <span aria-hidden="true" className="text-base leading-none select-none">💾</span>
                 টাকা জমা সংরক্ষণ করুন
@@ -750,7 +750,7 @@ export default function Accounting() {
                   {Array.from({ length: 6 }).map((_, i) => (
                     <li
                       key={`all-sk-${i}`}
-                      className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                      className="flex items-center gap-3 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 px-4 py-[18px] dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
                     >
                       <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/60" />
                       <div className="min-w-0 flex-1 space-y-1.5">
@@ -765,7 +765,7 @@ export default function Accounting() {
                 <div
                   className={typography(
                     "body-muted",
-                    "home-card-appear rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                    "home-card-appear rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 py-10 text-center dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5",
                   )}
                 >
                   {allTypeFilter === "New Payment"
@@ -793,7 +793,7 @@ export default function Accounting() {
                         className={cn(
                           "home-card-appear group flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-5 sm:py-[22px]",
                           isRevenue
-                            ? "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                            ? "border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
                             : "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5",
                         )}
                       >
@@ -814,7 +814,7 @@ export default function Accounting() {
                                 className={cn(
                                   "inline-flex shrink-0 items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold text-white",
                                   isRevenue
-                                    ? "bg-emerald-600"
+                                    ? "bg-brand-600"
                                     : "bg-rose-600",
                                 )}
                               >
@@ -825,7 +825,7 @@ export default function Accounting() {
                               className={cn(
                                 "shrink-0 text-sm font-bold tabular-nums",
                                 isRevenue
-                                  ? "text-emerald-700 dark:text-emerald-300"
+                                  ? "text-brand-700 dark:text-brand-300"
                                   : "text-rose-600 dark:text-rose-400",
                               )}
                             >

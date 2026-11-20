@@ -239,7 +239,7 @@ export default function Inventory() {
               role="tablist"
               aria-label="ক্যাটাগরি"
               style={{ animationDelay: "60ms" }}
-              className="home-card-appear relative flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto rounded-full bg-emerald-100/60 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:bg-emerald-500/15"
+              className="home-card-appear relative flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto rounded-full bg-brand-100/60 p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden dark:bg-brand-500/15"
             >
               {categoryOptions.map((opt) => {
                 const active = category === opt.value;
@@ -253,7 +253,7 @@ export default function Inventory() {
                     className={cn(
                       "inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-xs font-semibold transition-colors sm:text-sm",
                       active
-                        ? "bg-emerald-900 text-white"
+                        ? "bg-brand-900 text-white"
                         : "text-foreground/75 hover:text-foreground",
                     )}
                   >
@@ -272,7 +272,7 @@ export default function Inventory() {
               <Button
                 variant="outline"
                 size="icon"
-                className="relative h-11 w-11 shrink-0 rounded-full border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                className="relative h-11 w-11 shrink-0 rounded-full border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 hover:from-brand-200/70 hover:to-brand-100/70 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
                 aria-label="ফিল্টার খুলুন"
               >
                 <span aria-hidden="true" className="text-base leading-none select-none">⚙️</span>
@@ -293,7 +293,7 @@ export default function Inventory() {
 
           <DialogContent
             style={{ fontFamily: "'Anek Bangla', sans-serif" }}
-            className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:border-emerald-500/25 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-md"
+            className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 p-0 dark:border-brand-500/25 dark:from-brand-950 dark:to-brand-900 sm:max-w-md"
             onOpenAutoFocus={(e) => e.preventDefault()}
           >
             <DialogHeader className="px-6 pt-6 text-left">
@@ -356,7 +356,7 @@ export default function Inventory() {
               )}
               <Button
                 onClick={applyDraftFilters}
-                className="h-12 w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-11"
+                className="h-12 w-full gap-2 rounded-xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white transition-colors hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 md:h-11"
               >
                 ফিল্টার প্রয়োগ করুন
               </Button>
@@ -382,7 +382,7 @@ export default function Inventory() {
           type="button"
           size="lg"
           onClick={() => setAddOpen(true)}
-          className="home-card-appear h-12 w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-all hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+          className="home-card-appear h-12 w-full gap-2 rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-bold text-white transition-all hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -407,7 +407,7 @@ export default function Inventory() {
               type="button"
               size="lg"
               variant="outline"
-              className="home-card-appear h-12 w-full gap-2 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 font-semibold text-emerald-900 transition-all hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5 dark:text-emerald-200 active:scale-[0.98]"
+              className="home-card-appear h-12 w-full gap-2 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 font-semibold text-brand-900 transition-all hover:from-brand-200/70 hover:to-brand-100/70 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5 dark:text-brand-200 active:scale-[0.98]"
             >
               <span aria-hidden="true" className="text-base leading-none select-none">📥</span>
               <span>এক্সপোর্ট (PDF / CSV)</span>

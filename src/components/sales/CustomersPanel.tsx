@@ -403,7 +403,7 @@ export default function CustomersPanel() {
           <div
             role="tablist"
             aria-label="কাস্টমার ট্যাব"
-            className="grid min-w-0 flex-1 grid-cols-2 gap-1.5 rounded-full bg-emerald-100/60 p-1 dark:bg-emerald-500/15"
+            className="grid min-w-0 flex-1 grid-cols-2 gap-1.5 rounded-full bg-brand-100/60 p-1 dark:bg-brand-500/15"
           >
             <button
               type="button"
@@ -413,7 +413,7 @@ export default function CustomersPanel() {
               className={cn(
                 "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm",
                 tab === "list"
-                  ? "bg-emerald-900 text-white"
+                  ? "bg-brand-900 text-white"
                   : "text-foreground/75 hover:text-foreground",
               )}
             >
@@ -427,7 +427,7 @@ export default function CustomersPanel() {
               className={cn(
                 "flex items-center justify-center rounded-full px-3 py-2.5 text-xs font-semibold transition-colors sm:px-4 sm:text-sm",
                 tab === "new"
-                  ? "bg-emerald-900 text-white"
+                  ? "bg-brand-900 text-white"
                   : "text-foreground/75 hover:text-foreground",
               )}
             >
@@ -439,7 +439,7 @@ export default function CustomersPanel() {
             <Button
               variant="outline"
               size="icon"
-              className="relative h-11 w-11 shrink-0 rounded-full border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              className="relative h-11 w-11 shrink-0 rounded-full border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 hover:from-brand-200/70 hover:to-brand-100/70 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
               aria-label="কাস্টমার ফিল্টার খুলুন"
             >
               <span aria-hidden="true" className="text-base leading-none select-none">⚙️</span>
@@ -462,7 +462,7 @@ export default function CustomersPanel() {
           /* ===== Inline নতুন কাস্টমার Form (Tint Green) ===== */
           <div
             style={{ animationDelay: "60ms" }}
-            className="home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5"
+            className="home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-brand-200 dark:border-brand-500/25 bg-gradient-to-br from-brand-100 to-brand-50 dark:from-brand-500/15 dark:to-brand-500/5"
           >
             <div className="flex items-center justify-between gap-3 px-5 pb-2 pt-5 sm:px-6">
               <div>
@@ -470,9 +470,9 @@ export default function CustomersPanel() {
                   {formatDate(now, "MMMM d, yyyy")}
                 </h2>
               </div>
-              <div className="flex items-center gap-1.5 rounded-full border border-emerald-200 bg-white px-3 py-1.5 dark:border-emerald-500/20 dark:bg-white/10">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
-                <span className="text-xs font-bold uppercase tracking-tight text-emerald-700 dark:text-emerald-300">
+              <div className="flex items-center gap-1.5 rounded-full border border-brand-200 bg-white px-3 py-1.5 dark:border-brand-500/20 dark:bg-white/10">
+                <span className="h-2 w-2 animate-pulse rounded-full bg-brand-500" />
+                <span className="text-xs font-bold uppercase tracking-tight text-brand-700 dark:text-brand-300">
                   নতুন কাস্টমার
                 </span>
               </div>
@@ -584,7 +584,7 @@ export default function CustomersPanel() {
               <Button
                 type="submit"
                 size="lg"
-                className="w-full gap-2 rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-bold text-white transition-transform hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                className="w-full gap-2 rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-bold text-white transition-transform hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
               >
                 <span aria-hidden="true" className="text-base leading-none select-none">💾</span>
                 কাস্টমার সংরক্ষণ করুন
@@ -602,14 +602,14 @@ export default function CustomersPanel() {
               >
                 <div
                   style={{ animationDelay: "60ms" }}
-                  className="home-card-appear min-w-0 overflow-hidden rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-[16px] pl-[21px] pr-1.5 transition-transform duration-200 hover:-translate-y-0.5 sm:px-3 sm:py-[7px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                  className="home-card-appear min-w-0 overflow-hidden rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 py-[16px] pl-[21px] pr-1.5 transition-transform duration-200 hover:-translate-y-0.5 sm:px-3 sm:py-[7px] dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
                   role="group"
                   aria-label={`মোট বিল: ${currency(customers.reduce((s, c) => s + c.totalBilled, 0))}`}
                 >
                   <p aria-hidden="true" className={typography("body-muted", "truncate leading-tight")}>
                     মোট বিল
                   </p>
-                  <p aria-hidden="true" className={typography("h4", "mt-0.5 truncate tabular-nums text-emerald-700 dark:text-emerald-300 sm:mt-1")}>
+                  <p aria-hidden="true" className={typography("h4", "mt-0.5 truncate tabular-nums text-brand-700 dark:text-brand-300 sm:mt-1")}>
                     {fmtMoney(customers.reduce((s, c) => s + c.totalBilled, 0))}
                   </p>
                 </div>
@@ -633,7 +633,7 @@ export default function CustomersPanel() {
 
               <DialogContent
                 style={{ fontFamily: "'Anek Bangla', sans-serif" }}
-                className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-0 dark:border-emerald-500/25 dark:from-emerald-950 dark:to-emerald-900 sm:max-w-md"
+                className="flex max-h-[85svh] w-[calc(100%-2rem)] flex-col overflow-hidden rounded-3xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 p-0 dark:border-brand-500/25 dark:from-brand-950 dark:to-brand-900 sm:max-w-md"
                 onOpenAutoFocus={(e) => e.preventDefault()}
               >
                 <DialogHeader className="px-6 pt-6 text-left">
@@ -746,7 +746,7 @@ export default function CustomersPanel() {
                   )}
                   <Button
                     onClick={applyCustDraftFilters}
-                    className="h-12 w-full gap-2 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-11"
+                    className="h-12 w-full gap-2 rounded-xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white transition-colors hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 md:h-11"
                   >
                     ফিল্টার প্রয়োগ করুন
                   </Button>
@@ -758,7 +758,7 @@ export default function CustomersPanel() {
               </p>
 
               {filteredCustomers.length === 0 ? (
-                <div className={typography("body-muted", "rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5")}>
+                <div className={typography("body-muted", "rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 py-10 text-center dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5")}>
                   {customers.length === 0
                     ? "এখনো কোনো কাস্টমার নেই।"
                     : "কোনো কাস্টমার ফিল্টারের সাথে মিলছে না।"}
@@ -777,13 +777,13 @@ export default function CustomersPanel() {
                           "flex w-full items-center gap-3 rounded-2xl border px-4 py-[18px] text-left transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] sm:px-5 sm:py-[22px]",
                           c.due > 0
                             ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-                            : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                            : "border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5",
                         )}
                       >
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-2">
                             <span className="truncate text-sm font-semibold">{c.name}</span>
-                            <span className="shrink-0 text-sm font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                            <span className="shrink-0 text-sm font-bold tabular-nums text-brand-600 dark:text-brand-400">
                               {fmtMoney(c.totalBilled)}
                             </span>
                           </div>

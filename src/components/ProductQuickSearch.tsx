@@ -203,7 +203,7 @@ export function ProductQuickSearch() {
                             "group flex w-full items-center gap-3 rounded-2xl border p-3 transition-colors",
                             low
                               ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-                              : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                              : "border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5",
                           )}
                         >
                           <button
@@ -215,7 +215,7 @@ export function ProductQuickSearch() {
                             <div className="min-w-0 flex-1">
                               <div className="flex items-center justify-between gap-2">
                                 <p className={cn(BODY_TEXT, "truncate font-medium")}>{m.name}</p>
-                                <span className={cn(BODY_TEXT, "shrink-0 font-semibold text-emerald-600 dark:text-emerald-400")}>{currency(m.sellPrice)}</span>
+                                <span className={cn(BODY_TEXT, "shrink-0 font-semibold text-brand-600 dark:text-brand-400")}>{currency(m.sellPrice)}</span>
                               </div>
                               <p className={typography("body-muted", "truncate")}>
                                 {m.sku}{m.category ? ` · ${m.category}` : ""}
@@ -246,7 +246,7 @@ export function ProductQuickSearch() {
                               addToSale(m);
                             }}
                             disabled={m.stock <= 0}
-                            className="shrink-0 gap-1 rounded-lg bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
+                            className="shrink-0 gap-1 rounded-lg bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 text-white transition-colors hover:from-brand-600 hover:via-brand-500 hover:to-brand-400"
                             aria-label={`${m.name} বিক্রিতে যোগ করুন`}
                           >
                             <span aria-hidden="true" className="text-xs leading-none select-none">➕</span>
@@ -270,7 +270,7 @@ export function ProductQuickSearch() {
                         type="button"
                         onClick={() => pickCustomer(c.name)}
                         aria-label={`${c.name} এর বিবরণ খুলুন`}
-                        className="flex w-full items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 p-3 text-left transition-colors dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                        className="flex w-full items-center gap-3 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 p-3 text-left transition-colors dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
                       >
                         <span className="min-w-0 flex-1">
                           <span className={cn(BODY_TEXT, "block truncate font-medium")}>{c.name}</span>
