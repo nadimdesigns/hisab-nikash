@@ -1,1 +1,4 @@
-project_id = "cjjlylmaekwluufsasea"
+project_id = "rlehqzmsaxxaaruffnyq"
+
+[functions.hisab-nikash-signup]
+verify_jwt = false

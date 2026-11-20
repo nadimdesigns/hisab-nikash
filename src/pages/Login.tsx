@@ -24,6 +24,19 @@ import {
 const PHONE_DOMAIN = "hisabnikash.com";
 const authEmailFor = (phone: string) => `${phone.replace(/\D/g, "")}@${PHONE_DOMAIN}`;
 const authPasswordFor = (pin: string) => `H1${pin}`;
+const parsedPhoneDigits = (phone: string) => phone.replace(/\D/g, "");
+
+/** The signup function answers 409 { error: "already_registered" } for a taken number. */
+async function isAlreadyRegistered(err: unknown): Promise<boolean> {
+  const ctx = (err as { context?: Response }).context;
+  if (!ctx || typeof ctx.json !== "function") return false;
+  try {
+    const body = await ctx.clone().json();
+    return body?.error === "already_registered";
+  } catch {
+    return false;
+  }
+}
 
 const phoneSchema = z
   .string()
@@ -212,33 +225,37 @@ const Login = () => {
           : SHOP_TYPE_PRODUCTS[selectedShopType].filter((p) => selectedProductIds.has(p.id));
         seedCustomShopProducts(chosenTemplates, selectedShopType, false);
 
-        const { data, error } = await supabase.auth.signUp({
-          email: authEmailFor(phone),
-          password: authPasswordFor(parsedPin.data),
+        // Phone + PIN only: the account is created already-confirmed on the
+        // server (no email is ever sent), then we sign in with it.
+        const { error: signupError } = await supabase.functions.invoke("hisab-nikash-signup", {
+          body: { phone: parsedPhoneDigits(phone), pin: parsedPin.data },
         });
+        const alreadyRegistered = signupError ? await isAlreadyRegistered(signupError) : false;
 
-        if (error) {
-          setErrors({ form: mapAuthError(error.message) });
-        } else if (data.session) {
-          const serviceTitle = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId)?.title;
-          toast({
-            title: "স্বাগতম!",
-            description: isService
-              ? `আপনার ${serviceTitle || "সেবা"} ব্যবসা প্রস্তুত করা হয়েছে।`
-              : `আপনার দোকান ও ${chosenTemplates.length}টি পণ্য প্রস্তুত করা হয়েছে।`,
-          });
-          navigate(from, { replace: true });
+        if (signupError && !alreadyRegistered) {
+          setErrors({ form: "অ্যাকাউন্ট তৈরি করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।" });
         } else {
-          // If already registered under Supabase
           const { error: signInError } = await supabase.auth.signInWithPassword({
             email: authEmailFor(phone),
             password: authPasswordFor(parsedPin.data),
           });
           if (signInError) {
-            setIsExistingAccount(true);
-            setErrors({ form: "এই নম্বরে ইতিমধ্যে অ্যাকাউন্ট আছে। সঠিক পিন দিন।" });
+            if (alreadyRegistered) {
+              setIsExistingAccount(true);
+              setErrors({ form: "এই নম্বরে ইতিমধ্যে অ্যাকাউন্ট আছে। সঠিক পিন দিন।" });
+            } else {
+              setErrors({ form: mapAuthError(signInError.message) });
+            }
           } else {
-            toast({ title: "স্বাগতম", description: "লগইন সফল হয়েছে।" });
+            const serviceTitle = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId)?.title;
+            toast({
+              title: alreadyRegistered ? "স্বাগতম" : "স্বাগতম!",
+              description: alreadyRegistered
+                ? "লগইন সফল হয়েছে।"
+                : isService
+                  ? `আপনার ${serviceTitle || "সেবা"} ব্যবসা প্রস্তুত করা হয়েছে।`
+                  : `আপনার দোকান ও ${chosenTemplates.length}টি পণ্য প্রস্তুত করা হয়েছে।`,
+            });
             navigate(from, { replace: true });
           }
         }
