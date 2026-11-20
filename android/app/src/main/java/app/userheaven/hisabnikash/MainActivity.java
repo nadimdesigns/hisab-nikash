@@ -15,7 +15,7 @@ public class MainActivity extends BridgeActivity {
         super.onCreate(savedInstanceState);
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setNavigationBarColor(Color.parseColor("#02140D"));
+        window.setNavigationBarColor(Color.parseColor("#02102A"));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, window.getDecorView());
             if (controller != null) {
