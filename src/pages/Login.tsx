@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { z } from "zod";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,12 +52,14 @@ type FieldErrors = {
   form?: string;
 };
 
-// 4 Clean Steps:
-// 1) "step-1-shop": Shop Type Selection (2-column grid)
-// 2) "step-2-products": Product Selection (3-column checklist, min 1 item)
-// 3) "step-3-phone": Mobile number input (checks if registered or new)
-// 4) "step-4-pin": PIN input (1 PIN for registered, 2-stage progressive PIN for new)
-type Step = "step-1-shop" | "step-2-products" | "step-3-phone" | "step-4-pin";
+// 3 Steps:
+// 1) "step-1-shop": Shop Type Selection (full-width list)
+// 2) "step-2-products": Product Selection / service type
+// 3) "step-3-phone": Mobile number + PIN on one screen, no primary button.
+//    11 valid digits -> the number is looked up (new vs existing) automatically,
+//    PIN boxes appear underneath; a complete PIN (confirmed PIN for a new
+//    account) logs in / creates the account and lands on the homepage.
+type Step = "step-1-shop" | "step-2-products" | "step-3-phone";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -159,60 +161,64 @@ const Login = () => {
     return msg;
   };
 
-  // Step 3: Handle Phone Submit & Check Account Status
-  const handlePhoneSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const parsed = phoneSchema.safeParse(phone);
-    if (!parsed.success) {
-      setErrors({ phone: parsed.error.issues[0]?.message });
-      return;
-    }
+  // Step 3: as soon as 11 valid digits are typed, look the number up (new vs existing).
+  const phoneCheckToken = useRef(0);
 
-    setErrors({});
+  const lookupPhone = async (value: string) => {
+    const token = ++phoneCheckToken.current;
     setCheckingPhone(true);
+    let existing = false;
     try {
-      const { data, error } = await supabase.rpc("hisab_nikash_phone_has_account", {
-        _phone: parsed.data,
-      });
-      if (error) {
-        // Fallback: proceed to PIN setup
-        setIsExistingAccount(false);
-      } else {
-        setIsExistingAccount(!!data);
-      }
-      setPin("");
-      setConfirmPin("");
-      setStep("step-4-pin");
+      const { data, error } = await supabase.rpc("hisab_nikash_phone_has_account", { _phone: value });
+      // On a lookup error treat it as new: the signup function reports "already registered" if it is not.
+      existing = !error && !!data;
     } catch {
-      setIsExistingAccount(false);
-      setPin("");
-      setConfirmPin("");
-      setStep("step-4-pin");
-    } finally {
-      setCheckingPhone(false);
+      existing = false;
+    }
+    if (token !== phoneCheckToken.current) return; // the number changed while we were checking
+    setIsExistingAccount(existing);
+    setCheckingPhone(false);
+  };
+
+  const handlePhoneChange = (raw: string) => {
+    let v = raw.replace(/\D/g, "");
+    if (v.length === 10 && v[0] !== "0") v = `0${v}`;
+    v = v.slice(0, 11);
+    setPhone(v);
+
+    // Any edit invalidates the previous lookup and the PIN fields.
+    phoneCheckToken.current++;
+    setIsExistingAccount(null);
+    setCheckingPhone(false);
+    setPin("");
+    setConfirmPin("");
+    setErrors({});
+
+    if (v.length === 11) {
+      const parsed = phoneSchema.safeParse(v);
+      if (!parsed.success) {
+        setErrors({ phone: parsed.error.issues[0]?.message });
+        return;
+      }
+      void lookupPhone(parsed.data);
     }
   };
 
-  // Step 4: Handle PIN verification / Account Creation
-  const handlePinSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Log in (existing) or create the account (new) once the PIN is complete.
+  const submitCredentials = async (pinValue: string, confirmValue?: string) => {
+    if (submitting || isExistingAccount === null) return;
 
-    const parsedPin = pinSchema.safeParse(pin);
+    const parsedPin = pinSchema.safeParse(pinValue);
     if (!parsedPin.success) {
       setErrors({ pin: parsedPin.error.issues[0]?.message });
       return;
     }
 
-    // If new account, check confirm PIN
-    if (!isExistingAccount) {
-      if (confirmPin.length !== 4) {
-        setErrors({ confirmPin: "৪ সংখ্যার নিশ্চিতকরণ পিন দিন।" });
-        return;
-      }
-      if (confirmPin !== pin) {
-        setErrors({ confirmPin: "পিন দুটি মিলছে না।" });
-        return;
-      }
+    // New account: the confirmation PIN must match before anything is created.
+    if (!isExistingAccount && confirmValue !== pinValue) {
+      setErrors({ confirmPin: "পিন দুটি মিলছে না।" });
+      setConfirmPin("");
+      return;
     }
 
     setErrors({});
@@ -227,6 +233,7 @@ const Login = () => {
         });
         if (error) {
           setErrors({ form: mapAuthError(error.message) });
+          setPin("");
         } else {
           toast({ title: "স্বাগতম", description: "লগইন সফল হয়েছে।" });
           navigate(from, { replace: true });
@@ -254,6 +261,7 @@ const Login = () => {
                 ? "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।"
                 : "অ্যাকাউন্ট তৈরি করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।",
           });
+          setConfirmPin("");
         } else {
           const { error: signInError } = await supabase.auth.signInWithPassword({
             email: authEmailFor(phone),
@@ -266,6 +274,8 @@ const Login = () => {
             } else {
               setErrors({ form: mapAuthError(signInError.message) });
             }
+            setPin("");
+            setConfirmPin("");
           } else {
             const serviceTitle = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId)?.title;
             toast({
@@ -583,7 +593,7 @@ const Login = () => {
                 </button>
               </div>
 
-              <form onSubmit={handlePhoneSubmit} className="space-y-3.5" noValidate>
+              <form onSubmit={(e) => e.preventDefault()} className="space-y-3.5" noValidate>
                 <div className="space-y-1.5">
                   <Label htmlFor="phone" className={typography("body-strong")}>
                     মোবাইল নম্বর
@@ -592,7 +602,7 @@ const Login = () => {
                     className={cn(
                       "flex h-12 w-full items-center rounded-2xl border border-input bg-white shadow-sm transition-all dark:bg-white/10 overflow-hidden",
                       "focus-within:border-brand-600 focus-within:ring-2 focus-within:ring-brand-600/30",
-                      (errors.phone || errors.form) && "border-destructive focus-within:border-destructive focus-within:ring-destructive/30"
+                      errors.phone && "border-destructive focus-within:border-destructive focus-within:ring-destructive/30"
                     )}
                   >
                     <span className="inline-flex h-full shrink-0 select-none items-center border-r border-input bg-brand-50/50 px-3.5 text-sm font-semibold text-muted-foreground dark:bg-white/5">
@@ -608,14 +618,8 @@ const Login = () => {
                       maxLength={11}
                       placeholder="01XXXXXXXXX"
                       value={phone}
-                      onChange={(e) => {
-                        let v = e.target.value.replace(/\D/g, "");
-                        if (v.length === 10 && v[0] !== "0") v = `0${v}`;
-                        v = v.slice(0, 11);
-                        setPhone(v);
-                        if (errors.phone || errors.form)
-                          setErrors((prev) => ({ ...prev, phone: undefined, form: undefined }));
-                      }}
+                      disabled={submitting}
+                      onChange={(e) => handlePhoneChange(e.target.value)}
                       className="h-full w-full bg-transparent px-3.5 text-[15px] outline-none placeholder:text-muted-foreground/60 border-none focus:outline-none focus:ring-0 text-foreground"
                     />
                   </div>
@@ -624,97 +628,34 @@ const Login = () => {
                   )}
                 </div>
 
-                {errors.form && (
-                  <p role="alert" className={typography("muted", "text-destructive text-xs text-center")}>
-                    {errors.form}
-                  </p>
+                {checkingPhone && (
+                  <p className={typography("muted", "text-xs text-center")}>যাচাই হচ্ছে…</p>
                 )}
 
-                {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
-                <div className="pt-2 space-y-2">
-                  <Button
-                    type="submit"
-                    size="lg"
-                    disabled={checkingPhone}
-                    className="w-full rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white shadow-md hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
-                  >
-                    {checkingPhone ? "যাচাই হচ্ছে…" : "পরবর্তী ধাপ ➔"}
-                  </Button>
+                {/* PIN boxes appear under the number once it has been looked up */}
+                {!checkingPhone && isExistingAccount !== null && (
+                  <div className="space-y-3.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <p className="text-center text-xs font-semibold text-brand-700 dark:text-brand-300">
+                      {isExistingAccount ? "অ্যাকাউন্ট পাওয়া গেছে, পিন দিন" : "নতুন অ্যাকাউন্ট, পিন সেট করুন"}
+                    </p>
 
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setStep("step-2-products")}
-                      className="text-xs text-muted-foreground hover:text-foreground hover:bg-transparent"
-                    >
-                      ← পূর্ববর্তী ধাপে যান
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            </div>
-          )}
-
-          {/* ================= STEP 4: PIN VERIFICATION / CREATION ================= */}
-          {step === "step-4-pin" && (
-            <div className="space-y-4">
-              <div className="text-center space-y-1">
-                <h2 className={typography("h4", "text-foreground font-bold")}>
-                  {isExistingAccount ? "পিন নম্বর দিন" : "নতুন পিন সেট করুন"}
-                </h2>
-                <p className="text-xs text-muted-foreground">
-                  +88{phone}
-                </p>
-              </div>
-
-              <form onSubmit={handlePinSubmit} className="space-y-4" noValidate>
-                {isExistingAccount ? (
-                  /* Existing user: Single PIN input */
-                  <div className="space-y-2">
-                    <Label htmlFor="pin" className={typography("body-strong")}>
-                      আপনার ৪ সংখ্যার পিন
-                    </Label>
-                    <InputOTP
-                      id="pin"
-                      maxLength={4}
-                      value={pin}
-                      onChange={(v) => {
-                        setPin(v);
-                        if (errors.pin || errors.form)
-                          setErrors((prev) => ({ ...prev, pin: undefined, form: undefined }));
-                      }}
-                      pattern="^[0-9]+$"
-                      inputMode="numeric"
-                      autoFocus
-                    >
-                      <InputOTPGroup className="w-full grid grid-cols-4 gap-3">
-                        <InputOTPSlot index={0} className={otpSlotClass(errors.pin)} />
-                        <InputOTPSlot index={1} className={otpSlotClass(errors.pin)} />
-                        <InputOTPSlot index={2} className={otpSlotClass(errors.pin)} />
-                        <InputOTPSlot index={3} className={otpSlotClass(errors.pin)} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                    {errors.pin && (
-                      <p className={typography("muted", "text-destructive text-xs")}>{errors.pin}</p>
-                    )}
-                  </div>
-                ) : (
-                  /* New user: Progressive 2-stage PIN (1st PIN entered -> then reveal Confirm PIN underneath) */
-                  <div className="space-y-3.5">
                     <div className="space-y-1.5">
                       <Label htmlFor="pin" className={typography("body-strong")}>
-                        ৪ সংখ্যার নতুন পিন
+                        {isExistingAccount ? "আপনার ৪ সংখ্যার পিন" : "৪ সংখ্যার নতুন পিন"}
                       </Label>
                       <InputOTP
                         id="pin"
                         maxLength={4}
                         value={pin}
+                        disabled={submitting}
                         onChange={(v) => {
                           setPin(v);
-                          if (errors.pin || errors.form)
-                            setErrors((prev) => ({ ...prev, pin: undefined, form: undefined }));
+                          if (!isExistingAccount) setConfirmPin("");
+                          if (errors.pin || errors.confirmPin || errors.form)
+                            setErrors((prev) => ({ ...prev, pin: undefined, confirmPin: undefined, form: undefined }));
+                        }}
+                        onComplete={(v) => {
+                          if (isExistingAccount) void submitCredentials(v);
                         }}
                         pattern="^[0-9]+$"
                         inputMode="numeric"
@@ -732,9 +673,9 @@ const Login = () => {
                       )}
                     </div>
 
-                    {/* Step 4b: Confirm PIN revealed smoothly only when first PIN is complete (4 digits) */}
-                    {pin.length === 4 && (
-                      <div className="space-y-1.5 pt-1 animate-in fade-in slide-in-from-top-2 duration-300">
+                    {/* New account: confirm PIN appears once the first PIN is complete */}
+                    {!isExistingAccount && pin.length === 4 && (
+                      <div className="space-y-1.5 animate-in fade-in slide-in-from-top-2 duration-300">
                         <Label htmlFor="confirmPin" className={typography("body-strong")}>
                           পিন নিশ্চিত করুন
                         </Label>
@@ -742,11 +683,13 @@ const Login = () => {
                           id="confirmPin"
                           maxLength={4}
                           value={confirmPin}
+                          disabled={submitting}
                           onChange={(v) => {
                             setConfirmPin(v);
                             if (errors.confirmPin || errors.form)
                               setErrors((prev) => ({ ...prev, confirmPin: undefined, form: undefined }));
                           }}
+                          onComplete={(v) => void submitCredentials(pin, v)}
                           pattern="^[0-9]+$"
                           inputMode="numeric"
                           autoFocus
@@ -763,6 +706,12 @@ const Login = () => {
                         )}
                       </div>
                     )}
+
+                    {submitting && (
+                      <p className={typography("muted", "text-xs text-center")}>
+                        {isExistingAccount ? "লগইন হচ্ছে…" : "অ্যাকাউন্ট তৈরি হচ্ছে…"}
+                      </p>
+                    )}
                   </div>
                 )}
 
@@ -772,37 +721,18 @@ const Login = () => {
                   </p>
                 )}
 
-                {/* Action Buttons: Full width Primary + Center-aligned Ghost */}
-                <div className="pt-2 space-y-2">
+                {/* No primary button: everything above submits itself. Only a back link remains. */}
+                <div className="flex justify-center pt-1">
                   <Button
-                    type="submit"
-                    size="lg"
-                    disabled={submitting || (!isExistingAccount && (pin.length !== 4 || confirmPin.length !== 4))}
-                    className="w-full rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white shadow-md hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    disabled={submitting}
+                    onClick={() => setStep("step-2-products")}
+                    className="text-xs text-muted-foreground hover:text-foreground hover:bg-transparent"
                   >
-                    {submitting
-                      ? "প্রক্রিয়াকরণ হচ্ছে…"
-                      : isExistingAccount
-                        ? "লগইন করুন ➔"
-                        : "অ্যাকাউন্ট তৈরি করুন ➔"}
+                    ← পূর্ববর্তী ধাপে যান
                   </Button>
-
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setStep("step-3-phone");
-                        setPin("");
-                        setConfirmPin("");
-                        setErrors({});
-                      }}
-                      className="text-xs text-muted-foreground hover:text-foreground hover:bg-transparent"
-                    >
-                      ← নম্বর পরিবর্তন করুন
-                    </Button>
-                  </div>
                 </div>
               </form>
             </div>
