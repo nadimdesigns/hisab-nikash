@@ -68,23 +68,44 @@ jobs:
       - name: Sync Capacitor Android
         run: npx cap sync android
 
-      - name: Build debug APK
+      - name: Restore the upload keystore (if the secrets are set)
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            echo "KEYSTORE_FILE=$RUNNER_TEMP/upload.jks" >> "$GITHUB_ENV"
+            echo "KEYSTORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> "$GITHUB_ENV"
+            echo "KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> "$GITHUB_ENV"
+            echo "KEY_PASSWORD=${{ secrets.ANDROID_KEY_PASSWORD }}" >> "$GITHUB_ENV"
+            echo "SIGNED=true" >> "$GITHUB_ENV"
+          else
+            echo "::warning::ANDROID_KEYSTORE_* secrets are not set: the Play bundle will be UNSIGNED (not uploadable)."
+            echo "SIGNED=false" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build debug APK and release bundle (AAB)
         run: |
           chmod +x android/gradlew
           cd android
-          ./gradlew assembleDebug --no-daemon --stacktrace
+          ./gradlew assembleDebug bundleRelease -PversionCodeOverride=${{ github.run_number }} --no-daemon --stacktrace
 
-      - name: Collect APK
+      - name: Collect outputs
         run: |
           mkdir -p releases
           cp android/app/build/outputs/apk/debug/app-debug.apk releases/hisab-nikash.apk
-          ls -lh releases/hisab-nikash.apk
+          if [ "$SIGNED" = "true" ]; then
+            cp android/app/build/outputs/bundle/release/app-release.aab releases/hisab-nikash.aab
+          else
+            cp android/app/build/outputs/bundle/release/app-release.aab releases/hisab-nikash-UNSIGNED.aab
+          fi
+          ls -lh releases
 
-      - name: Upload APK artifact
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: hisab-nikash-apk
-          path: releases/hisab-nikash.apk
+          name: hisab-nikash-android
+          path: releases/*
           retention-days: 30
 
       - name: Publish APK to the "apk-latest" release
@@ -96,4 +117,8 @@ jobs:
           body: |
             Offline Android app. The UI updates itself over the air whenever the app is opened online.
             Install this APK once; install a new one only when the release notes mention a native change.
-          files: releases/hisab-nikash.apk
+
+            `hisab-nikash.aab` is the signed Google Play bundle (attached only when the signing secrets are configured).
+          files: |
+            releases/hisab-nikash.apk
+            releases/hisab-nikash.aab
