@@ -37,7 +37,7 @@ export function MobileBottomNav() {
             className={cn(
               "flex h-8 w-12 items-center justify-center rounded-full transition-all duration-200",
               active
-                ? "bg-emerald-400/20 ring-1 ring-emerald-300/30"
+                ? "bg-brand-400/20 ring-1 ring-brand-300/30"
                 : "group-hover:bg-white/5",
             )}
           >
@@ -55,7 +55,7 @@ export function MobileBottomNav() {
           <span
             className={cn(
               "text-[11px] leading-none tracking-tight transition-colors duration-200",
-              active ? "font-bold text-white" : "font-medium text-emerald-100/65",
+              active ? "font-bold text-white" : "font-medium text-brand-100/65",
             )}
           >
             {item.title}
@@ -68,7 +68,7 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="প্রধান নেভিগেশন"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-emerald-700/40 px-2 pt-1.5 backdrop-blur-2xl md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-brand-700/40 px-2 pt-1.5 backdrop-blur-2xl md:hidden"
       style={{
         background: "linear-gradient(180deg, rgba(6, 44, 30, 0.82) 0%, rgba(2, 20, 13, 0.88) 100%)",
         backdropFilter: "blur(20px)",
@@ -89,8 +89,8 @@ export function MobileBottomNav() {
               className={cn(
                 "shimmer-overlay group relative -mt-7 flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full transition-all duration-200 hover:-translate-y-0.5 active:scale-95",
                 isSale
-                  ? "bg-gradient-to-br from-emerald-400 via-emerald-500 to-teal-600 shadow-md ring-2 ring-emerald-300/40"
-                  : "bg-gradient-to-br from-emerald-600 via-emerald-500 to-emerald-400",
+                  ? "bg-gradient-to-br from-brand-400 via-brand-500 to-brand-700 shadow-md ring-2 ring-brand-300/40"
+                  : "bg-gradient-to-br from-brand-600 via-brand-500 to-brand-400",
               )}
             >
               <svg
@@ -108,7 +108,7 @@ export function MobileBottomNav() {
             <span
               className={cn(
                 "mt-[7px] text-[11px] leading-none tracking-tight transition-colors duration-200",
-                isSale ? "font-bold text-white" : "font-medium text-emerald-100/70",
+                isSale ? "font-bold text-white" : "font-medium text-brand-100/70",
               )}
             >
               বিক্রয়

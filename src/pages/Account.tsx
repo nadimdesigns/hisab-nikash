@@ -34,7 +34,7 @@ const Account = () => {
   return (
     <AppLayout title="অ্যাকাউন্ট">
       <div className="space-y-6">
-        <Card className="home-hero-appear max-w-xl rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+        <Card className="home-hero-appear max-w-xl rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5">
           <CardHeader className="flex flex-row items-center gap-4 space-y-0">
             <Avatar className="h-14 w-14">
               {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
@@ -60,7 +60,7 @@ const Account = () => {
               <div
                 role="tablist"
                 aria-label="অ্যাপ থিম"
-                className="flex items-center gap-1.5 rounded-full bg-emerald-100/60 p-1 dark:bg-emerald-500/15"
+                className="flex items-center gap-1.5 rounded-full bg-brand-100/60 p-1 dark:bg-brand-500/15"
               >
                 {[
                   { value: "light", label: "লাইট", icon: "☀️" },
@@ -78,7 +78,7 @@ const Account = () => {
                       className={cn(
                         "flex flex-1 items-center justify-center gap-1.5 rounded-full py-2 text-xs font-semibold transition-colors sm:text-sm",
                         active
-                          ? "bg-emerald-900 text-white"
+                          ? "bg-brand-900 text-white"
                           : "text-foreground/75 hover:text-foreground",
                       )}
                     >

@@ -303,7 +303,7 @@ export default function CustomerDetails() {
             variant="outline"
             size="sm"
             onClick={() => navigate("/customers")}
-            className="h-10 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 font-semibold hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+            className="h-10 gap-1.5 rounded-xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 px-3.5 font-semibold hover:from-brand-200/70 hover:to-brand-100/70 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
           >
             <span aria-hidden="true" className="text-sm leading-none select-none">⬅️</span>
             <span>সকল কাস্টমার</span>
@@ -316,7 +316,7 @@ export default function CustomerDetails() {
                 variant="outline"
                 size="sm"
                 onClick={startEdit}
-                className="h-10 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 font-semibold hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+                className="h-10 gap-1.5 rounded-xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 px-3.5 font-semibold hover:from-brand-200/70 hover:to-brand-100/70 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
               >
                 <span aria-hidden="true" className="text-xs leading-none select-none">✏️</span>
                 <span>{hasProfileInfo ? "সম্পাদনা" : "তথ্য যোগ"}</span>
@@ -326,7 +326,7 @@ export default function CustomerDetails() {
               type="button"
               variant="outline"
               size="sm"
-              className="h-10 gap-1.5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-3.5 font-semibold hover:from-emerald-200/70 hover:to-emerald-100/70 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              className="h-10 gap-1.5 rounded-xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 px-3.5 font-semibold hover:from-brand-200/70 hover:to-brand-100/70 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
               onClick={exportCSV}
               disabled={history.length === 0}
             >
@@ -343,7 +343,7 @@ export default function CustomerDetails() {
             "home-hero-appear overflow-hidden rounded-3xl border",
             hasDue
               ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-              : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+              : "border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5",
           )}
         >
           <CardContent className="p-5 sm:p-6">
@@ -358,13 +358,13 @@ export default function CustomerDetails() {
                       "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-white px-2.5 py-0.5 text-xs font-bold dark:bg-white/10",
                       hasDue
                         ? "text-rose-600 dark:text-rose-300"
-                        : "text-emerald-700 dark:text-emerald-300",
+                        : "text-brand-700 dark:text-brand-300",
                     )}
                   >
                     <span
                       className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        hasDue ? "bg-rose-500" : "bg-emerald-500",
+                        hasDue ? "bg-rose-500" : "bg-brand-500",
                       )}
                     />
                     {hasDue ? `বাকি ${currency(stats.due)}` : "পরিশোধিত"}
@@ -456,7 +456,7 @@ export default function CustomerDetails() {
                   <Button
                     type="button"
                     onClick={saveEdit}
-                    className="rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
+                    className="rounded-xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white transition-colors hover:from-brand-600 hover:via-brand-500 hover:to-brand-400"
                   >
                     সংরক্ষণ
                   </Button>
@@ -482,7 +482,7 @@ export default function CustomerDetails() {
         {hasDue && (
           <Card
             style={{ animationDelay: "240ms" }}
-            className="home-card-appear rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+            className="home-card-appear rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
           >
             <CardContent className="p-4 sm:p-5">
               <div className="mb-2.5 flex items-center justify-between gap-2">
@@ -490,7 +490,7 @@ export default function CustomerDetails() {
                 <button
                   type="button"
                   onClick={() => setPaymentInput(String(stats.due))}
-                  className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-emerald-700 transition-colors hover:bg-white/80 dark:bg-white/10 dark:text-emerald-300"
+                  className="rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold text-brand-700 transition-colors hover:bg-white/80 dark:bg-white/10 dark:text-brand-300"
                 >
                   পুরো বকেয়া ({currency(stats.due)})
                 </button>
@@ -508,7 +508,7 @@ export default function CustomerDetails() {
                 />
                 <Button
                   type="button"
-                  className="h-11 shrink-0 gap-1.5 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 px-4 font-semibold text-white transition-colors hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400"
+                  className="h-11 shrink-0 gap-1.5 rounded-xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 px-4 font-semibold text-white transition-colors hover:from-brand-600 hover:via-brand-500 hover:to-brand-400"
                   onClick={() => {
                     const amount = parseFloat(paymentInput);
                     if (!Number.isFinite(amount) || amount <= 0) {
@@ -550,7 +550,7 @@ export default function CustomerDetails() {
           </div>
 
           {history.length === 0 ? (
-            <div className="home-card-appear rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center text-sm text-muted-foreground dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5">
+            <div className="home-card-appear rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 py-10 text-center text-sm text-muted-foreground dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5">
               এখনও কোনো লেনদেন নেই।
             </div>
           ) : (
@@ -567,7 +567,7 @@ export default function CustomerDetails() {
                   isDue ? "বাকি বিক্রি" : isPayment ? "টাকা জমা" : "নগদ বিক্রি";
                 const cardTint = isDue
                   ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-                  : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
+                  : "border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5";
 
                 const emoji = isDue ? "⏳" : isPayment ? "💰" : "💵";
 
@@ -599,7 +599,7 @@ export default function CustomerDetails() {
                               "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold dark:bg-white/10",
                               isDue
                                 ? "text-rose-700 dark:text-rose-300"
-                                : "text-emerald-700 dark:text-emerald-300",
+                                : "text-brand-700 dark:text-brand-300",
                             )}
                           >
                             {badgeLabel}
@@ -610,7 +610,7 @@ export default function CustomerDetails() {
                             "shrink-0 text-sm font-bold tabular-nums",
                             isDue
                               ? "text-rose-600 dark:text-rose-400"
-                              : "text-emerald-700 dark:text-emerald-300",
+                              : "text-brand-700 dark:text-brand-300",
                           )}
                         >
                           {isDue ? "−" : "+"}
@@ -650,10 +650,10 @@ function StatTile({
   const isDestructive = tone === "destructive";
   const valueClass = isDestructive
     ? "text-rose-600 dark:text-rose-400"
-    : "text-emerald-700 dark:text-emerald-300";
+    : "text-brand-700 dark:text-brand-300";
   const bgClass = isDestructive
     ? "border border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-    : "border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5";
+    : "border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5";
   return (
     <div
       style={{ animationDelay: `${delay}ms` }}

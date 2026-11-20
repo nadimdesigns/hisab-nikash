@@ -363,7 +363,7 @@ export default function InventoryPanel({
             <Button variant="outline" onClick={() => setOpen(false)} className="h-12 rounded-xl bg-white hover:bg-white md:h-11">
               বাতিল
             </Button>
-            <Button onClick={submit} className="h-12 rounded-xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 md:h-11">
+            <Button onClick={submit} className="h-12 rounded-xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 md:h-11">
               {editing ? "সংরক্ষণ করুন" : "যোগ করুন"}
             </Button>
           </DialogFooter>
@@ -378,7 +378,7 @@ export default function InventoryPanel({
             <li
               key={`sk-${i}`}
               aria-busy="true"
-              className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 px-4 py-[18px] dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5"
+              className="flex items-center gap-3 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 px-4 py-[18px] dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
             >
               <Skeleton className="h-11 w-11 shrink-0 rounded-[100px] bg-white/60" />
               <div className="min-w-0 flex-1 space-y-1.5">
@@ -396,7 +396,7 @@ export default function InventoryPanel({
         <div
           className={typography(
             "body-muted",
-            "rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 py-10 text-center dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+            "rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 py-10 text-center dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5",
           )}
         >
           No products found.
@@ -417,7 +417,7 @@ export default function InventoryPanel({
                   "home-card-appear flex items-center gap-3 rounded-2xl border px-4 py-[18px] transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.99] sm:px-5 sm:py-[22px]",
                   low
                     ? "border-rose-200 bg-gradient-to-br from-rose-100 to-rose-50 dark:border-rose-500/25 dark:from-rose-500/15 dark:to-rose-500/5"
-                    : "border-emerald-200 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:border-emerald-500/25 dark:from-emerald-500/15 dark:to-emerald-500/5",
+                    : "border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5",
                   highlightId === m.id && "ring-2 ring-primary/50",
                 )}
               >
@@ -431,7 +431,7 @@ export default function InventoryPanel({
                         "inline-flex shrink-0 items-center whitespace-nowrap rounded-full bg-white px-2.5 py-0.5 text-xs font-semibold tabular-nums dark:bg-white/10",
                         low
                           ? "text-rose-700 dark:text-rose-300"
-                          : "text-emerald-700 dark:text-emerald-300",
+                          : "text-brand-700 dark:text-brand-300",
                       )}
                     >
                       {bnNumber(m.stock)} {unitLabel(m.unit)}

@@ -34,7 +34,7 @@ export default function AppLayout({ children, title }: { children: ReactNode; ti
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <header
-            className="sticky top-0 z-30 relative flex h-14 items-center gap-3 border-b border-emerald-700/40 text-sidebar-foreground px-4 pt-[5px] backdrop-blur-2xl md:pt-0"
+            className="sticky top-0 z-30 relative flex h-14 items-center gap-3 border-b border-brand-700/40 text-sidebar-foreground px-4 pt-[5px] backdrop-blur-2xl md:pt-0"
             style={{
               background: "linear-gradient(180deg, rgba(6, 44, 30, 0.82) 0%, rgba(2, 20, 13, 0.88) 100%)",
               backdropFilter: "blur(20px)",

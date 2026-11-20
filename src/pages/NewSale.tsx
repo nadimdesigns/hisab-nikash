@@ -24,7 +24,7 @@ export default function NewSale() {
             "home-card-appear grid grid-cols-2 gap-2 rounded-full p-1 transition-colors",
             isCredit
               ? "bg-rose-100/70 dark:bg-rose-500/15"
-              : "bg-emerald-100/60 dark:bg-emerald-500/15",
+              : "bg-brand-100/60 dark:bg-brand-500/15",
           )}
         >
           <button
@@ -35,7 +35,7 @@ export default function NewSale() {
             className={cn(
               "flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold transition-colors",
               !isCredit
-                ? "bg-emerald-900 text-white"
+                ? "bg-brand-900 text-white"
                 : "text-foreground/75 hover:text-foreground",
             )}
           >

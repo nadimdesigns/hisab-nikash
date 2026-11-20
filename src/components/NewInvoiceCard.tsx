@@ -165,16 +165,16 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         gradientHover: "hover:from-rose-600 hover:to-red-700",
       }
     : {
-        border: "border-emerald-100 dark:border-emerald-500/20",
-        label: "text-emerald-500 dark:text-emerald-300",
-        pillBg: "bg-emerald-50 border-emerald-100 dark:bg-emerald-950/40 dark:border-emerald-500/20",
-        pillText: "text-emerald-600 dark:text-emerald-300",
-        pillDot: "bg-emerald-500",
+        border: "border-brand-100 dark:border-brand-500/20",
+        label: "text-brand-500 dark:text-brand-300",
+        pillBg: "bg-brand-50 border-brand-100 dark:bg-brand-950/40 dark:border-brand-500/20",
+        pillText: "text-brand-600 dark:text-brand-300",
+        pillDot: "bg-brand-500",
         pillLabel: "পরিশোধিত",
-        focus: "focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500",
-        emptyHover: "hover:border-emerald-300 dark:hover:border-emerald-500/40",
-        gradient: "from-emerald-500 to-green-600",
-        gradientHover: "hover:from-emerald-600 hover:to-green-700",
+        focus: "focus-visible:ring-brand-500/20 focus-visible:border-brand-500",
+        emptyHover: "hover:border-brand-300 dark:hover:border-brand-500/40",
+        gradient: "from-brand-500 to-brand-700",
+        gradientHover: "hover:from-brand-600 hover:to-brand-800",
       };
 
   return (
@@ -184,7 +184,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
         className ??
         (isCredit
           ? "home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-rose-200 dark:border-rose-500/25 bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-500/15 dark:to-rose-500/5"
-          : "home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-emerald-200 dark:border-emerald-500/25 bg-gradient-to-br from-emerald-100 to-emerald-50 dark:from-emerald-500/15 dark:to-emerald-500/5")
+          : "home-hero-appear w-full min-w-0 overflow-hidden rounded-3xl border border-brand-200 dark:border-brand-500/25 bg-gradient-to-br from-brand-100 to-brand-50 dark:from-brand-500/15 dark:to-brand-500/5")
       }
     >
       {/* Header */}
@@ -279,7 +279,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
                   setQty(i.qty);
                 }}
                 className={`flex cursor-pointer items-center justify-between gap-3 rounded-2xl bg-white/80 px-4 py-[18px] transition-all hover:bg-white dark:bg-white/10 dark:hover:bg-white/15 ${
-                  pickId === i.productId ? "ring-2 ring-emerald-600/50 dark:ring-emerald-400/50" : ""
+                  pickId === i.productId ? "ring-2 ring-brand-600/50 dark:ring-brand-400/50" : ""
                 }`}
               >
                 <div className="min-w-0 flex-1">
@@ -292,7 +292,7 @@ export default function NewInvoiceCard({ className, title = "Cash Sale" }: { cla
                   className={
                     isCredit
                       ? "shrink-0 text-sm font-bold tabular-nums text-rose-600 dark:text-rose-400"
-                      : "shrink-0 text-sm font-bold tabular-nums text-emerald-700 dark:text-emerald-300"
+                      : "shrink-0 text-sm font-bold tabular-nums text-brand-700 dark:text-brand-300"
                   }
                 >
                   {currency(i.qty * i.unitPrice)}

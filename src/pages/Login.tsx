@@ -284,9 +284,9 @@ const Login = () => {
 
   return (
     <main className="min-h-[100svh] w-full bg-background flex flex-col items-center justify-start p-3 sm:p-4 pt-[max(20px,env(safe-area-inset-top))] pb-10 overflow-y-auto">
-      <Card className="w-full max-w-lg rounded-[28px] border border-emerald-200 dark:border-emerald-800/30 overflow-hidden bg-card transition-all my-0">
+      <Card className="w-full max-w-lg rounded-[28px] border border-brand-200 dark:border-brand-800/30 overflow-hidden bg-card transition-all my-0">
         {/* Top Header: Tint Green matching Nogod Bikroy card with black texts and no decorative circles */}
-        <div className="relative bg-gradient-to-br from-emerald-100 to-emerald-50 border-b border-emerald-200 px-5 pt-6 pb-5 flex flex-col items-center gap-1.5 text-center dark:from-emerald-950/50 dark:to-emerald-900/20 dark:border-emerald-800/40">
+        <div className="relative bg-gradient-to-br from-brand-100 to-brand-50 border-b border-brand-200 px-5 pt-6 pb-5 flex flex-col items-center gap-1.5 text-center dark:from-brand-950/50 dark:to-brand-900/20 dark:border-brand-800/40">
           <img
             src="/logo.webp"
             alt={APP_NAME}
@@ -297,7 +297,7 @@ const Login = () => {
           </span>
         </div>
 
-        <CardContent className="bg-emerald-50/70 px-4 sm:px-6 pt-5 pb-6 dark:bg-emerald-950/20">
+        <CardContent className="bg-brand-50/70 px-4 sm:px-6 pt-5 pb-6 dark:bg-brand-950/20">
           {/* ================= STEP 1: SHOP TYPE SELECTION ================= */}
           {step === "step-1-shop" && (
             <div className="space-y-4">
@@ -319,12 +319,12 @@ const Login = () => {
                       className={cn(
                         "relative flex flex-col justify-between p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] h-full min-h-[96px]",
                         isSelected
-                          ? "border-emerald-600 bg-emerald-500/15 ring-2 ring-emerald-600/60 dark:bg-emerald-500/20"
-                          : "border-border/80 bg-white/80 hover:bg-white hover:border-emerald-300 dark:bg-white/5 dark:hover:bg-white/10"
+                          ? "border-brand-600 bg-brand-500/15 ring-2 ring-brand-600/60 dark:bg-brand-500/20"
+                          : "border-border/80 bg-white/80 hover:bg-white hover:border-brand-300 dark:bg-white/5 dark:hover:bg-white/10"
                       )}
                     >
                       <div className="flex items-start justify-between w-full">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/50 text-2xl">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/50 text-2xl">
                           <span aria-hidden="true">{shop.emoji}</span>
                         </div>
 
@@ -333,7 +333,7 @@ const Login = () => {
                           className={cn(
                             "h-4 w-4 rounded-full border flex items-center justify-center transition-colors mt-0.5 shrink-0",
                             isSelected
-                              ? "border-emerald-600 bg-emerald-600 text-white"
+                              ? "border-brand-600 bg-brand-600 text-white"
                               : "border-muted-foreground/40 bg-transparent"
                           )}
                         >
@@ -361,7 +361,7 @@ const Login = () => {
                     setStep("step-3-phone");
                     setErrors({});
                   }}
-                  className="text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:bg-transparent hover:underline"
+                  className="text-xs font-semibold text-brand-800 dark:text-brand-300 hover:bg-transparent hover:underline"
                 >
                   ইতিমধ্যে অ্যাকাউন্ট আছে? সরাসরি লগইন করুন
                 </Button>
@@ -375,13 +375,13 @@ const Login = () => {
               {isServiceShop ? (
                 /* Service Business Type Single-Selection */
                 <>
-                  <div className="flex items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5 dark:border-emerald-800/40">
+                  <div className="flex items-center justify-between gap-2 border-b border-brand-200/60 pb-2.5 dark:border-brand-800/40">
                     <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
                       <span>🛠️</span>
                       <span>সেবার ধরন বেছে নিন</span>
                     </h2>
 
-                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold bg-emerald-600 text-white">
+                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold bg-brand-600 text-white">
                       ১টি নির্বাচিত
                     </span>
                   </div>
@@ -391,7 +391,7 @@ const Login = () => {
                   </p>
 
                   {/* 2-Column Service Types Grid (Single-Selection) */}
-                  <div className="grid grid-cols-2 gap-2 max-h-[340px] overflow-y-auto p-1 rounded-xl bg-white/40 dark:bg-white/5 border border-emerald-200/40 dark:border-white/10">
+                  <div className="grid grid-cols-2 gap-2 max-h-[340px] overflow-y-auto p-1 rounded-xl bg-white/40 dark:bg-white/5 border border-brand-200/40 dark:border-white/10">
                     {SERVICE_BUSINESS_TYPES.map((service) => {
                       const isSelected = selectedServiceTypeId === service.id;
                       return (
@@ -402,7 +402,7 @@ const Login = () => {
                           className={cn(
                             "relative flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-150 active:scale-95 select-none min-h-[58px]",
                             isSelected
-                              ? "border-emerald-600 bg-emerald-100/70 dark:bg-emerald-500/25 ring-1 ring-emerald-500/50"
+                              ? "border-brand-600 bg-brand-100/70 dark:bg-brand-500/25 ring-1 ring-brand-500/50"
                               : "border-border/70 bg-white dark:bg-white/5 opacity-80 hover:opacity-100"
                           )}
                         >
@@ -416,7 +416,7 @@ const Login = () => {
                             className={cn(
                               "h-4 w-4 shrink-0 rounded-full border flex items-center justify-center transition-colors",
                               isSelected
-                                ? "border-emerald-600 bg-emerald-600 text-white"
+                                ? "border-brand-600 bg-brand-600 text-white"
                                 : "border-muted-foreground/40 bg-white dark:bg-white/10"
                             )}
                           >
@@ -430,7 +430,7 @@ const Login = () => {
               ) : (
                 /* Standard Products Multi-Selection Checklist */
                 <>
-                  <div className="flex items-center justify-between gap-2 border-b border-emerald-200/60 pb-2.5 dark:border-emerald-800/40">
+                  <div className="flex items-center justify-between gap-2 border-b border-brand-200/60 pb-2.5 dark:border-brand-800/40">
                     <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
                       <span>{currentShopInfo.emoji}</span>
                       <span>{currentShopInfo.shortTitle}র পণ্য</span>
@@ -440,7 +440,7 @@ const Login = () => {
                       className={cn(
                         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold",
                         selectedProductIds.size >= 1
-                          ? "bg-emerald-600 text-white"
+                          ? "bg-brand-600 text-white"
                           : "bg-rose-600 text-white animate-pulse"
                       )}
                     >
@@ -457,7 +457,7 @@ const Login = () => {
                       <button
                         type="button"
                         onClick={selectAllProducts}
-                        className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300 hover:underline"
+                        className="text-[11px] font-semibold text-brand-700 dark:text-brand-300 hover:underline"
                       >
                         সব নির্বাচন
                       </button>
@@ -473,7 +473,7 @@ const Login = () => {
                   </div>
 
                   {/* Simple Plain Text Checkmark Options (3 Columns) */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2 gap-y-1 max-h-[340px] overflow-y-auto p-2.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-emerald-200/50 dark:border-white/10">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2 gap-y-1 max-h-[340px] overflow-y-auto p-2.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-brand-200/50 dark:border-white/10">
                     {currentProductsList.map((product) => {
                       const isChecked = selectedProductIds.has(product.id);
                       return (
@@ -482,7 +482,7 @@ const Login = () => {
                           type="button"
                           onClick={() => toggleProduct(product.id)}
                           className={cn(
-                            "flex items-center gap-2 py-1.5 px-2 rounded-lg text-left transition-colors select-none hover:bg-emerald-500/10 active:scale-[0.98]",
+                            "flex items-center gap-2 py-1.5 px-2 rounded-lg text-left transition-colors select-none hover:bg-brand-500/10 active:scale-[0.98]",
                             isChecked ? "text-foreground font-semibold" : "text-muted-foreground font-normal"
                           )}
                         >
@@ -490,7 +490,7 @@ const Login = () => {
                             className={cn(
                               "h-4 w-4 shrink-0 rounded flex items-center justify-center border transition-colors",
                               isChecked
-                                ? "bg-emerald-600 border-emerald-600 text-white"
+                                ? "bg-brand-600 border-brand-600 text-white"
                                 : "border-muted-foreground/40 bg-white dark:bg-white/10"
                             )}
                           >
@@ -524,7 +524,7 @@ const Login = () => {
                         setStep("step-3-phone");
                       }
                     }}
-                    className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md shadow-emerald-700/20 hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                    className="w-full rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white shadow-md shadow-brand-700/20 hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
                   >
                     পরবর্তী ধাপ ➔
                   </Button>
@@ -548,7 +548,7 @@ const Login = () => {
           {/* ================= STEP 3: PHONE NUMBER ================= */}
           {step === "step-3-phone" && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between bg-emerald-100/60 dark:bg-emerald-900/30 p-2.5 rounded-2xl border border-emerald-200 dark:border-emerald-800/40">
+              <div className="flex items-center justify-between bg-brand-100/60 dark:bg-brand-900/30 p-2.5 rounded-2xl border border-brand-200 dark:border-brand-800/40">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">
                     {isServiceShop ? selectedServiceInfo.emoji : currentShopInfo.emoji}
@@ -567,7 +567,7 @@ const Login = () => {
                 <button
                   type="button"
                   onClick={() => setStep("step-2-products")}
-                  className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 hover:underline px-2 py-1"
+                  className="text-xs font-semibold text-brand-700 dark:text-brand-300 hover:underline px-2 py-1"
                 >
                   পরিবর্তন ✏️
                 </button>
@@ -581,11 +581,11 @@ const Login = () => {
                   <div
                     className={cn(
                       "flex h-12 w-full items-center rounded-2xl border border-input bg-white shadow-sm transition-all dark:bg-white/10 overflow-hidden",
-                      "focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/30",
+                      "focus-within:border-brand-600 focus-within:ring-2 focus-within:ring-brand-600/30",
                       (errors.phone || errors.form) && "border-destructive focus-within:border-destructive focus-within:ring-destructive/30"
                     )}
                   >
-                    <span className="inline-flex h-full shrink-0 select-none items-center border-r border-input bg-emerald-50/50 px-3.5 text-sm font-semibold text-muted-foreground dark:bg-white/5">
+                    <span className="inline-flex h-full shrink-0 select-none items-center border-r border-input bg-brand-50/50 px-3.5 text-sm font-semibold text-muted-foreground dark:bg-white/5">
                       +88
                     </span>
                     <input
@@ -626,7 +626,7 @@ const Login = () => {
                     type="submit"
                     size="lg"
                     disabled={checkingPhone}
-                    className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                    className="w-full rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white shadow-md hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
                   >
                     {checkingPhone ? "যাচাই হচ্ছে…" : "পরবর্তী ধাপ ➔"}
                   </Button>
@@ -768,7 +768,7 @@ const Login = () => {
                     type="submit"
                     size="lg"
                     disabled={submitting || (!isExistingAccount && (pin.length !== 4 || confirmPin.length !== 4))}
-                    className="w-full rounded-2xl bg-gradient-to-r from-emerald-700 via-emerald-600 to-emerald-500 font-semibold text-white shadow-md hover:from-emerald-600 hover:via-emerald-500 hover:to-emerald-400 active:scale-[0.98]"
+                    className="w-full rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white shadow-md hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
                   >
                     {submitting
                       ? "প্রক্রিয়াকরণ হচ্ছে…"

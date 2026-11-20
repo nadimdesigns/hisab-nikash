@@ -15,6 +15,20 @@ export default {
     },
     extend: {
       colors: {
+        // Brand blue, sampled from the app icon (core #0075FB).
+        brand: {
+          50: "#eef6ff",
+          100: "#d9ebff",
+          200: "#b8dbff",
+          300: "#85c2ff",
+          400: "#46a3ff",
+          500: "#0075fb",
+          600: "#0062dc",
+          700: "#0050b8",
+          800: "#0a418f",
+          900: "#0c3770",
+          950: "#082049",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
