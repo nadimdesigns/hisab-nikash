@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import RequireAuth from "./components/RequireAuth";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { useAppUpdater } from "./lib/appUpdate";
 
 const Index = lazy(() => import("./pages/Index.tsx"));
 const Inventory = lazy(() => import("./pages/Inventory.tsx"));
@@ -22,6 +23,12 @@ const Login = lazy(() => import("./pages/Login.tsx"));
 const ProductQuickSearch = lazy(() =>
   import("./components/ProductQuickSearch").then((m) => ({ default: m.ProductQuickSearch })),
 );
+
+/** Mounts the "reload when a newer build is deployed" watcher inside the router. */
+const AppUpdater = () => {
+  useAppUpdater();
+  return null;
+};
 
 const GlobalQuickSearch = () => {
   const { pathname } = useLocation();
@@ -49,6 +56,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <ScrollToTop />
+          <AppUpdater />
           <GlobalQuickSearch />
           <Suspense fallback={<PageFallback />}>
             <Routes>
