@@ -7,6 +7,11 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 // created already-confirmed through the admin API, so nothing depends on the
 // project's "Confirm email" setting and no auth.users trigger is needed.
 // Only this app's synthetic addresses can be created here.
+//
+// Abuse guard: at most MAX_PER_HOUR signup attempts per client IP per hour,
+// tracked in hisab_nikash_signup_attempts (service role only).
+
+const MAX_PER_HOUR = 10;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -41,6 +46,21 @@ Deno.serve(async (req: Request) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     { auth: { persistSession: false, autoRefreshToken: false } },
   );
+
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim() || "unknown";
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count } = await admin
+    .from("hisab_nikash_signup_attempts")
+    .select("id", { count: "exact", head: true })
+    .eq("ip", ip)
+    .gte("created_at", since);
+  if ((count ?? 0) >= MAX_PER_HOUR) return json({ error: "rate_limited" }, 429);
+  await admin.from("hisab_nikash_signup_attempts").insert({ ip });
+  // Keep the log small: drop anything older than a day.
+  await admin
+    .from("hisab_nikash_signup_attempts")
+    .delete()
+    .lt("created_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
   const { error } = await admin.auth.admin.createUser({
     email: `${phone}@hisabnikash.com`,

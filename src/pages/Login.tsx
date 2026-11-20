@@ -26,15 +26,15 @@ const authEmailFor = (phone: string) => `${phone.replace(/\D/g, "")}@${PHONE_DOM
 const authPasswordFor = (pin: string) => `H1${pin}`;
 const parsedPhoneDigits = (phone: string) => phone.replace(/\D/g, "");
 
-/** The signup function answers 409 { error: "already_registered" } for a taken number. */
-async function isAlreadyRegistered(err: unknown): Promise<boolean> {
+/** Reads the `{ error }` code the signup function answers with (409 already_registered, 429 rate_limited, ...). */
+async function signupErrorCode(err: unknown): Promise<string | null> {
   const ctx = (err as { context?: Response }).context;
-  if (!ctx || typeof ctx.json !== "function") return false;
+  if (!ctx || typeof ctx.json !== "function") return null;
   try {
     const body = await ctx.clone().json();
-    return body?.error === "already_registered";
+    return typeof body?.error === "string" ? body.error : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -230,10 +230,16 @@ const Login = () => {
         const { error: signupError } = await supabase.functions.invoke("hisab-nikash-signup", {
           body: { phone: parsedPhoneDigits(phone), pin: parsedPin.data },
         });
-        const alreadyRegistered = signupError ? await isAlreadyRegistered(signupError) : false;
+        const errorCode = signupError ? await signupErrorCode(signupError) : null;
+        const alreadyRegistered = errorCode === "already_registered";
 
         if (signupError && !alreadyRegistered) {
-          setErrors({ form: "অ্যাকাউন্ট তৈরি করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।" });
+          setErrors({
+            form:
+              errorCode === "rate_limited"
+                ? "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।"
+                : "অ্যাকাউন্ট তৈরি করা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।",
+          });
         } else {
           const { error: signInError } = await supabase.auth.signInWithPassword({
             email: authEmailFor(phone),
