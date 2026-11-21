@@ -220,45 +220,6 @@
     mix-blend-mode: screen;
   }
 
-  /* Balance card gloss: the card's glossy highlight, moving. A thin, bright white band (about a third of the card wide) with a soft falloff
-     glides slowly from the top-left corner to the bottom-right corner (the 300% background goes from
-     100% 100%, band off the top-left, to 0% 0%, band off the bottom-right), rests off-card for a moment
-     and loops (about 8s per pass). The band uses the same 140deg angle as the card's own background
-     gradient, so it crosses the card parallel to the fixed diagonal band. It replaces the old static diagonal highlight, so there is only this one glow. */
-  @keyframes balance-sheen {
-    0%   { background-position: 100% 100%; }
-    90%  { background-position: 0% 0%; }
-    100% { background-position: 0% 0%; }
-  }
-  .balance-sheen {
-    --balance-sheen-color: rgba(255, 255, 255, 0.55);
-    --balance-sheen-soft: rgba(255, 255, 255, 0.12);
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    background-image: linear-gradient(
-      140deg,
-      transparent 45%,
-      var(--balance-sheen-soft) 48%,
-      var(--balance-sheen-color) 50%,
-      var(--balance-sheen-soft) 52%,
-      transparent 55%
-    );
-    background-size: 300% 300%;
-    background-repeat: no-repeat;
-    background-position: 100% 100%;
-    animation: balance-sheen 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
-    mix-blend-mode: screen;
-  }
-  .dark .balance-sheen {
-    --balance-sheen-color: rgba(255, 228, 150, 0.6);
-    --balance-sheen-soft: rgba(255, 228, 150, 0.14);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .balance-sheen { animation: none; }
-  }
-
   /* Hide the scrollbar track/thumb while keeping the element scrollable
      (wheel, touch, keyboard). Use on a container that already sets
      overflow-auto/-scroll. */

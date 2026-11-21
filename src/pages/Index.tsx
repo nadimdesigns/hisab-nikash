@@ -312,7 +312,7 @@ const Index = () => {
 
 /**
  * Credit-card style net-balance card (Bank Asia + Hisab-Kitab inspiration):
- * rich blue gradient, glossy premium 3D finish (sheen overlay + embossed
+ * rich blue gradient, glossy premium 3D finish (embossed
  * digits), tap to reveal the amount, and a bottom Income / Expense split.
  */
 function BalanceCardSkeleton() {

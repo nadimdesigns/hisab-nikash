@@ -7,9 +7,8 @@ import { isDemoMode } from "@/lib/demoMode";
  *  - light theme: blue card; dark theme: premium gold card (every colour has a `dark:` twin, so a
  *    `.dark` ancestor forces the gold look, which the style guide uses to show both side by side);
  *  - the card's own gradient has a fixed brighter diagonal band (centre stop); it is kept at half
- *    contrast (#0558cc light / #8e6518 dark, midway to the neighbouring stops) so it reads soft;
- *  - one glossy highlight (`.balance-sheen`, src/index.css), no static gloss: it glides slowly from the
- *    top-left corner to the bottom-right corner and loops, like light moving across a glossy card.
+ *    contrast (#0558cc light / #8e6518 dark, midway to the neighbouring stops) so it reads soft.
+ *  - no moving shimmer: the card has only its gradient, the wave lines and the top-right blob.
  */
 export function BalanceCard({
   net,
@@ -41,10 +40,6 @@ export function BalanceCard({
       </svg>
 
       <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/20 blur-2xl dark:bg-amber-200/20" aria-hidden />
-
-      {/* The glossy highlight itself, moving: it glides slowly from the top-left corner to the
-          bottom-right corner, then loops (there is no separate static gloss or second shimmer) */}
-      <div className="balance-sheen" aria-hidden />
 
       <div className="relative flex items-start justify-between">
         {/* EMV-style chip */}
