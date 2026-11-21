@@ -23,6 +23,15 @@ import {
   seedCustomShopProducts,
 } from "@/lib/onboardingData";
 
+/** Categories shown before the "more categories" button; only their products start ticked. */
+const VISIBLE_CATEGORIES = 5;
+
+function defaultSelectedIds(type: ShopType): Set<string> {
+  const items = SHOP_TYPE_PRODUCTS[type] || [];
+  const firstCategories = new Set(Array.from(new Set(items.map((p) => p.category))).slice(0, VISIBLE_CATEGORIES));
+  return new Set(items.filter((p) => firstCategories.has(p.category)).map((p) => p.id));
+}
+
 const PHONE_DOMAIN = "hisabnikash.com";
 const authEmailFor = (phone: string) => `${phone.replace(/\D/g, "")}@${PHONE_DOMAIN}`;
 const authPasswordFor = (pin: string) => `H1${pin}`;
@@ -87,9 +96,7 @@ const Login = () => {
   }, []);
   const [selectedShopType, setSelectedShopType] = useState<ShopType>("grocery");
   const [selectedServiceTypeId, setSelectedServiceTypeId] = useState<string>("srv-dental");
-  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(() => {
-    return new Set(SHOP_TYPE_PRODUCTS["grocery"].map((p) => p.id));
-  });
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(() => defaultSelectedIds("grocery"));
 
   // Step 2: only the first 5 categories are listed until "more" is pressed
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -127,7 +134,7 @@ const Login = () => {
       const srv = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId) || SERVICE_BUSINESS_TYPES[0];
       setSelectedProductIds(new Set(srv.defaultItems.map((p) => p.id)));
     } else {
-      setSelectedProductIds(new Set(SHOP_TYPE_PRODUCTS[type].map((p) => p.id)));
+      setSelectedProductIds(defaultSelectedIds(type));
     }
     setStep("step-2-products");
   };
@@ -351,7 +358,6 @@ const Login = () => {
   const productCategories = Array.from(
     currentProductsList.reduce((m, p) => m.set(p.category, [...(m.get(p.category) ?? []), p]), new Map<string, typeof currentProductsList>()),
   ).map(([category, items]) => ({ category, items }));
-  const VISIBLE_CATEGORIES = 5;
   const visibleCategories = showAllCategories ? productCategories : productCategories.slice(0, VISIBLE_CATEGORIES);
   const hiddenCategoryCount = Math.max(0, productCategories.length - VISIBLE_CATEGORIES);
   const currentShopInfo = ONBOARDING_SHOP_TYPES.find((s) => s.id === selectedShopType) || ONBOARDING_SHOP_TYPES[0];
