@@ -101,6 +101,29 @@ const Login = () => {
   // Step 2: only the first 5 categories are listed until "more" is pressed
   const [showAllCategories, setShowAllCategories] = useState(false);
 
+  // Opening the full list scrolls to the very bottom of the page, closing it back to the top. Done
+  // after the list has re-rendered (the page height changes), with an instant fallback in case
+  // the browser dropped the smooth scroll while the page was shrinking.
+  const categoriesToggled = useRef(false);
+  useEffect(() => {
+    if (!categoriesToggled.current) {
+      categoriesToggled.current = true;
+      return;
+    }
+    const toTop = !showAllCategories;
+    const go = (behavior: ScrollBehavior) =>
+      window.scrollTo({ top: toTop ? 0 : document.documentElement.scrollHeight, behavior });
+    const raf = requestAnimationFrame(() => go("smooth"));
+    const fallback = window.setTimeout(() => {
+      const target = toTop ? 0 : document.documentElement.scrollHeight - window.innerHeight;
+      if (Math.abs(window.scrollY - target) > 2) go("auto");
+    }, 700);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.clearTimeout(fallback);
+    };
+  }, [showAllCategories]);
+
   // Step 2: which categories are expanded
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
 
@@ -642,18 +665,7 @@ const Login = () => {
                         variant="ghost"
                         size="sm"
                         aria-expanded={showAllCategories}
-                        onClick={() => {
-                          const expanding = !showAllCategories;
-                          setShowAllCategories(expanding);
-                          // Opening the list scrolls to the very bottom of the page; closing it
-                          // scrolls back to the top, where the step opened.
-                          requestAnimationFrame(() =>
-                            window.scrollTo({
-                              top: expanding ? document.documentElement.scrollHeight : 0,
-                              behavior: "smooth",
-                            }),
-                          );
-                        }}
+                        onClick={() => setShowAllCategories((v) => !v)}
                         className="h-8 rounded-full px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100/70 dark:text-brand-300"
                       >
                         {showAllCategories ? "কম দেখান ▴" : `আরও ${hiddenCategoryCount}টি ক্যাটাগরি ▾`}
