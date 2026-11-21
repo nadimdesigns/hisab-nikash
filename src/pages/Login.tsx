@@ -91,6 +91,9 @@ const Login = () => {
     return new Set(SHOP_TYPE_PRODUCTS["grocery"].map((p) => p.id));
   });
 
+  // Step 2: only the first 5 categories are listed until "more" is pressed
+  const [showAllCategories, setShowAllCategories] = useState(false);
+
   // Step 2: which categories are expanded
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
 
@@ -118,6 +121,7 @@ const Login = () => {
   const handleSelectShopType = (type: ShopType) => {
     setSelectedShopType(type);
     setOpenCategories(new Set());
+    setShowAllCategories(false);
     if (type === "service") {
       const srv = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId) || SERVICE_BUSINESS_TYPES[0];
       setSelectedProductIds(new Set(srv.defaultItems.map((p) => p.id)));
@@ -346,6 +350,9 @@ const Login = () => {
   const productCategories = Array.from(
     currentProductsList.reduce((m, p) => m.set(p.category, [...(m.get(p.category) ?? []), p]), new Map<string, typeof currentProductsList>()),
   ).map(([category, items]) => ({ category, items }));
+  const VISIBLE_CATEGORIES = 5;
+  const visibleCategories = showAllCategories ? productCategories : productCategories.slice(0, VISIBLE_CATEGORIES);
+  const hiddenCategoryCount = Math.max(0, productCategories.length - VISIBLE_CATEGORIES);
   const currentShopInfo = ONBOARDING_SHOP_TYPES.find((s) => s.id === selectedShopType) || ONBOARDING_SHOP_TYPES[0];
 
   return (
@@ -535,8 +542,8 @@ const Login = () => {
                   </div>
 
                   {/* Categories: tick a category to include all its products, open it to pick/rename products */}
-                  <div className="grid grid-cols-1 gap-2 max-h-[360px] overflow-y-auto p-2 rounded-2xl bg-white/60 dark:bg-white/5 border border-brand-200/50 dark:border-white/10">
-                    {productCategories.map(({ category, items }) => {
+                  <div className="grid grid-cols-1 gap-2 p-2 rounded-2xl bg-white/60 dark:bg-white/5 border border-brand-200/50 dark:border-white/10">
+                    {visibleCategories.map(({ category, items }) => {
                       const selectedCount = items.filter((p) => selectedProductIds.has(p.id)).length;
                       const allOn = selectedCount === items.length;
                       const someOn = selectedCount > 0 && !allOn;
@@ -621,6 +628,21 @@ const Login = () => {
                       );
                     })}
                   </div>
+
+                  {hiddenCategoryCount > 0 || showAllCategories ? (
+                    <div className="flex justify-end">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        aria-expanded={showAllCategories}
+                        onClick={() => setShowAllCategories((v) => !v)}
+                        className="h-8 rounded-full px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100/70 dark:text-brand-300"
+                      >
+                        {showAllCategories ? "কম দেখান ▴" : `আরও ${hiddenCategoryCount}টি ক্যাটাগরি ▾`}
+                      </Button>
+                    </div>
+                  ) : null}
 
                   {selectedProductIds.size === 0 && (
                     <p role="alert" className="text-xs text-rose-600 font-medium text-center bg-rose-50 dark:bg-rose-950/30 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/40">
