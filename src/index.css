@@ -220,36 +220,39 @@
     mix-blend-mode: screen;
   }
 
-  /* Balance card sheen: a soft diagonal highlight that glides slowly from the top-left corner to
-     the bottom-right corner, rests off-card for a moment, then loops. The 300% background is moved
-     from 100% 100% (band off the top-left) to 0% 0% (band off the bottom-right). */
+  /* Balance card gloss: the card's glossy highlight, moving. A soft white band with a brighter core
+     glides slowly from the top-left corner to the bottom-right corner (the 300% background goes from
+     100% 100%, band off the top-left, to 0% 0%, band off the bottom-right), rests off-card for a moment
+     and loops (about 8s per pass). It replaces the old static diagonal highlight, so there is only this one glow. */
   @keyframes balance-sheen {
     0%   { background-position: 100% 100%; }
-    74%  { background-position: 0% 0%; }
+    90%  { background-position: 0% 0%; }
     100% { background-position: 0% 0%; }
   }
   .balance-sheen {
-    --balance-sheen-color: rgba(255, 255, 255, 0.34);
+    --balance-sheen-color: rgba(255, 255, 255, 0.4);
+    --balance-sheen-soft: rgba(255, 255, 255, 0.1);
     position: absolute;
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
     background-image: linear-gradient(
-      135deg,
-      transparent 0%,
-      transparent 37%,
+      115deg,
+      transparent 33%,
+      var(--balance-sheen-soft) 42%,
       var(--balance-sheen-color) 50%,
-      transparent 63%,
-      transparent 100%
+      var(--balance-sheen-soft) 58%,
+      transparent 67%
     );
     background-size: 300% 300%;
     background-repeat: no-repeat;
     background-position: 100% 100%;
-    animation: balance-sheen 8s ease-in-out infinite;
+    animation: balance-sheen 8s cubic-bezier(0.37, 0, 0.63, 1) infinite;
     mix-blend-mode: screen;
   }
   .dark .balance-sheen {
     --balance-sheen-color: rgba(255, 228, 150, 0.5);
+    --balance-sheen-soft: rgba(255, 228, 150, 0.12);
   }
   @media (prefers-reduced-motion: reduce) {
     .balance-sheen { animation: none; }

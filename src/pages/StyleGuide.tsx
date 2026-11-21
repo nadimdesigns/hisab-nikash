@@ -485,7 +485,7 @@ export default function StyleGuide() {
             </div>
           </Block>
 
-          <Block title="Balance card" note="components/BalanceCard · light = blue, dark = premium gold, slow diagonal sheen">
+          <Block title="Balance card" note="components/BalanceCard · light = blue, dark = premium gold, one glossy highlight that moves slowly top-left to bottom-right and loops">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <p className="font-mono text-[11px] text-muted-foreground">light theme</p>
