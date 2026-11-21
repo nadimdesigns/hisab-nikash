@@ -1,5 +1,5 @@
 import { lazy, Suspense, useMemo } from "react";
-import { startOfDay } from "date-fns";
+import { startOfDay, startOfMonth } from "date-fns";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,7 +18,7 @@ const SalesChart = lazy(() => import("@/components/SalesChart"));
 /** Labels for the selected period: "আজকের বিক্রি", "এই মাসের লাভ" ... */
 const PERIOD_PREFIX: Record<HomePeriod, string> = {
   today: "আজকের",
-  week: "এই সপ্তাহের",
+  all: "সকল",
   month: "এই মাসের",
   year: "এই বছরের",
 };
@@ -74,21 +74,25 @@ const Index = () => {
     return { inventoryValue, lowStock, bestSelling, periodRevenue, periodProfit, periodIncome, periodExpense, periodNet, recent };
   }, [products, sales, purchases, period]);
 
-  // Sales chart: one bar per day of the period (per month for "এই বছর"), up to today.
+  // Sales chart: one bar per day of the period ("এই বছর" and "সকল হিসাব": one bar per month), up to today.
   const chartData = useMemo(() => {
     const now = new Date();
-    const yearly = period === "year";
+    const yearly = period === "year" || period === "all";
     const key = (d: Date) => (yearly ? d.getFullYear() * 12 + d.getMonth() : startOfDay(d).getTime());
-    const cursor = new Date(periodStart(period, now));
+    // "সকল হিসাব" starts from the month of the first sale (or the current month when there are none).
+    const start =
+      period === "all"
+        ? startOfMonth(sales.reduce((min, s) => Math.min(min, new Date(s.date).getTime()), now.getTime())).getTime()
+        : periodStart(period, now);
+    const cursor = new Date(start);
     const buckets: { date: string; revenue: number }[] = [];
     const index = new Map<number, number>();
     while (key(cursor) <= key(now)) {
       index.set(key(cursor), buckets.length);
-      buckets.push({ date: formatDate(cursor, yearly ? "MMM" : "d MMM"), revenue: 0 });
+      buckets.push({ date: formatDate(cursor, yearly ? "MMM yy" : "d MMM"), revenue: 0 });
       if (yearly) cursor.setMonth(cursor.getMonth() + 1, 1);
       else cursor.setDate(cursor.getDate() + 1);
     }
-    const start = periodStart(period, now);
     sales.forEach((s) => {
       const d = new Date(s.date);
       if (d.getTime() < start || d.getTime() > now.getTime()) return;
@@ -105,7 +109,6 @@ const Index = () => {
         <div className="flex gap-2 overflow-x-auto pb-0.5">
           {([
             { k: "today", l: "আজ" },
-            { k: "week", l: "এই সপ্তাহ" },
             { k: "month", l: "এই মাস" },
             { k: "year", l: "এই বছর" },
           ] as const).map(({ k, l }, idx) => (
@@ -223,7 +226,7 @@ const Index = () => {
           className="home-card-appear lg:col-span-2 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 transition-transform duration-200 hover:-translate-y-0.5 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
         >
           <CardHeader>
-            <CardTitle>{period === "year" ? "এই বছরের মাসিক বিক্রি" : `${PERIOD_PREFIX[period]} দৈনিক বিক্রি`}</CardTitle>
+            <CardTitle>{period === "all" ? "সকল সময়ের মাসিক বিক্রি" : period === "year" ? "এই বছরের মাসিক বিক্রি" : `${PERIOD_PREFIX[period]} দৈনিক বিক্রি`}</CardTitle>
           </CardHeader>
           <CardContent className="h-[280px]">
             {hydrated ? (
