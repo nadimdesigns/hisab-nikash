@@ -49,3 +49,12 @@ Before finishing any UI task, check `/style-guide` still matches (light and dark
 - A new APK is only needed for **native** changes (plugins, permissions, icon, splash). Bump
   `APK_MIN_NATIVE` (scripts/zip-apk-bundle.mjs) when a bundle needs a newer native shell.
 - The Android shell (`android/`, `capacitor.config.ts`, APK workflow) lives on the `Apk` branch only.
+
+## Auto-updater must never interrupt the user
+
+`useAppUpdater` (`src/lib/appUpdate.ts`) reloads the page / switches the APK bundle after a deploy. It only
+applies an update at start-up, on navigation (not straight out of `/login`), or when backgrounded/idle, and
+never on `/login`, with a field focused, or while `holdUpdates()` (`src/lib/updateGate.ts`) is held. Any
+screen that runs a multi-step async action a reload would half-finish (signup, payment, a save in flight)
+must wrap it in `const release = holdUpdates(); try { ... } finally { release(); }`.
+(A reload between "account created" and "signed in" once dropped new users back on onboarding step 1.)

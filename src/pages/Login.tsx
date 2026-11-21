@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useAuth, SKIP_ONBOARDING_KEY } from "@/lib/auth";
+import { holdUpdates } from "@/lib/updateGate";
 import { supabase } from "@/integrations/supabase/client";
 
 import { toast } from "@/hooks/use-toast";
@@ -223,6 +224,8 @@ const Login = () => {
 
     setErrors({});
     setSubmitting(true);
+    // A new deployment must not reload the page between "account created" and "signed in".
+    const releaseUpdates = holdUpdates();
 
     try {
       if (isExistingAccount) {
@@ -291,6 +294,7 @@ const Login = () => {
         }
       }
     } finally {
+      releaseUpdates();
       setSubmitting(false);
     }
   };

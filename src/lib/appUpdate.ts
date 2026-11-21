@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { IS_APK, LIVE_ORIGIN } from "@/lib/appTarget";
+import { updatesHeld } from "@/lib/updateGate";
 
 /**
  * Keeps every open tab / installed app on the latest deployment without a manual refresh.
@@ -17,9 +18,13 @@ import { IS_APK, LIVE_ORIGIN } from "@/lib/appTarget";
  *    at a safe moment. The packaged build keeps working offline; no download is attempted
  *    while offline.
  *
- * To avoid wiping a half-filled form, a switch found while the user is active waits for the
- * next navigation, for the app to be backgrounded, or for 20s of idleness with no field
- * focused. A one-minute guard prevents reload loops.
+ * To avoid wiping a half-filled form or a request in flight, an update is only applied:
+ *  - right at start-up (the page has just loaded, nothing typed yet),
+ *  - when the user navigates to another screen (except straight out of /login),
+ *  - when the app is in the background or has been idle for 20 s,
+ * and never on /login, while a field is focused, or while a screen holds updates (updateGate.ts,
+ * e.g. during signup). Coming back to the foreground only checks; it never reloads by itself.
+ * A one-minute guard prevents reload loops.
  */
 
 const POLL_MS = 30_000;
@@ -95,6 +100,11 @@ async function apply(latest: LatestBuild) {
   await clearCachesAndReload(latest);
 }
 
+/** A reload now would lose something the user is doing (login form, focused field, request in flight). */
+function mustNotInterrupt(): boolean {
+  return window.location.pathname === "/login" || updatesHeld() || isEditing();
+}
+
 function isEditing(): boolean {
   const el = document.activeElement as HTMLElement | null;
   if (!el) return false;
@@ -106,7 +116,7 @@ export function useAppUpdater() {
   const { pathname } = useLocation();
   const pending = useRef<LatestBuild | null>(null);
   const lastActive = useRef(Date.now());
-  const firstPath = useRef(pathname);
+  const lastPath = useRef(pathname);
 
   useEffect(() => {
     if (import.meta.env.DEV || __APP_VERSION__ === "dev") return;
@@ -128,13 +138,13 @@ export function useAppUpdater() {
       }
       if (!(await prepare(latest))) return; // e.g. needs a newer APK, or the download failed
       pending.current = latest;
-      // Nothing typed yet at start-up, or the app is in the background: safe now.
-      if (atStartup || document.hidden) void apply(latest);
+      // Only at start-up: the page has just loaded, so nothing can be lost.
+      if (atStartup && !updatesHeld() && !isEditing()) void apply(latest);
     };
 
     const maybeApplyWhenIdle = () => {
-      if (!pending.current) return;
-      if (document.hidden || (!isEditing() && Date.now() - lastActive.current > IDLE_MS)) {
+      if (!pending.current || mustNotInterrupt()) return;
+      if (document.hidden || Date.now() - lastActive.current > IDLE_MS) {
         void apply(pending.current);
       }
     };
@@ -143,8 +153,11 @@ export function useAppUpdater() {
     const poll = window.setInterval(() => {
       void check().then(maybeApplyWhenIdle);
     }, POLL_MS);
+    // Coming back to the app or the network returning only looks for / downloads the new build;
+    // it is applied at the next safe moment, never by interrupting what the user is doing.
     const onVisible = () => {
-      if (!document.hidden) void check(true);
+      if (document.hidden) maybeApplyWhenIdle();
+      else void check();
     };
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("online", onVisible);
@@ -157,10 +170,12 @@ export function useAppUpdater() {
     };
   }, []);
 
-  // Navigating to another screen is a safe moment to swap in the new build.
+  // Navigating to another screen is a safe moment to swap in the new build, except right after
+  // logging in or signing up (leave /login alone; it is applied a little later when idle).
   useEffect(() => {
-    if (pathname === firstPath.current) return;
-    firstPath.current = pathname;
+    const from = lastPath.current;
+    lastPath.current = pathname;
+    if (from === pathname || from === "/login" || updatesHeld()) return;
     if (pending.current) void apply(pending.current);
   }, [pathname]);
 }
