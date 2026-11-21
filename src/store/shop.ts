@@ -304,14 +304,18 @@ export const useShop = create<ShopState>()(
 
       addProduct: (m) => {
         if (blockedByDemo()) return;
-        set((s) => ({ products: [...s.products, { ...m, id: uid() }] }));
+        // Newest first: the array is ordered most-recently added/edited first.
+        set((s) => ({ products: [{ ...m, id: uid() }, ...s.products] }));
       },
 
       updateProduct: (id, patch) => {
         if (blockedByDemo()) return;
-        set((s) => ({
-          products: s.products.map((m) => (m.id === id ? { ...m, ...patch } : m)),
-        }));
+        set((s) => {
+          const target = s.products.find((m) => m.id === id);
+          if (!target) return s;
+          // An edited product moves to the front (most recent first).
+          return { products: [{ ...target, ...patch }, ...s.products.filter((m) => m.id !== id)] };
+        });
       },
 
       deleteProduct: (id) => {

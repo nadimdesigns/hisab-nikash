@@ -93,11 +93,12 @@ export function filterAndSortProducts(
         (a, b) => new Date(a.expiry).getTime() - new Date(b.expiry).getTime() || byName(a, b),
       );
       break;
+    // The products array is ordered most recently added/edited first.
     case "newest":
-      sorted.sort((a, b) => (indexById.get(b.id) ?? 0) - (indexById.get(a.id) ?? 0));
+      sorted.sort((a, b) => (indexById.get(a.id) ?? 0) - (indexById.get(b.id) ?? 0));
       break;
     case "oldest":
-      sorted.sort((a, b) => (indexById.get(a.id) ?? 0) - (indexById.get(b.id) ?? 0));
+      sorted.sort((a, b) => (indexById.get(b.id) ?? 0) - (indexById.get(a.id) ?? 0));
       break;
     case "name-asc":
     default:
