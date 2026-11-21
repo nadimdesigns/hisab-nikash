@@ -108,6 +108,7 @@ const Index = () => {
         {/* Time period filter pills (Hisab-Kitab style) */}
         <div className="flex gap-2 overflow-x-auto pb-0.5">
           {([
+            { k: "all", l: "সকল হিসাব" },
             { k: "today", l: "আজ" },
             { k: "month", l: "এই মাস" },
             { k: "year", l: "এই বছর" },
