@@ -14,7 +14,7 @@ type BrandLogoProps = {
 export function BrandLogo({ className }: BrandLogoProps) {
   return (
     <img
-      src="/logo.webp?v=4"
+      src="/logo.webp?v=5"
       alt={APP_NAME}
       className={cn("h-5 w-5 shrink-0 object-contain", className)}
     />
