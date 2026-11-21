@@ -37,15 +37,26 @@ function buildDemoSession(): { session: Session; user: User } {
 let cachedSession: Session | null | undefined;
 
 /**
- * The session supabase-js keeps in localStorage. When the phone is offline an expired access
- * token cannot be refreshed, supabase-js then reports "no session" and the app would throw the
- * user out to /login, where they cannot sign in without internet. Offline we keep trusting the
- * stored session on this device (signing out removes it); online the normal refresh applies.
+ * Staying signed in. The shop's data lives on this device, so the only thing that may end a
+ * session is the user pressing "sign out". supabase-js drops its session whenever a token
+ * refresh fails (offline, flaky network, server-side revoke, a rotated refresh token), which
+ * used to throw people back to onboarding. We therefore keep our own copy of the last good
+ * session (DEVICE_SESSION_KEY) and fall back to it whenever supabase-js reports "no session".
+ * Only `signOut()` removes it.
  */
-function readStoredSession(): Session | null {
+const DEVICE_SESSION_KEY = "hisab-nikash-device-session";
+
+function supabaseTokenKey(): string | null {
   try {
-    const host = new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split(".")[0];
-    const raw = localStorage.getItem(`sb-${host}-auth-token`);
+    return `sb-${new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split(".")[0]}-auth-token`;
+  } catch {
+    return null;
+  }
+}
+
+function readSession(key: string | null): Session | null {
+  try {
+    const raw = key ? localStorage.getItem(key) : null;
     const stored = raw ? JSON.parse(raw) : null;
     return stored?.user && stored?.refresh_token ? (stored as Session) : null;
   } catch {
@@ -53,8 +64,28 @@ function readStoredSession(): Session | null {
   }
 }
 
-const withOfflineGrace = (s: Session | null): Session | null =>
-  s ?? (typeof navigator !== "undefined" && !navigator.onLine ? readStoredSession() : null);
+function rememberSession(s: Session | null): void {
+  if (!s || s.access_token === "demo") return;
+  try {
+    localStorage.setItem(DEVICE_SESSION_KEY, JSON.stringify(s));
+  } catch {
+    /* storage full/unavailable: supabase-js' own copy still applies */
+  }
+}
+
+/** True once the user explicitly signed out in this page load (until they sign in again). */
+let signedOutByUser = false;
+
+/** supabase's session, else our remembered one (also adopts an existing supabase token on first run). */
+const keepSignedIn = (s: Session | null): Session | null => {
+  if (s) {
+    signedOutByUser = false;
+    rememberSession(s);
+    return s;
+  }
+  if (signedOutByUser) return null;
+  return readSession(DEVICE_SESSION_KEY) ?? readSession(supabaseTokenKey());
+};
 
 /**
  * React hook returning the current Supabase session and user.
@@ -84,7 +115,7 @@ export function useAuth() {
     // Timeout safeguard: if Supabase takes more than 1.2s to reply or is offline, unblock loading
     const timeoutTimer = setTimeout(() => {
       if (!isMounted) return;
-      const grace = withOfflineGrace(null);
+      const grace = keepSignedIn(null);
       if (grace) {
         cachedSession = grace;
         setSession(grace);
@@ -94,7 +125,7 @@ export function useAuth() {
     }, 1200);
 
     const { data: sub } = supabase.auth.onAuthStateChange((_event, raw) => {
-      const s = withOfflineGrace(raw);
+      const s = keepSignedIn(raw);
       // Cache first: a sign-in event can arrive just after the screen that started it unmounted,
       // and the next screen (RequireAuth) must still see the new session.
       cachedSession = s;
@@ -107,7 +138,7 @@ export function useAuth() {
 
     supabase.auth.getSession()
       .then(({ data: { session: raw } }) => {
-        const s = withOfflineGrace(raw);
+        const s = keepSignedIn(raw);
         cachedSession = s;
         if (!isMounted) return;
         clearTimeout(timeoutTimer);
@@ -155,6 +186,12 @@ export async function signOut(): Promise<void> {
   }
   setCachedRole(null);
   cachedSession = null;
+  signedOutByUser = true;
+  try {
+    localStorage.removeItem(DEVICE_SESSION_KEY);
+  } catch {
+    /* ignore */
+  }
   if (isDemoMode()) {
     disableDemoMode();
     window.dispatchEvent(new Event("pharmasee-demo-changed"));
@@ -162,5 +199,15 @@ export async function signOut(): Promise<void> {
     window.location.reload();
     return;
   }
-  await supabase.auth.signOut();
+  try {
+    await supabase.auth.signOut();
+  } catch {
+    /* offline: still sign out on this device */
+  }
+  try {
+    const key = supabaseTokenKey();
+    if (key) localStorage.removeItem(key);
+  } catch {
+    /* ignore */
+  }
 }
