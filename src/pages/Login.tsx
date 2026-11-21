@@ -100,7 +100,6 @@ const Login = () => {
 
   // Step 2: only the first 5 categories are listed until "more" is pressed
   const [showAllCategories, setShowAllCategories] = useState(false);
-  const productsHeadingRef = useRef<HTMLDivElement>(null);
 
   // Step 2: which categories are expanded
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
@@ -506,7 +505,7 @@ const Login = () => {
               ) : (
                 /* Standard Products Multi-Selection Checklist */
                 <>
-                  <div ref={productsHeadingRef} className="scroll-mt-2 flex items-center justify-between gap-2 border-b border-brand-200/60 pb-2.5 dark:border-brand-800/40">
+                  <div className="flex items-center justify-between gap-2 border-b border-brand-200/60 pb-2.5 dark:border-brand-800/40">
                     <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
                       <span>{currentShopInfo.emoji}</span>
                       <span>{currentShopInfo.shortTitle}র পণ্য</span>
@@ -646,13 +645,14 @@ const Login = () => {
                         onClick={() => {
                           const expanding = !showAllCategories;
                           setShowAllCategories(expanding);
-                          // Opening the full list: bring the shop heading right under the top of the
-                          // screen (below the logo card) so the whole list is in view from its start.
-                          if (expanding) {
-                            requestAnimationFrame(() =>
-                              productsHeadingRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                            );
-                          }
+                          // Opening the list scrolls to the very bottom of the page; closing it
+                          // scrolls back to the top, where the step opened.
+                          requestAnimationFrame(() =>
+                            window.scrollTo({
+                              top: expanding ? document.documentElement.scrollHeight : 0,
+                              behavior: "smooth",
+                            }),
+                          );
                         }}
                         className="h-8 rounded-full px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100/70 dark:text-brand-300"
                       >
