@@ -1,3 +1,4 @@
+import { scopedKey } from "@/lib/accountScope";
 /**
  * Demo account management.
  * The demo account shares the primary live store keys so all changes (adding/editing
@@ -40,6 +41,8 @@ export function disableDemoMode(): void {
  * Also migrates any previous demo: prefixed keys to the main keys.
  */
 export function dataKey(key: string): string {
+  const scoped = scopedKey(key);
+  if (scoped !== key) return scoped;
   if (typeof window !== "undefined") {
     try {
       const demoKey = `demo:${key}`;

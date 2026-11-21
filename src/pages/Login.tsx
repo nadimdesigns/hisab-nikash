@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { useAuth, SKIP_ONBOARDING_KEY } from "@/lib/auth";
 import { holdUpdates } from "@/lib/updateGate";
+import { activateAccount } from "@/lib/accountScope";
 import { supabase } from "@/integrations/supabase/client";
 
 import { toast } from "@/hooks/use-toast";
@@ -89,6 +90,9 @@ const Login = () => {
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(() => {
     return new Set(SHOP_TYPE_PRODUCTS["grocery"].map((p) => p.id));
   });
+
+  // Product names the user edited in step 2 (id -> name)
+  const [productNames, setProductNames] = useState<Record<string, string>>({});
 
   // User credentials state
   const [phone, setPhone] = useState("");
@@ -246,8 +250,9 @@ const Login = () => {
         const isService = selectedShopType === "service";
         const chosenTemplates = isService
           ? (SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId)?.defaultItems || [])
-          : SHOP_TYPE_PRODUCTS[selectedShopType].filter((p) => selectedProductIds.has(p.id));
-        seedCustomShopProducts(chosenTemplates, selectedShopType, false);
+          : SHOP_TYPE_PRODUCTS[selectedShopType]
+              .filter((p) => selectedProductIds.has(p.id))
+              .map((p) => ({ ...p, name: (productNames[p.id] ?? p.name).trim() || p.name }));
 
         // Phone + PIN only: the account is created already-confirmed on the
         // server (no email is ever sent), then we sign in with it.
@@ -266,7 +271,7 @@ const Login = () => {
           });
           setConfirmPin("");
         } else {
-          const { error: signInError } = await supabase.auth.signInWithPassword({
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
             email: authEmailFor(phone),
             password: authPasswordFor(parsedPin.data),
           });
@@ -289,6 +294,15 @@ const Login = () => {
                   ? `আপনার ${serviceTitle || "সেবা"} ব্যবসা প্রস্তুত করা হয়েছে।`
                   : `আপনার দোকান ও ${chosenTemplates.length}টি পণ্য প্রস্তুত করা হয়েছে।`,
             });
+            const accountId = signInData.user?.id;
+            if (accountId) {
+              // This account's own shop data (never another account's), then a hard reload so every
+              // store starts from it.
+              if (!alreadyRegistered) seedCustomShopProducts(chosenTemplates, selectedShopType, accountId);
+              activateAccount(accountId, { isNew: !alreadyRegistered });
+              window.location.replace(from);
+              return;
+            }
             navigate(from, { replace: true });
           }
         }
@@ -496,34 +510,46 @@ const Login = () => {
                     </div>
                   </div>
 
-                  {/* Simple Plain Text Checkmark Options (3 Columns) */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2 gap-y-1 max-h-[340px] overflow-y-auto p-2.5 rounded-2xl bg-white/60 dark:bg-white/5 border border-brand-200/50 dark:border-white/10">
+                  {/* Product list: tick to include, tap the name to rename it */}
+                  <div className="grid grid-cols-1 gap-1.5 max-h-[340px] overflow-y-auto p-2 rounded-2xl bg-white/60 dark:bg-white/5 border border-brand-200/50 dark:border-white/10">
                     {currentProductsList.map((product) => {
                       const isChecked = selectedProductIds.has(product.id);
                       return (
-                        <button
-                          key={product.id}
-                          type="button"
-                          onClick={() => toggleProduct(product.id)}
-                          className={cn(
-                            "flex items-center gap-2 py-1.5 px-2 rounded-lg text-left transition-colors select-none hover:bg-brand-500/10 active:scale-[0.98]",
-                            isChecked ? "text-foreground font-semibold" : "text-muted-foreground font-normal"
-                          )}
-                        >
-                          <div
+                        <div key={product.id} className="flex items-center gap-2 rounded-xl px-1.5 py-1">
+                          <button
+                            type="button"
+                            role="checkbox"
+                            aria-checked={isChecked}
+                            aria-label={`${productNames[product.id] ?? product.name} নির্বাচন`}
+                            onClick={() => toggleProduct(product.id)}
                             className={cn(
-                              "h-4 w-4 shrink-0 rounded flex items-center justify-center border transition-colors",
+                              "h-6 w-6 shrink-0 rounded-md flex items-center justify-center border transition-colors active:scale-95",
                               isChecked
                                 ? "bg-brand-600 border-brand-600 text-white"
                                 : "border-muted-foreground/40 bg-white dark:bg-white/10"
                             )}
                           >
-                            {isChecked && <span className="text-[10px] font-bold leading-none">✓</span>}
-                          </div>
-                          <span className="text-xs leading-snug line-clamp-1">
-                            {product.name}
-                          </span>
-                        </button>
+                            {isChecked && <span className="text-xs font-bold leading-none">✓</span>}
+                          </button>
+                          <Input
+                            value={productNames[product.id] ?? product.name}
+                            onChange={(e) => setProductNames((prev) => ({ ...prev, [product.id]: e.target.value }))}
+                            onBlur={(e) => {
+                              if (!e.target.value.trim()) {
+                                setProductNames((prev) => {
+                                  const { [product.id]: _drop, ...rest } = prev;
+                                  return rest;
+                                });
+                              }
+                            }}
+                            maxLength={60}
+                            aria-label="পণ্যের নাম"
+                            className={cn(
+                              "h-10 rounded-lg bg-white text-sm dark:bg-white/10",
+                              !isChecked && "text-muted-foreground"
+                            )}
+                          />
+                        </div>
                       );
                     })}
                   </div>
