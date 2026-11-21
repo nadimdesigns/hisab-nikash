@@ -415,20 +415,11 @@ export const useShop = create<ShopState>()(
 
       resetAll: () => {
         if (blockedByDemo()) return;
-        const items = seedProducts();
-        set({ products: items, sales: seedSales(items), purchases: seedPurchases(items) });
+        set({ products: [], sales: [], purchases: [] });
       },
     }),
     {
       name: STORE_KEY,
-      onRehydrateStorage: () => (state) => {
-        if (state && state.products.length === 0) {
-          const items = seedProducts();
-          state.products = items;
-          state.sales = seedSales(items);
-          state.purchases = seedPurchases(items);
-        }
-      },
     }
   )
 );

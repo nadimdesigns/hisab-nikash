@@ -1,4 +1,5 @@
 import { type UnitCode } from "@/lib/copy";
+import { scopedKey } from "@/lib/accountScope";
 
 export type ShopType = "grocery" | "pharmacy" | "tea_stall" | "raw_market" | "service" | "other";
 
@@ -263,6 +264,7 @@ export const SHOP_TYPE_PRODUCTS: Record<ShopType, OnboardingProductTemplate[]> =
 export function seedCustomShopProducts(
   selectedTemplates: OnboardingProductTemplate[],
   shopType: ShopType,
+  accountId: string,
   isDemo = false
 ): void {
   if (typeof window === "undefined") return;
@@ -275,7 +277,7 @@ export function seedCustomShopProducts(
   };
 
   const products = selectedTemplates.map((t, idx) => ({
-    id: `p-${Date.now().toString(36)}-${idx}`,
+    id: `p-${Date.now().toString(36)}-${idx}-${Math.random().toString(36).slice(2, 6)}`,
     name: t.name,
     sku: `${t.category.slice(0, 3).toUpperCase()}-${idx + 101}`,
     category: t.category,
@@ -358,8 +360,8 @@ export function seedCustomShopProducts(
       },
       version: 0,
     };
-    window.localStorage.setItem("dokan-store-v1", JSON.stringify(storeData));
-    window.localStorage.setItem("hisab-nikash-shop-type", shopType);
+    window.localStorage.setItem(scopedKey("dokan-store-v1", accountId), JSON.stringify(storeData));
+    window.localStorage.setItem(scopedKey("hisab-nikash-shop-type", accountId), shopType);
   } catch {
     /* quota ignore */
   }

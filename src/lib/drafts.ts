@@ -1,5 +1,5 @@
 import type { SaleItem } from "@/store/shop";
-import { isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
+import { dataKey, isReadOnly, notifyReadOnlyBlocked } from "@/lib/demoMode";
 
 /**
  * Persistent in-progress carts on the Sales page.
@@ -21,7 +21,7 @@ export type DraftCart = {
   updatedAt: string; // ISO
 };
 
-export const DRAFTS_KEY = "medishop-drafts-v1";
+export const DRAFTS_KEY = dataKey("medishop-drafts-v1");
 
 type DraftsShape = Partial<Record<DraftKind, DraftCart>>;
 
