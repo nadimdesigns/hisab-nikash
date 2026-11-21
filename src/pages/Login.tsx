@@ -542,7 +542,7 @@ const Login = () => {
                   </div>
 
                   {/* Categories: tick a category to include all its products, open it to pick/rename products */}
-                  <div className="grid grid-cols-1 gap-2 p-2 rounded-2xl bg-white/60 dark:bg-white/5 border border-brand-200/50 dark:border-white/10">
+                  <div className="grid grid-cols-1 gap-2">
                     {visibleCategories.map(({ category, items }) => {
                       const selectedCount = items.filter((p) => selectedProductIds.has(p.id)).length;
                       const allOn = selectedCount === items.length;
