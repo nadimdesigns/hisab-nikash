@@ -91,6 +91,9 @@ const Login = () => {
     return new Set(SHOP_TYPE_PRODUCTS["grocery"].map((p) => p.id));
   });
 
+  // Step 2: which categories are expanded
+  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+
   // Product names the user edited in step 2 (id -> name)
   const [productNames, setProductNames] = useState<Record<string, string>>({});
 
@@ -114,6 +117,7 @@ const Login = () => {
   // When user switches shop type in Step 1, immediately proceed to Step 2
   const handleSelectShopType = (type: ShopType) => {
     setSelectedShopType(type);
+    setOpenCategories(new Set());
     if (type === "service") {
       const srv = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId) || SERVICE_BUSINESS_TYPES[0];
       setSelectedProductIds(new Set(srv.defaultItems.map((p) => p.id)));
@@ -142,6 +146,23 @@ const Login = () => {
       } else {
         next.add(id);
       }
+      return next;
+    });
+  };
+
+  const toggleCategory = (items: { id: string }[], on: boolean) => {
+    setSelectedProductIds((prev) => {
+      const next = new Set(prev);
+      items.forEach((p) => (on ? next.add(p.id) : next.delete(p.id)));
+      return next;
+    });
+  };
+
+  const toggleCategoryOpen = (category: string) => {
+    setOpenCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(category)) next.delete(category);
+      else next.add(category);
       return next;
     });
   };
@@ -322,6 +343,9 @@ const Login = () => {
   const isServiceShop = selectedShopType === "service";
   const selectedServiceInfo = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId) || SERVICE_BUSINESS_TYPES[0];
   const currentProductsList = SHOP_TYPE_PRODUCTS[selectedShopType] || [];
+  const productCategories = Array.from(
+    currentProductsList.reduce((m, p) => m.set(p.category, [...(m.get(p.category) ?? []), p]), new Map<string, typeof currentProductsList>()),
+  ).map(([category, items]) => ({ category, items }));
   const currentShopInfo = ONBOARDING_SHOP_TYPES.find((s) => s.id === selectedShopType) || ONBOARDING_SHOP_TYPES[0];
 
   return (
@@ -489,7 +513,7 @@ const Login = () => {
                   {/* Quick Select All / Deselect All */}
                   <div className="flex items-center justify-between text-xs px-0.5">
                     <span className="text-muted-foreground text-[11px]">
-                      মোট {currentProductsList.length}টি সাধারণ পণ্য
+                      {productCategories.length}টি ক্যাটাগরি · মোট {currentProductsList.length}টি পণ্য
                     </span>
                     <div className="flex items-center gap-2">
                       <button
@@ -510,45 +534,89 @@ const Login = () => {
                     </div>
                   </div>
 
-                  {/* Product list: tick to include, tap the name to rename it */}
-                  <div className="grid grid-cols-1 gap-1.5 max-h-[340px] overflow-y-auto p-2 rounded-2xl bg-white/60 dark:bg-white/5 border border-brand-200/50 dark:border-white/10">
-                    {currentProductsList.map((product) => {
-                      const isChecked = selectedProductIds.has(product.id);
+                  {/* Categories: tick a category to include all its products, open it to pick/rename products */}
+                  <div className="grid grid-cols-1 gap-2 max-h-[360px] overflow-y-auto p-2 rounded-2xl bg-white/60 dark:bg-white/5 border border-brand-200/50 dark:border-white/10">
+                    {productCategories.map(({ category, items }) => {
+                      const selectedCount = items.filter((p) => selectedProductIds.has(p.id)).length;
+                      const allOn = selectedCount === items.length;
+                      const someOn = selectedCount > 0 && !allOn;
+                      const open = openCategories.has(category);
                       return (
-                        <div key={product.id} className="flex items-center gap-2 rounded-xl px-1.5 py-1">
-                          <button
-                            type="button"
-                            role="checkbox"
-                            aria-checked={isChecked}
-                            aria-label={`${productNames[product.id] ?? product.name} নির্বাচন`}
-                            onClick={() => toggleProduct(product.id)}
-                            className={cn(
-                              "h-6 w-6 shrink-0 rounded-md flex items-center justify-center border transition-colors active:scale-95",
-                              isChecked
-                                ? "bg-brand-600 border-brand-600 text-white"
-                                : "border-muted-foreground/40 bg-white dark:bg-white/10"
-                            )}
-                          >
-                            {isChecked && <span className="text-xs font-bold leading-none">✓</span>}
-                          </button>
-                          <Input
-                            value={productNames[product.id] ?? product.name}
-                            onChange={(e) => setProductNames((prev) => ({ ...prev, [product.id]: e.target.value }))}
-                            onBlur={(e) => {
-                              if (!e.target.value.trim()) {
-                                setProductNames((prev) => {
-                                  const { [product.id]: _drop, ...rest } = prev;
-                                  return rest;
-                                });
-                              }
-                            }}
-                            maxLength={60}
-                            aria-label="পণ্যের নাম"
-                            className={cn(
-                              "h-10 rounded-lg bg-white text-sm dark:bg-white/10",
-                              !isChecked && "text-muted-foreground"
-                            )}
-                          />
+                        <div key={category} className="rounded-xl border border-brand-200/60 bg-white/80 dark:border-white/10 dark:bg-white/5">
+                          <div className="flex items-center gap-2 px-2 py-1.5">
+                            <button
+                              type="button"
+                              role="checkbox"
+                              aria-checked={allOn ? true : someOn ? "mixed" : false}
+                              aria-label={`${category} ক্যাটাগরি নির্বাচন`}
+                              onClick={() => toggleCategory(items, !allOn)}
+                              className={cn(
+                                "h-6 w-6 shrink-0 rounded-md flex items-center justify-center border transition-colors active:scale-95",
+                                allOn || someOn
+                                  ? "bg-brand-600 border-brand-600 text-white"
+                                  : "border-muted-foreground/40 bg-white dark:bg-white/10"
+                              )}
+                            >
+                              {allOn && <span className="text-xs font-bold leading-none">✓</span>}
+                              {someOn && <span className="text-xs font-bold leading-none">–</span>}
+                            </button>
+                            <button
+                              type="button"
+                              aria-expanded={open}
+                              onClick={() => toggleCategoryOpen(category)}
+                              className="flex min-w-0 flex-1 items-center justify-between gap-2 py-1.5 text-left"
+                            >
+                              <span className="truncate text-sm font-semibold text-foreground">{category}</span>
+                              <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+                                {selectedCount}/{items.length}টি
+                                <span aria-hidden="true" className={cn("transition-transform", open && "rotate-180")}>▾</span>
+                              </span>
+                            </button>
+                          </div>
+                          {open && (
+                            <div className="space-y-1.5 border-t border-brand-200/50 px-2 py-2 dark:border-white/10">
+                              {items.map((product) => {
+                                const isChecked = selectedProductIds.has(product.id);
+                                return (
+                                  <div key={product.id} className="flex items-center gap-2">
+                                    <button
+                                      type="button"
+                                      role="checkbox"
+                                      aria-checked={isChecked}
+                                      aria-label={`${productNames[product.id] ?? product.name} নির্বাচন`}
+                                      onClick={() => toggleProduct(product.id)}
+                                      className={cn(
+                                        "h-6 w-6 shrink-0 rounded-md flex items-center justify-center border transition-colors active:scale-95",
+                                        isChecked
+                                          ? "bg-brand-600 border-brand-600 text-white"
+                                          : "border-muted-foreground/40 bg-white dark:bg-white/10"
+                                      )}
+                                    >
+                                      {isChecked && <span className="text-xs font-bold leading-none">✓</span>}
+                                    </button>
+                                    <Input
+                                      value={productNames[product.id] ?? product.name}
+                                      onChange={(e) => setProductNames((prev) => ({ ...prev, [product.id]: e.target.value }))}
+                                      onBlur={(e) => {
+                                        if (!e.target.value.trim()) {
+                                          setProductNames((prev) => {
+                                            const { [product.id]: _drop, ...rest } = prev;
+                                            return rest;
+                                          });
+                                        }
+                                      }}
+                                      maxLength={60}
+                                      aria-label="পণ্যের নাম"
+                                      className={cn(
+                                        "h-10 rounded-lg bg-white text-sm dark:bg-white/10",
+                                        !isChecked && "text-muted-foreground"
+                                      )}
+                                    />
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
                         </div>
                       );
                     })}

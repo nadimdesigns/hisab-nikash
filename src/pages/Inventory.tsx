@@ -24,6 +24,7 @@ import {
 } from "@/lib/inventoryFilters";
 import { exportInventoryCSV, exportInventoryPDF } from "@/lib/inventoryExport";
 import { toast } from "@/hooks/use-toast";
+import { dataKey } from "@/lib/demoMode";
 import { usePersistentState } from "@/hooks/use-persistent-state";
 import { typography, BODY_TEXT } from "@/lib/typography";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,8 @@ const SORT_VALUES: SortKey[] = [
   "oldest",
 ];
 
+/** Most recently added or edited product first. */
+const DEFAULT_SORT: SortKey = "newest";
 const isString = (v: unknown): v is string => typeof v === "string";
 const isStock = (v: unknown): v is StockFilter =>
   typeof v === "string" && (STOCK_VALUES as string[]).includes(v);
@@ -51,11 +54,13 @@ const isSort = (v: unknown): v is SortKey =>
   typeof v === "string" && (SORT_VALUES as string[]).includes(v);
 
 export default function Inventory() {
-  const [query, setQuery] = usePersistentState<string>("inv.query", "", isString);
-  const [category, setCategory] = usePersistentState<string>("inv.category", "all", isString);
-  const [stockFilter, setStockFilter] = usePersistentState<StockFilter>("inv.stock", "all", isStock);
-  const [expiryFilter, setExpiryFilter] = usePersistentState<ExpiryFilter>("inv.expiry", "all", isExpiry);
-  const [sort, setSort] = usePersistentState<SortKey>("inv.sort", "name-asc", isSort);
+  const [query, setQuery] = usePersistentState<string>(dataKey("inv.query"), "", isString);
+  // Not persisted: the stock page always opens on "সব ক্যাটাগরি" (a remembered category from another
+  // shop used to make a new account's stock page look empty).
+  const [category, setCategory] = useState<string>("all");
+  const [stockFilter, setStockFilter] = usePersistentState<StockFilter>(dataKey("inv.stock"), "all", isStock);
+  const [expiryFilter, setExpiryFilter] = usePersistentState<ExpiryFilter>(dataKey("inv.expiry"), "all", isExpiry);
+  const [sort, setSort] = usePersistentState<SortKey>(dataKey("inv.sort.v2"), DEFAULT_SORT, isSort);
   const [addOpen, setAddOpen] = useState(false);
 
   // Auto-open the add-product dialog when arriving via ?new=1 (bottom nav).
@@ -114,6 +119,11 @@ export default function Inventory() {
     return Array.from(set).sort();
   }, [products]);
 
+  // The chosen category no longer exists (last product of it deleted/renamed): back to all.
+  useEffect(() => {
+    if (category !== "all" && !categories.includes(category)) setCategory("all");
+  }, [category, categories]);
+
   const categoryCounts = useMemo(() => {
     const map = new Map<string, number>();
     products.forEach((m) => {
@@ -161,21 +171,21 @@ export default function Inventory() {
     category !== "all" ||
     stockFilter !== "all" ||
     expiryFilter !== "all" ||
-    sort !== "name-asc";
+    sort !== DEFAULT_SORT;
 
   // Number of advanced filters (those exposed in the slide-out panel) that
   // differ from defaults. Used to decorate the filter icon with a counter.
   const advancedFilterCount =
     (stockFilter !== "all" ? 1 : 0) +
     (expiryFilter !== "all" ? 1 : 0) +
-    (sort !== "name-asc" ? 1 : 0);
+    (sort !== DEFAULT_SORT ? 1 : 0);
 
   const clearFilters = () => {
     setQuery("");
     setCategory("all");
     setStockFilter("all");
     setExpiryFilter("all");
-    setSort("name-asc");
+    setSort(DEFAULT_SORT);
   };
 
   // When the user lands here from the global quick-search with a ?focus=<id>,
