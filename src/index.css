@@ -230,8 +230,8 @@
     100% { background-position: 0% 0%; }
   }
   .balance-sheen {
-    --balance-sheen-color: rgba(255, 255, 255, 0.4);
-    --balance-sheen-soft: rgba(255, 255, 255, 0.1);
+    --balance-sheen-color: rgba(255, 255, 255, 0.2);
+    --balance-sheen-soft: rgba(255, 255, 255, 0.05);
     position: absolute;
     inset: 0;
     border-radius: inherit;
@@ -251,8 +251,8 @@
     mix-blend-mode: screen;
   }
   .dark .balance-sheen {
-    --balance-sheen-color: rgba(255, 228, 150, 0.5);
-    --balance-sheen-soft: rgba(255, 228, 150, 0.12);
+    --balance-sheen-color: rgba(255, 228, 150, 0.25);
+    --balance-sheen-soft: rgba(255, 228, 150, 0.06);
   }
   @media (prefers-reduced-motion: reduce) {
     .balance-sheen { animation: none; }
