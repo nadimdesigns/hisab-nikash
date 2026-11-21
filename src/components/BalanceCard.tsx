@@ -6,6 +6,8 @@ import { isDemoMode } from "@/lib/demoMode";
  * The dashboard's net-balance card.
  *  - light theme: blue card; dark theme: premium gold card (every colour has a `dark:` twin, so a
  *    `.dark` ancestor forces the gold look, which the style guide uses to show both side by side);
+ *  - the card's own gradient has a fixed brighter diagonal band (centre stop); it is kept at half
+ *    contrast (#0558cc light / #8e6518 dark, midway to the neighbouring stops) so it reads soft;
  *  - one glossy highlight (`.balance-sheen`, src/index.css), no static gloss: it glides slowly from the
  *    top-left corner to the bottom-right corner and loops, like light moving across a glossy card.
  */
@@ -29,7 +31,7 @@ export function BalanceCard({
       onClick={() => setRevealed((v) => !v)}
       aria-label={revealed ? "ব্যালেন্স লুকান" : "ব্যালেন্স দেখুন"}
       style={{ animationDelay: "50ms" }}
-      className="home-hero-appear group relative flex aspect-[16/10] w-full max-w-[440px] flex-col justify-between overflow-hidden rounded-[24px] border border-brand-500/20 bg-[linear-gradient(140deg,#00091f_0%,#0a3a9e_30%,#0075fb_52%,#0a3a9e_74%,#00091f_100%)] p-4 text-left text-white transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] sm:aspect-[1.586/1] sm:p-5 dark:border-amber-300/35 dark:bg-[linear-gradient(140deg,#0f0a02_0%,#4d3508_26%,#b98425_50%,#7a560f_72%,#0f0a02_100%)] dark:shadow-[0_10px_34px_-10px_rgba(214,160,40,0.5)]"
+      className="home-hero-appear group relative flex aspect-[16/10] w-full max-w-[440px] flex-col justify-between overflow-hidden rounded-[24px] border border-brand-500/20 bg-[linear-gradient(140deg,#00091f_0%,#0a3a9e_30%,#0558cc_52%,#0a3a9e_74%,#00091f_100%)] p-4 text-left text-white transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98] sm:aspect-[1.586/1] sm:p-5 dark:border-amber-300/35 dark:bg-[linear-gradient(140deg,#0f0a02_0%,#4d3508_26%,#8e6518_50%,#7a560f_72%,#0f0a02_100%)] dark:shadow-[0_10px_34px_-10px_rgba(214,160,40,0.5)]"
     >
       {/* Glowing wave lines */}
       <svg className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105" viewBox="0 0 400 260" preserveAspectRatio="none" aria-hidden>
