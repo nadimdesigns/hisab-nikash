@@ -223,7 +223,8 @@
   /* Balance card gloss: the card's glossy highlight, moving. A soft white band with a brighter core
      glides slowly from the top-left corner to the bottom-right corner (the 300% background goes from
      100% 100%, band off the top-left, to 0% 0%, band off the bottom-right), rests off-card for a moment
-     and loops (about 8s per pass). It replaces the old static diagonal highlight, so there is only this one glow. */
+     and loops (about 8s per pass). The band uses the same 140deg angle as the card's own background
+     gradient, so it crosses the card parallel to the fixed diagonal band. It replaces the old static diagonal highlight, so there is only this one glow. */
   @keyframes balance-sheen {
     0%   { background-position: 100% 100%; }
     90%  { background-position: 0% 0%; }
@@ -237,7 +238,7 @@
     border-radius: inherit;
     pointer-events: none;
     background-image: linear-gradient(
-      115deg,
+      140deg,
       transparent 33%,
       var(--balance-sheen-soft) 42%,
       var(--balance-sheen-color) 50%,
