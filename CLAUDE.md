@@ -60,3 +60,20 @@ never on `/login`, with a field focused, or while `holdUpdates()` (`src/lib/upda
 screen that runs a multi-step async action a reload would half-finish (signup, payment, a save in flight)
 must wrap it in `const release = holdUpdates(); try { ... } finally { release(); }`.
 (A reload between "account created" and "signed in" once dropped new users back on onboarding step 1.)
+
+## Every reply about a change must say whether a new APK/AAB is needed (and why)
+
+Never answer "tell me if you want an APK/AAB". After any change, state plainly in the reply which of
+these applies, with the reason:
+
+- **No new APK/AAB needed** (it reaches installed apps online, over the air): any change under `src/`,
+  `public/`, `index.html`, styles, copy or logic that ships in the web bundle. Installed APKs/AABs pick
+  it up from `/apk/version.json` after the next deploy of `main`; they apply it at a safe moment (see
+  "Auto-updater must never interrupt the user"). Say which bundle version is live.
+- **New APK + AAB needed**, and then build and send them without being asked: native/shell changes on
+  the `Apk` branch (`android/`, `capacitor.config.ts`): Capacitor plugins, permissions, launcher icon,
+  splash, app name, package id, signing key, `APK_MIN_NATIVE` bump, a new Play Store release (versionCode
+  is the CI run number). Say what native thing changed and that the OTA update cannot deliver it.
+- If an installed APK was signed with a different key than the new one, say that it must be
+  uninstalled once (shop data is on the device and is lost) and that later updates then install over it.
+- Always say what was and was not verified on a real phone.
