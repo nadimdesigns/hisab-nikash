@@ -1,4 +1,5 @@
-import { lazy, Suspense, useMemo, useState } from "react";
+import { lazy, Suspense, useMemo } from "react";
+import { startOfDay } from "date-fns";
 import AppLayout from "@/components/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -6,57 +7,58 @@ import { Link } from "react-router-dom";
 import { useShop, useShopHydrated } from "@/store/shop";
 import { bnNumber, currency, currencyCompact, formatDate } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
-import { subDays, startOfDay } from "date-fns";
 import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { unitLabel } from "@/lib/copy";
 import { BalanceCard } from "@/components/BalanceCard";
+import { HomePeriod, periodStart, useHomePeriod } from "@/store/homePeriod";
 
 const SalesChart = lazy(() => import("@/components/SalesChart"));
+
+/** Labels for the selected period: "আজকের বিক্রি", "এই মাসের লাভ" ... */
+const PERIOD_PREFIX: Record<HomePeriod, string> = {
+  today: "আজকের",
+  week: "এই সপ্তাহের",
+  month: "এই মাসের",
+  year: "এই বছরের",
+};
 
 const Index = () => {
   const { products, sales, purchases } = useShop();
   const hydrated = useShopHydrated();
-  const [period, setPeriod] = useState<"today" | "week" | "month" | "year">("month");
+  // Shared across pages in this app session (see src/store/homePeriod.ts); defaults to "এই মাস".
+  const period = useHomePeriod((s) => s.period);
+  const setPeriod = useHomePeriod((s) => s.setPeriod);
 
+  // Everything dated on this page is limited to the selected period (the current day/week/month/year).
   const stats = useMemo(() => {
+    const start = periodStart(period);
+    const inPeriod = (date: string) => new Date(date).getTime() >= start;
+
     const inventoryValue = products.reduce((s, m) => s + m.stock * m.costPrice, 0);
     const lowStock = products.filter((m) => m.stock <= m.reorderLevel);
-    const today = startOfDay(new Date()).getTime();
-    const todaySales = sales.filter((s) => new Date(s.date).getTime() >= today);
-    const todayRevenue = todaySales.reduce((s, x) => s + x.total, 0);
-    const monthSales = sales.filter(
-      (s) => new Date(s.date).getTime() >= subDays(new Date(), 30).getTime()
-    );
-    const monthRevenue = monthSales.reduce((s, x) => s + x.total, 0);
-    const monthProfit = monthSales.reduce((s, x) => s + (x.total - x.cost), 0);
 
-    // Period-scoped income/expense/net for the balance card (Hisab-Kitab style).
-    const periodStart = subDays(new Date(), period === "today" ? 1 : period === "week" ? 7 : period === "month" ? 30 : 365).getTime();
-    const periodIncome = sales
-      .filter((s) => new Date(s.date).getTime() >= periodStart)
-      .reduce((s, x) => s + (x.saleType === "credit" ? (x.amountPaid ?? 0) : x.total), 0);
-    const periodExpense = purchases
-      .filter((p) => new Date(p.date).getTime() >= periodStart)
-      .reduce((s, p) => s + p.total, 0);
-    const periodNet = periodIncome - periodExpense;
+    const periodSales = sales.filter((s) => inPeriod(s.date));
+    const periodRevenue = periodSales.reduce((s, x) => s + x.total, 0);
+    const periodProfit = periodSales.reduce((s, x) => s + (x.total - x.cost), 0);
 
-    // Cash in hand (all-time): everything paid in minus money spent on stock.
-    const cashReceived = sales.reduce(
+    // Period income/expense/net for the balance card (Hisab-Kitab style).
+    const periodIncome = periodSales.reduce(
       (s, x) => s + (x.saleType === "credit" ? (x.amountPaid ?? 0) : x.total),
       0
     );
-    const cashSpent = purchases.reduce((s, p) => s + p.total, 0);
-    const cashBalance = cashReceived - cashSpent;
+    const periodPurchases = purchases.filter((p) => inPeriod(p.date));
+    const periodExpense = periodPurchases.reduce((s, p) => s + p.total, 0);
+    const periodNet = periodIncome - periodExpense;
 
-    // Recent activity: latest sales first.
-    const recent = [...sales]
+    // Recent activity: latest sales of the period first.
+    const recent = [...periodSales]
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
       .slice(0, 5);
 
-    // Best selling products (last 30 days) by qty sold
+    // Best selling products of the period by qty sold
     const tally = new Map<string, { name: string; qty: number; revenue: number }>();
-    monthSales.forEach((s) => {
+    periodSales.forEach((s) => {
       s.items.forEach((it) => {
         const cur = tally.get(it.productId) ?? { name: it.name, qty: 0, revenue: 0 };
         cur.qty += it.qty;
@@ -69,24 +71,32 @@ const Index = () => {
       .sort((a, b) => b.qty - a.qty)
       .slice(0, 5);
 
-    return { inventoryValue, lowStock, bestSelling, todayRevenue, monthRevenue, monthProfit, cashBalance, periodIncome, periodExpense, periodNet, recent };
+    return { inventoryValue, lowStock, bestSelling, periodRevenue, periodProfit, periodIncome, periodExpense, periodNet, recent };
   }, [products, sales, purchases, period]);
 
+  // Sales chart: one bar per day of the period (per month for "এই বছর"), up to today.
   const chartData = useMemo(() => {
-    const days = 14;
+    const now = new Date();
+    const yearly = period === "year";
+    const key = (d: Date) => (yearly ? d.getFullYear() * 12 + d.getMonth() : startOfDay(d).getTime());
+    const cursor = new Date(periodStart(period, now));
     const buckets: { date: string; revenue: number }[] = [];
-    for (let i = days - 1; i >= 0; i--) {
-      const d = startOfDay(subDays(new Date(), i));
-      buckets.push({ date: formatDate(d, "MMM d"), revenue: 0 });
+    const index = new Map<number, number>();
+    while (key(cursor) <= key(now)) {
+      index.set(key(cursor), buckets.length);
+      buckets.push({ date: formatDate(cursor, yearly ? "MMM" : "d MMM"), revenue: 0 });
+      if (yearly) cursor.setMonth(cursor.getMonth() + 1, 1);
+      else cursor.setDate(cursor.getDate() + 1);
     }
+    const start = periodStart(period, now);
     sales.forEach((s) => {
-      const d = startOfDay(new Date(s.date));
-      const diff = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
-      const idx = days - 1 - diff;
-      if (idx >= 0 && idx < days) buckets[idx].revenue += s.total;
+      const d = new Date(s.date);
+      if (d.getTime() < start || d.getTime() > now.getTime()) return;
+      const i = index.get(key(d));
+      if (i !== undefined) buckets[i].revenue += s.total;
     });
     return buckets;
-  }, [sales]);
+  }, [sales, period]);
 
   return (
     <AppLayout title="হোম">
@@ -148,7 +158,7 @@ const Index = () => {
             <Skeleton className="h-[76px] w-full rounded-2xl" />
           ) : stats.recent.length === 0 ? (
             <div className="home-card-appear rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">
-              এখনো কোনো লেনদেন নেই — প্রথম বিক্রি করে শুরু করুন!
+              এই সময়ে কোনো লেনদেন নেই।
             </div>
           ) : (
             <ul className="space-y-2">
@@ -196,8 +206,8 @@ const Index = () => {
         <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:gap-4 lg:grid-cols-4">
           {hydrated ? (
             <>
-              <StatCard emoji="💵" gradient="brand" label="আজকের বিক্রি" value={currencyCompact(stats.todayRevenue)} delay={340} />
-              <StatCard emoji="📈" gradient="brand" label="৩০ দিনের লাভ" value={currencyCompact(stats.monthProfit)} delay={400} />
+              <StatCard emoji="💵" gradient="brand" label={`${PERIOD_PREFIX[period]} বিক্রি`} value={currencyCompact(stats.periodRevenue)} delay={340} />
+              <StatCard emoji="📈" gradient="brand" label={`${PERIOD_PREFIX[period]} লাভ`} value={currencyCompact(stats.periodProfit)} delay={400} />
               <StatCard emoji="📦" gradient="brand" label="স্টকের মূল্য" value={currencyCompact(stats.inventoryValue)} delay={460} />
               <StatCard emoji="⚠️" gradient="rose" label="কম স্টক" value={bnNumber(stats.lowStock.length)} tone={stats.lowStock.length > 0 ? "warn" : "ok"} delay={520} />
             </>
@@ -213,7 +223,7 @@ const Index = () => {
           className="home-card-appear lg:col-span-2 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 transition-transform duration-200 hover:-translate-y-0.5 dark:border-brand-500/25 dark:from-brand-500/15 dark:to-brand-500/5"
         >
           <CardHeader>
-            <CardTitle>গত ১৪ দিনের বিক্রি</CardTitle>
+            <CardTitle>{period === "year" ? "এই বছরের মাসিক বিক্রি" : `${PERIOD_PREFIX[period]} দৈনিক বিক্রি`}</CardTitle>
           </CardHeader>
           <CardContent className="h-[280px]">
             {hydrated ? (
@@ -247,7 +257,7 @@ const Index = () => {
                 ))}
               </ul>
             ) : stats.bestSelling.length === 0 ? (
-              <p className={typography("body-muted")}>গত ৩০ দিনে কোনো বিক্রি হয়নি।</p>
+              <p className={typography("body-muted")}>এই সময়ে কোনো বিক্রি হয়নি।</p>
             ) : (
               <ul className="space-y-2">
                 {stats.bestSelling.map((p, idx) => (
