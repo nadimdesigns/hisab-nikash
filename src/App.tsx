@@ -18,6 +18,7 @@ const Accounting = lazy(() => import("./pages/Accounting.tsx"));
 const Account = lazy(() => import("./pages/Account.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Login = lazy(() => import("./pages/Login.tsx"));
+const Privacy = lazy(() => import("./pages/Privacy.tsx"));
 // The style guide is a web-only reference page; the Android bundle leaves it out.
 const StyleGuide = __IS_APK__ ? null : lazy(() => import("./pages/StyleGuide.tsx"));
 // Quick-search pulls in fuse.js, date-fns and the whole shop store, so it is
@@ -63,6 +64,7 @@ const App = () => (
           <Suspense fallback={<PageFallback />}>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/privacy" element={<Privacy />} />
               {StyleGuide && <Route path="/style-guide" element={<StyleGuide />} />}
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
               <Route path="/stocks" element={<RequireAuth><Inventory /></RequireAuth>} />
