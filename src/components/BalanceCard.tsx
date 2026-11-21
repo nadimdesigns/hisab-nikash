@@ -6,8 +6,8 @@ import { isDemoMode } from "@/lib/demoMode";
  * The dashboard's net-balance card.
  *  - light theme: blue card; dark theme: premium gold card (every colour has a `dark:` twin, so a
  *    `.dark` ancestor forces the gold look, which the style guide uses to show both side by side);
- *  - a slow diagonal sheen (`.balance-sheen`, src/index.css) glides from the top-left corner to the
- *    bottom-right corner and loops.
+ *  - one glossy highlight (`.balance-sheen`, src/index.css), no static gloss: it glides slowly from the
+ *    top-left corner to the bottom-right corner and loops, like light moving across a glossy card.
  */
 export function BalanceCard({
   net,
@@ -38,18 +38,10 @@ export function BalanceCard({
         <path d="M0 220 Q 50 190, 100 220 T 200 220 T 300 220 T 400 220" className="stroke-white/[0.045] dark:stroke-amber-200/[0.09]" strokeWidth="2" fill="none" />
       </svg>
 
-      {/* Static glossy highlight */}
-      <div
-        className="pointer-events-none absolute inset-0 dark:opacity-60"
-        style={{
-          background:
-            "linear-gradient(115deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 28%, transparent 45%, transparent 70%, rgba(255,255,255,0.16) 88%, rgba(255,255,255,0.30) 100%)",
-        }}
-        aria-hidden
-      />
       <div className="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full bg-white/20 blur-2xl dark:bg-amber-200/20" aria-hidden />
 
-      {/* Slow sheen, top-left corner to bottom-right corner, looping */}
+      {/* The glossy highlight itself, moving: it glides slowly from the top-left corner to the
+          bottom-right corner, then loops (there is no separate static gloss or second shimmer) */}
       <div className="balance-sheen" aria-hidden />
 
       <div className="relative flex items-start justify-between">
