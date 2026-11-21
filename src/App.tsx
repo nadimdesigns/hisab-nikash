@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,10 +15,10 @@ const NewSale = lazy(() => import("./pages/NewSale.tsx"));
 const Customers = lazy(() => import("./pages/Customers.tsx"));
 const CustomerDetails = lazy(() => import("./pages/CustomerDetails.tsx"));
 const Accounting = lazy(() => import("./pages/Accounting.tsx"));
-// The Android bundle has its own Account page (local data, no login) and no login / style-guide screens.
-const Account = lazy(() => (__IS_APK__ ? import("./targets/apk/Account.tsx") : import("./pages/Account.tsx")));
+const Account = lazy(() => import("./pages/Account.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const Login = __IS_APK__ ? null : lazy(() => import("./pages/Login.tsx"));
+const Login = lazy(() => import("./pages/Login.tsx"));
+// The style guide is a web-only reference page; the Android bundle leaves it out.
 const StyleGuide = __IS_APK__ ? null : lazy(() => import("./pages/StyleGuide.tsx"));
 // Quick-search pulls in fuse.js, date-fns and the whole shop store, so it is
 // loaded off the critical path and never on the login screen.
@@ -62,8 +62,7 @@ const App = () => (
           <GlobalQuickSearch />
           <Suspense fallback={<PageFallback />}>
             <Routes>
-              {/* APK: always signed in as the local user, so /login just goes home */}
-              <Route path="/login" element={Login ? <Login /> : <Navigate to="/" replace />} />
+              <Route path="/login" element={<Login />} />
               {StyleGuide && <Route path="/style-guide" element={<StyleGuide />} />}
               <Route path="/" element={<RequireAuth><Index /></RequireAuth>} />
               <Route path="/stocks" element={<RequireAuth><Inventory /></RequireAuth>} />

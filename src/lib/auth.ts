@@ -37,6 +37,26 @@ function buildDemoSession(): { session: Session; user: User } {
 let cachedSession: Session | null | undefined;
 
 /**
+ * The session supabase-js keeps in localStorage. When the phone is offline an expired access
+ * token cannot be refreshed, supabase-js then reports "no session" and the app would throw the
+ * user out to /login, where they cannot sign in without internet. Offline we keep trusting the
+ * stored session on this device (signing out removes it); online the normal refresh applies.
+ */
+function readStoredSession(): Session | null {
+  try {
+    const host = new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split(".")[0];
+    const raw = localStorage.getItem(`sb-${host}-auth-token`);
+    const stored = raw ? JSON.parse(raw) : null;
+    return stored?.user && stored?.refresh_token ? (stored as Session) : null;
+  } catch {
+    return null;
+  }
+}
+
+const withOfflineGrace = (s: Session | null): Session | null =>
+  s ?? (typeof navigator !== "undefined" && !navigator.onLine ? readStoredSession() : null);
+
+/**
  * React hook returning the current Supabase session and user.
  * When demo mode is active, returns a synthetic demo session instead of
  * touching Supabase auth.
@@ -63,23 +83,34 @@ export function useAuth() {
     let isMounted = true;
     // Timeout safeguard: if Supabase takes more than 1.2s to reply or is offline, unblock loading
     const timeoutTimer = setTimeout(() => {
-      if (isMounted) setLoading(false);
+      if (!isMounted) return;
+      const grace = withOfflineGrace(null);
+      if (grace) {
+        cachedSession = grace;
+        setSession(grace);
+        setUser(grace.user);
+      }
+      setLoading(false);
     }, 1200);
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, s) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, raw) => {
+      const s = withOfflineGrace(raw);
+      // Cache first: a sign-in event can arrive just after the screen that started it unmounted,
+      // and the next screen (RequireAuth) must still see the new session.
+      cachedSession = s;
       if (!isMounted) return;
       clearTimeout(timeoutTimer);
-      cachedSession = s;
       setSession(s);
       setUser(s?.user ?? null);
       setLoading(false);
     });
 
     supabase.auth.getSession()
-      .then(({ data: { session: s } }) => {
+      .then(({ data: { session: raw } }) => {
+        const s = withOfflineGrace(raw);
+        cachedSession = s;
         if (!isMounted) return;
         clearTimeout(timeoutTimer);
-        cachedSession = s;
         setSession(s);
         setUser(s?.user ?? null);
         setLoading(false);

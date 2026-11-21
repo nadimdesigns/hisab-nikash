@@ -31,22 +31,24 @@ Where the sources of truth live:
 
 Before finishing any UI task, check `/style-guide` still matches (light and dark).
 
-## Android app (APK): one codebase, two builds, over-the-air UI updates
+## Android app (APK): same app, over-the-air UI updates
 
-`main` is the single source for both the live site and the Android app.
+`main` is the single source for both the live site and the Android app. **The app is the same:** the same
+onboarding and phone + PIN signup/login (Supabase), the same screens; shop data is on the device
+(localStorage). Opening the app offline works once someone is signed in (the stored session is trusted offline,
+`src/lib/auth.ts`); signing up or logging in needs internet.
 
-- `VITE_APP_TARGET=apk` (see `vite.config.ts`, `src/lib/appTarget.ts`, `__IS_APK__`) builds the
-  **offline variant**: no login, no Supabase, data on the device. Only `src/targets/apk/*`
-  (auth, useIsAdmin, Account, otaUpdate) differs; **all other UI is shared**. Never copy shared UI
-  into the apk variant. When a UI change is needed in both, change the shared file once.
+- `VITE_APP_TARGET=apk` (see `vite.config.ts`, `src/lib/appTarget.ts`, `__IS_APK__`) only changes what the
+  Android bundle needs: the over-the-air updater (`src/targets/apk/otaUpdate.ts`) and leaving out the
+  `/style-guide` page. Do **not** fork UI or auth for the APK; change the shared file once.
 - Code that must exist in only one build goes behind `__IS_APK__` (a literal injected by vite, so the
   other build drops it; `IS_APK` from `appTarget.ts` is fine for plain values but does **not** let
   the bundler drop dynamic imports).
 - Every deploy of main (`npm run build:all` on Vercel) publishes the web build **and**
   `/apk/version.json` + `/apk/bundle-<version>.zip`. Installed APKs poll `/apk/version.json`
   (`src/lib/appUpdate.ts`), download newer bundles with `@capgo/capacitor-updater` and switch at a safe
-  moment, so UI changes reach the APK without a new APK. localStorage (shop data) is untouched.
-- A new APK is only needed for **native** changes (plugins, permissions, icon, splash). Bump
+  moment, so UI changes reach the APK without a new APK. localStorage (shop data, session) is untouched.
+- A new APK/AAB is only needed for **native** changes (plugins, permissions, icon, splash). Bump
   `APK_MIN_NATIVE` (scripts/zip-apk-bundle.mjs) when a bundle needs a newer native shell.
 - The Android shell (`android/`, `capacitor.config.ts`, APK workflow) lives on the `Apk` branch only.
 
