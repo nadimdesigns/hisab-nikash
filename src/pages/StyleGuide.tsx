@@ -283,12 +283,12 @@ export default function StyleGuide() {
           <div className="flex flex-wrap items-end gap-6 rounded-2xl border border-brand-200 bg-brand-50 dark:border-border dark:bg-card p-5">
             {[24, 40, 78, 128].map((px) => (
               <div key={px} className="space-y-1.5 text-center">
-                <img src="/logo.webp?v=6" alt={APP_NAME} width={px} height={px} className="mx-auto object-contain" />
+                <img src="/logo.webp?v=7" alt={APP_NAME} width={px} height={px} className="mx-auto object-contain" />
                 <p className="font-mono text-[11px] text-muted-foreground">{px}px</p>
               </div>
             ))}
             <div className="flex items-center gap-3 rounded-2xl border border-brand-200 bg-gradient-to-br from-brand-100 to-brand-50 px-4 py-3 dark:border-brand-800/40 dark:from-brand-950/50 dark:to-brand-900/20">
-              <img src="/logo.webp?v=6" alt="" className="h-[78px] w-[78px] object-contain" />
+              <img src="/logo.webp?v=7" alt="" className="h-[78px] w-[78px] object-contain" />
               <span className="text-xl font-bold">{APP_NAME}</span>
             </div>
           </div>
