@@ -13,6 +13,8 @@ import UserManagement from "@/components/account/UserManagement";
 import { syncNow, useSyncStatus } from "@/lib/cloudSync";
 import { isDemoMode } from "@/lib/demoMode";
 import { formatDate } from "@/lib/format";
+import { readOtaLog } from "@/lib/otaLog";
+import { IS_APK } from "@/lib/appTarget";
 
 const Account = () => {
   const navigate = useNavigate();
@@ -88,6 +90,21 @@ const Account = () => {
                 </Button>
               </div>
             )}
+
+            <div className="space-y-1">
+              <p className={typography("body-muted")}>অ্যাপ সংস্করণ</p>
+              <p className={typography("body", "tabular-nums")}>
+                {IS_APK ? "📱 অ্যান্ড্রয়েড অ্যাপ" : "🌐 ওয়েব"} · {String(__APP_VERSION__).slice(0, 7)}
+              </p>
+              {IS_APK &&
+                readOtaLog()
+                  .slice(-4)
+                  .map((e) => (
+                    <p key={e.at + e.msg} className={typography("body-muted")}>
+                      {formatDate(e.at, "hh:mm a")} · {e.msg}
+                    </p>
+                  ))}
+            </div>
 
             <div className="space-y-2 pt-1">
               <p className={typography("body-muted")}>অ্যাপ থিম</p>
