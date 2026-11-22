@@ -7,7 +7,10 @@ let tick = 0;
 
 vi.mock("@/integrations/supabase/client", () => ({
   supabase: {
-    auth: { getSession: async () => ({ data: { session: { user: { id: "u1" } } } }) },
+    auth: {
+      getSession: async () => ({ data: { session: { user: { id: "u1" } } } }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+    },
     from: () => {
       let after = "";
       const q = {
@@ -101,5 +104,25 @@ describe("cloud sync (two devices, one account)", () => {
     useShop.getState().deleteSale("sx");
     await syncNow();
     expect(cloud.find((r) => r.id === "sx")).toMatchObject({ deleted: true, data: null });
+  });
+
+  it("syncs on its own, nobody has to press anything", async () => {
+    vi.useFakeTimers();
+    try {
+      const { startCloudSync } = await import("../cloudSync");
+      const { useShop } = await import("@/store/shop");
+      const stop = startCloudSync();
+      await vi.advanceTimersByTimeAsync(1000);
+
+      // A sale is made on this device ...
+      const sale = { id: "auto1", date: "2026-03-05T10:00:00.000Z", customer: "", items: [], total: 7, cost: 3 };
+      useShop.setState({ sales: [sale] as never });
+      // ... and within a few seconds it is in the cloud, with no button pressed.
+      await vi.advanceTimersByTimeAsync(6000);
+      expect(cloud.find((r) => r.id === "auto1")).toMatchObject({ coll: "sales", deleted: false });
+      stop();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
