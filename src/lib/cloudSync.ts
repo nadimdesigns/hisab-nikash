@@ -29,8 +29,9 @@ import {
  * pushes what changed here and pulls what changed elsewhere (table `hisab_nikash_records`, see
  * src/lib/cloudSyncCore.ts for the merge rules).
  *
- * Runs on start-up, when the app comes back to the foreground or the network returns, shortly
- * after a local change, and every 20 s while the app is open.
+ * Runs on its own, nobody has to press anything: on start-up, right after signing in, when the app
+ * comes back to the foreground or the network returns, shortly after a local change, every 15 s while
+ * the app is open, and again within seconds when a run failed.
  */
 
 const META_KEY = "hisab-nikash-sync-v1";
@@ -39,7 +40,9 @@ const PAGE = 1000;
 const PUSH_BATCH = 100;
 /** Pull a little before the last seen server time so a row committed late is never missed. */
 const CURSOR_OVERLAP_MS = 5000;
-const POLL_MS = 20_000;
+const POLL_MS = 15_000;
+/** Retry quickly when a run could not happen (not signed in yet, no network): 3 s, 6 s, 12 s, then every POLL_MS. */
+const RETRY_MS = 3000;
 const LOCAL_CHECK_MS = 4000;
 
 export type SyncState = "idle" | "syncing" | "offline" | "error";
@@ -204,7 +207,9 @@ async function push(rows: ReturnType<typeof dirtyRows>): Promise<void> {
 
 let running = false;
 let rerun = false;
-let lastRunAt = 0;
+/** Earliest time of the next background run; moves up after a failure so a missed run is retried soon. */
+let nextRunAt = 0;
+let failures = 0;
 let lastStamp = 0;
 
 /** Edit times on this device only ever go up, so a later edit or delete always beats an earlier one (even within a millisecond). */
@@ -265,10 +270,13 @@ export async function syncNow(): Promise<void> {
   setStatus({ state: "syncing" });
   try {
     const synced = await runOnce();
-    lastRunAt = Date.now();
+    failures = 0;
+    // Nothing to do yet (not signed in / stores still loading): look again soon.
+    nextRunAt = Date.now() + (synced ? POLL_MS : RETRY_MS);
     setStatus(synced ? { state: "idle", lastSyncedAt: Date.now() } : { state: "idle" });
   } catch {
-    lastRunAt = Date.now();
+    failures += 1;
+    nextRunAt = Date.now() + Math.min(RETRY_MS * 2 ** (failures - 1), POLL_MS);
     setStatus({ state: typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "error" });
   } finally {
     running = false;
@@ -292,7 +300,7 @@ const sameSignature = (a: ReturnType<typeof localSignature>, b: ReturnType<typeo
 /** Cheap check (no network): is there anything edited on this device that the cloud does not have yet? */
 async function syncIfNeeded(): Promise<void> {
   if (running) return;
-  if (Date.now() - lastRunAt >= POLL_MS) return void syncNow();
+  if (Date.now() >= nextRunAt) return void syncNow();
   const signature = localSignature();
   if (sameSignature(signature, lastSignature)) return; // nothing changed since the last look
   lastSignature = signature;
@@ -315,9 +323,15 @@ export function startCloudSync(): () => void {
     if (visible()) void syncNow();
   };
   const onOnline = () => void syncNow();
+  // Signing in (or the session being renewed) is the moment the first sync can happen: do not wait for the next tick.
+  const { data: authSub } = supabase.auth.onAuthStateChange((event) => {
+    if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") void syncNow();
+  });
 
   document.addEventListener("visibilitychange", onVisible);
   window.addEventListener("online", onOnline);
+  window.addEventListener("focus", onVisible);
+  window.addEventListener("pageshow", onVisible);
   let debounce: number | undefined;
   const unsubscribe = useShop.subscribe(() => {
     window.clearTimeout(debounce);
@@ -329,6 +343,9 @@ export function startCloudSync(): () => void {
     window.clearTimeout(debounce);
     document.removeEventListener("visibilitychange", onVisible);
     window.removeEventListener("online", onOnline);
+    window.removeEventListener("focus", onVisible);
+    window.removeEventListener("pageshow", onVisible);
+    authSub.subscription.unsubscribe();
     unsubscribe();
   };
 }
