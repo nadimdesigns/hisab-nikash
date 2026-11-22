@@ -54,11 +54,34 @@ function supabaseTokenKey(): string | null {
   }
 }
 
+/**
+ * A session only works on the Supabase project that issued it. After the app moved to another project
+ * (see CLAUDE.md), sessions kept from the old one would look signed in but every request would fail, so
+ * they are dropped and the user signs in again (same phone + PIN, same account id, same shop data).
+ * Unreadable tokens are kept: a parsing problem must never sign anybody out.
+ */
+function issuedByThisProject(s: Session): boolean {
+  try {
+    const origin = new URL(import.meta.env.VITE_SUPABASE_URL).origin;
+    const part = s.access_token.split(".")[1];
+    if (!part) return true;
+    const payload = JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/")));
+    return typeof payload?.iss !== "string" || payload.iss.startsWith(origin);
+  } catch {
+    return true;
+  }
+}
+
 function readSession(key: string | null): Session | null {
   try {
     const raw = key ? localStorage.getItem(key) : null;
     const stored = raw ? JSON.parse(raw) : null;
-    return stored?.user && stored?.refresh_token ? (stored as Session) : null;
+    if (!(stored?.user && stored?.refresh_token)) return null;
+    if (!issuedByThisProject(stored as Session)) {
+      if (key === DEVICE_SESSION_KEY) localStorage.removeItem(key); // never trust it again
+      return null;
+    }
+    return stored as Session;
   } catch {
     return null;
   }
