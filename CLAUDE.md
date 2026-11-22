@@ -61,7 +61,9 @@ row each, settled per record, last write wins by the edit time (`ts`); deletes a
 nothing about sync: `cloudSyncCore.stampLocal` finds edits by comparing records with what was last seen.
 **When you add a new persisted collection or a new localStorage key that holds shop data, add it to `readLive` /
 `writeBack` in `src/lib/cloudSync.ts` (and to the `coll` check in the table) or it will not follow the account.**
-Server changes go in `supabase/migrations/` (prefix `hisab_nikash_`, the project is shared with other apps).
+Server changes go in `supabase/migrations/` (prefix `hisab_nikash_`) and must be applied to the Supabase project `UserHeaven`
+(`cjjlylmaekwluufsasea`, the one in `.env`); the app moved there from `team-schoolzee` (`rlehqzmsaxxaaruffnyq`) on 2026-11-22 with
+the same user ids and password hashes. Sessions issued by another project are dropped on start (`issuedByThisProject`, `auth.ts`).
 
 ## Auto-updater must never interrupt the user
 
