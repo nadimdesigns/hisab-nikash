@@ -1,6 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import { CapacitorUpdater } from "@capgo/capacitor-updater";
 import type { LatestBuild } from "@/lib/appUpdate";
+import { errorText, logOta } from "@/lib/otaLog";
 
 /**
  * Over-the-air updates for the Android app (APK build only; web never imports this).
@@ -39,8 +40,9 @@ export async function markReady(): Promise<void> {
   if (!isNative()) return;
   try {
     await CapacitorUpdater.notifyAppReady();
-  } catch {
-    /* ignore */
+    logOta(`bundle ${__APP_VERSION__} started fine`);
+  } catch (e) {
+    logOta(`notifyAppReady failed: ${errorText(e)}`);
   }
 }
 
@@ -60,12 +62,23 @@ export function stageBundle(latest: LatestBuild): Promise<boolean> {
       try {
         if (latest.minNative) {
           const { native } = await CapacitorUpdater.current();
-          if (compareVersions(native, latest.minNative) < 0) return null; // needs a new APK install
+          if (compareVersions(native, latest.minNative) < 0) {
+            logOta(`needs a newer APK (installed ${native}, bundle needs ${latest.minNative})`);
+            return null; // needs a new APK install
+          }
         }
-        const bundle = await CapacitorUpdater.download({ url: latest.url!, version: latest.version });
+        // The updater refuses a bundle it cannot verify ("Checksum required"), so a manifest without one is unusable.
+        if (!latest.checksum) {
+          logOta(`manifest ${latest.version} has no checksum`);
+          return null;
+        }
+        logOta(`downloading ${latest.version}`);
+        const bundle = await CapacitorUpdater.download({ url: latest.url!, version: latest.version, checksum: latest.checksum });
         await CapacitorUpdater.next({ id: bundle.id }); // activates on background / relaunch even if we never switch
+        logOta(`downloaded ${latest.version}, will start on next launch`);
         return bundle.id;
-      } catch {
+      } catch (e) {
+        logOta(`download of ${latest.version} failed: ${errorText(e)}`);
         return null;
       }
     })();
@@ -83,8 +96,10 @@ export async function switchToStaged(latest: LatestBuild): Promise<void> {
   const id = await staged.get(latest.version);
   if (!id) return;
   try {
+    logOta(`switching to ${latest.version}`);
     await CapacitorUpdater.set({ id });
-  } catch {
+  } catch (e) {
+    logOta(`switch to ${latest.version} failed: ${errorText(e)}`);
     /* stay on the current bundle */
   }
 }

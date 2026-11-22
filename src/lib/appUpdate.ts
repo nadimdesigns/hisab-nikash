@@ -2,13 +2,14 @@ import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { IS_APK, LIVE_ORIGIN } from "@/lib/appTarget";
 import { updatesHeld } from "@/lib/updateGate";
+import { logOta } from "@/lib/otaLog";
 
 /**
  * Keeps every open tab / installed app on the latest deployment without a manual refresh.
  *
  * Each deploy of main publishes two builds that share one version id:
  *  - the live site, with /version.json ({ version }),
- *  - the Android bundle, with /apk/version.json ({ version, url, minNative }) and a zip.
+ *  - the Android bundle, with /apk/version.json ({ version, url, minNative, checksum }) and a zip.
  * The running build knows its own id (__APP_VERSION__) and compares it with the published
  * one on start-up, when it returns to the foreground and every POLL_MS.
  *
@@ -32,7 +33,7 @@ const IDLE_MS = 20_000;
 const LOOP_GUARD_KEY = "hisab-nikash-update-reload";
 const LOOP_GUARD_MS = 60_000;
 
-export type LatestBuild = { version: string; url?: string; minNative?: string };
+export type LatestBuild = { version: string; url?: string; minNative?: string; checksum?: string };
 
 async function fetchLatest(): Promise<LatestBuild | null> {
   // The APK is served from the device, so it has to ask the live site (absolute URL).
@@ -42,10 +43,13 @@ async function fetchLatest(): Promise<LatestBuild | null> {
       cache: "no-store",
       headers: { "Cache-Control": "no-cache" },
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      if (IS_APK) logOta(`manifest request failed: HTTP ${res.status}`);
+      return null;
+    }
     const data = await res.json();
     if (typeof data?.version !== "string") return null;
-    return { version: data.version, url: data.url, minNative: data.minNative };
+    return { version: data.version, url: data.url, minNative: data.minNative, checksum: data.checksum };
   } catch {
     return null; // offline or blocked: stay on the current build
   }
