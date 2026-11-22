@@ -10,12 +10,26 @@ import { useIsAdmin } from "@/lib/useIsAdmin";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import UserManagement from "@/components/account/UserManagement";
+import { syncNow, useSyncStatus } from "@/lib/cloudSync";
+import { isDemoMode } from "@/lib/demoMode";
+import { formatDate } from "@/lib/format";
 
 const Account = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isAdmin } = useIsAdmin();
   const { theme, setTheme } = useTheme();
+  const sync = useSyncStatus();
+  const syncText =
+    sync.state === "syncing"
+      ? "সিঙ্ক হচ্ছে…"
+      : sync.state === "offline"
+        ? "অফলাইন — ইন্টারনেট পেলে সিঙ্ক হবে"
+        : sync.state === "error"
+          ? "সিঙ্ক হয়নি — একটু পরে আবার চেষ্টা হবে"
+          : sync.lastSyncedAt
+            ? `সিঙ্ক হয়েছে · ${formatDate(sync.lastSyncedAt, "hh:mm a")}`
+            : "সিঙ্ক শুরু হচ্ছে…";
 
   const handleLogout = async () => {
     await signOut();
@@ -54,6 +68,26 @@ const Account = () => {
                 📱 {user?.email?.split("@")[0] ?? "—"}
               </p>
             </div>
+
+            {!isDemoMode() && (
+              <div className="space-y-1">
+                <p className={typography("body-muted")}>ক্লাউড সিঙ্ক</p>
+                <p className={typography("body")}>
+                  ☁️ {syncText}
+                </p>
+                <p className={typography("body-muted")}>
+                  একই মোবাইল নম্বর দিয়ে অন্য ফোনে লগইন করলে এই দোকানের হিসাব সেখানেও দেখা যাবে।
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={sync.state === "syncing"}
+                  onClick={() => void syncNow()}
+                >
+                  এখনই সিঙ্ক করুন
+                </Button>
+              </div>
+            )}
 
             <div className="space-y-2 pt-1">
               <p className={typography("body-muted")}>অ্যাপ থিম</p>

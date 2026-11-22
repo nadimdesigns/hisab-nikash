@@ -34,9 +34,11 @@ Before finishing any UI task, check `/style-guide` still matches (light and dark
 ## Android app (APK): same app, over-the-air UI updates
 
 `main` is the single source for both the live site and the Android app. **The app is the same:** the same
-onboarding and phone + PIN signup/login (Supabase), the same screens; shop data is on the device
-(localStorage). Opening the app offline works once someone is signed in (the stored session is trusted offline,
-`src/lib/auth.ts`); signing up or logging in needs internet.
+onboarding and phone + PIN signup/login (Supabase), the same screens; shop data lives on the device
+(localStorage, per account) **and is synced to Supabase** (`hisab_nikash_records`, `src/lib/cloudSync.ts` +
+`cloudSyncCore.ts`), so the same phone number shows the same shop on every device. Opening the app offline works
+once someone is signed in (the stored session is trusted offline, `src/lib/auth.ts`) and offline edits sync when the
+network returns; signing up or logging in needs internet.
 
 - `VITE_APP_TARGET=apk` (see `vite.config.ts`, `src/lib/appTarget.ts`, `__IS_APK__`) only changes what the
   Android bundle needs: the over-the-air updater (`src/targets/apk/otaUpdate.ts`) and leaving out the
@@ -51,6 +53,15 @@ onboarding and phone + PIN signup/login (Supabase), the same screens; shop data 
 - A new APK/AAB is only needed for **native** changes (plugins, permissions, icon, splash). Bump
   `APK_MIN_NATIVE` (scripts/zip-apk-bundle.mjs) when a bundle needs a newer native shell.
 - The Android shell (`android/`, `capacitor.config.ts`, APK workflow) lives on the `Apk` branch only.
+
+## Cloud sync (shop data on every device)
+
+Shop data is a set of records (`products`, `sales`, `purchases`, `dues`, `payments`, `profiles`, `meta`), one cloud
+row each, settled per record, last write wins by the edit time (`ts`); deletes are tombstones. The stores know
+nothing about sync: `cloudSyncCore.stampLocal` finds edits by comparing records with what was last seen.
+**When you add a new persisted collection or a new localStorage key that holds shop data, add it to `readLive` /
+`writeBack` in `src/lib/cloudSync.ts` (and to the `coll` check in the table) or it will not follow the account.**
+Server changes go in `supabase/migrations/` (prefix `hisab_nikash_`, the project is shared with other apps).
 
 ## Auto-updater must never interrupt the user
 
