@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import RequireAuth from "./components/RequireAuth";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { useAppUpdater } from "./lib/appUpdate";
+import { useCloudSync } from "./lib/cloudSync";
 
 const Index = lazy(() => import("./pages/Index.tsx"));
 const Inventory = lazy(() => import("./pages/Inventory.tsx"));
@@ -30,6 +31,12 @@ const ProductQuickSearch = lazy(() =>
 /** Mounts the "reload when a newer build is deployed" watcher inside the router. */
 const AppUpdater = () => {
   useAppUpdater();
+  return null;
+};
+
+/** Keeps this device's shop data and the cloud copy in step (same phone number, any device). */
+const CloudSync = () => {
+  useCloudSync();
   return null;
 };
 
@@ -60,6 +67,7 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <AppUpdater />
+          <CloudSync />
           <GlobalQuickSearch />
           <Suspense fallback={<PageFallback />}>
             <Routes>

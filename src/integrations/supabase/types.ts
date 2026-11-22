@@ -196,6 +196,36 @@ export type Database = {
         }
         Relationships: []
       }
+      hisab_nikash_records: {
+        Row: {
+          coll: string
+          data: Json | null
+          deleted: boolean
+          id: string
+          synced_at: string
+          ts: number
+          user_id: string
+        }
+        Insert: {
+          coll: string
+          data?: Json | null
+          deleted?: boolean
+          id: string
+          synced_at?: string
+          ts: number
+          user_id: string
+        }
+        Update: {
+          coll?: string
+          data?: Json | null
+          deleted?: boolean
+          id?: string
+          synced_at?: string
+          ts?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       hisab_nikash_user_roles: {
         Row: {
           created_at: string
@@ -600,6 +630,10 @@ export type Database = {
       hisab_nikash_phone_has_account: {
         Args: { _phone: string }
         Returns: boolean
+      }
+      hisab_nikash_sync_push: {
+        Args: { records: Json }
+        Returns: number
       }
     }
     Enums: {
