@@ -525,7 +525,7 @@ export default function StyleGuide() {
             </div>
           </Block>
 
-          <Block title="Onboarding mother type cards" note="Step 0 (splash onboarding): icon left · title & description · arrow right">
+          <Block title="Onboarding mother type cards" note="Step 0 (splash onboarding): icon left · title · arrow right (no description)">
             <div className="grid gap-2.5">
               {ONBOARDING_MOTHER_TYPES.slice(0, 3).map((mother) => {
                 const on = motherPicked === mother.id;
@@ -546,7 +546,6 @@ export default function StyleGuide() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <span className="block text-sm font-bold text-foreground sm:text-base">{mother.title}</span>
-                      <span className="mt-0.5 block line-clamp-1 text-[11px] text-muted-foreground sm:text-xs">{mother.description}</span>
                     </div>
                     <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100/70 text-xs font-bold text-brand-700 transition-transform group-hover:translate-x-0.5 dark:bg-brand-900/40 dark:text-brand-300">
                       ➔
