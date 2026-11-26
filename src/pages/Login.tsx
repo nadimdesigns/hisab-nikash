@@ -391,8 +391,8 @@ const Login = () => {
   return (
     <main className="min-h-[100svh] w-full bg-background flex flex-col items-center justify-start p-3 sm:p-4 pt-[max(20px,env(safe-area-inset-top))] pb-10 overflow-y-auto">
       <Card className="w-full max-w-lg rounded-[28px] border border-brand-200 dark:border-brand-800/30 overflow-hidden bg-card transition-all my-0">
-        {/* Top Header: icon + app name side by side (icon 1.3x, not clipped), tint blue */}
-        <div className="relative bg-gradient-to-br from-brand-100 to-brand-50 border-b border-brand-200 px-5 pt-5 pb-5 flex flex-row items-center justify-center gap-3 text-center dark:from-brand-950/50 dark:to-brand-900/20 dark:border-brand-800/40">
+        {/* Top Header: icon above the app name (stacked, centred), tint blue */}
+        <div className="relative bg-gradient-to-br from-brand-100 to-brand-50 border-b border-brand-200 px-5 pt-5 pb-5 flex flex-col items-center justify-center gap-3 text-center dark:from-brand-950/50 dark:to-brand-900/20 dark:border-brand-800/40">
           <img
             src="/logo.webp?v=7"
             alt={APP_NAME}
@@ -439,9 +439,6 @@ const Login = () => {
                       <div className="min-w-0 flex-1">
                         <span className="block font-bold text-sm sm:text-base text-foreground leading-snug">
                           {mother.title}
-                        </span>
-                        <span className="block text-[11px] sm:text-xs text-muted-foreground leading-tight mt-0.5 line-clamp-1">
-                          {mother.description}
                         </span>
                       </div>
 
