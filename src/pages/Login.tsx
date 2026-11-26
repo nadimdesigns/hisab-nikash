@@ -16,11 +16,13 @@ import { typography } from "@/lib/typography";
 import { cn } from "@/lib/utils";
 import { APP_NAME } from "@/lib/copy";
 import {
+  ONBOARDING_MOTHER_TYPES,
   ONBOARDING_SHOP_TYPES,
   SHOP_TYPE_PRODUCTS,
-  SERVICE_BUSINESS_TYPES,
+  type MotherType,
   type ShopType,
   seedCustomShopProducts,
+  getOnboardingTypeInfo,
 } from "@/lib/onboardingData";
 
 /** Categories shown before the "more categories" button; only their products start ticked. */
@@ -63,14 +65,15 @@ type FieldErrors = {
   form?: string;
 };
 
-// 3 Steps:
-// 1) "step-1-shop": Shop Type Selection (full-width list)
-// 2) "step-2-products": Product Selection / service type
+// 4 Steps:
+// 0) "step-0-mother": Mother Type Selection (New splash screen onboarding: Dokan, Samity, Personal, Education, Salon, Other)
+// 1) "step-1-shop": Shop Type Selection (under "দোকানের হিসাব", which was previously the 1st step)
+// 2) "step-2-products": Product / Item Selection checklist
 // 3) "step-3-phone": Mobile number + PIN on one screen, no primary button.
 //    11 valid digits -> the number is looked up (new vs existing) automatically,
 //    PIN boxes appear underneath; a complete PIN (confirmed PIN for a new
 //    account) logs in / creates the account and lands on the homepage.
-type Step = "step-1-shop" | "step-2-products" | "step-3-phone";
+type Step = "step-0-mother" | "step-1-shop" | "step-2-products" | "step-3-phone";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -79,12 +82,12 @@ const Login = () => {
   const from = (location.state as { from?: { pathname: string } } | null)?.from?.pathname || "/";
 
   // Flow State
-  // After a sign-out go straight to the phone step (step 3), not shop-type onboarding.
+  // After a sign-out go straight to the phone step (step 3), not onboarding.
   const [step, setStep] = useState<Step>(() => {
     try {
-      return sessionStorage.getItem(SKIP_ONBOARDING_KEY) ? "step-3-phone" : "step-1-shop";
+      return sessionStorage.getItem(SKIP_ONBOARDING_KEY) ? "step-3-phone" : "step-0-mother";
     } catch {
-      return "step-1-shop";
+      return "step-0-mother";
     }
   });
   useEffect(() => {
@@ -94,8 +97,8 @@ const Login = () => {
       /* ignore */
     }
   }, []);
+  const [selectedMotherType, setSelectedMotherType] = useState<MotherType>("dokan");
   const [selectedShopType, setSelectedShopType] = useState<ShopType>("grocery");
-  const [selectedServiceTypeId, setSelectedServiceTypeId] = useState<string>("srv-dental");
   const [selectedProductIds, setSelectedProductIds] = useState<Set<string>>(() => defaultSelectedIds("grocery"));
 
   // Step 2: only the first 5 categories are listed until "more" is pressed
@@ -147,28 +150,28 @@ const Login = () => {
     }
   }, [loading, session, from, navigate]);
 
-  // When user switches shop type in Step 1, immediately proceed to Step 2
+  // When user selects a mother type in Step 0
+  const handleSelectMotherType = (motherId: MotherType) => {
+    setSelectedMotherType(motherId);
+    setOpenCategories(new Set());
+    setShowAllCategories(false);
+
+    if (motherId === "dokan") {
+      setStep("step-1-shop");
+    } else {
+      setSelectedShopType(motherId as ShopType);
+      setSelectedProductIds(defaultSelectedIds(motherId as ShopType));
+      setStep("step-2-products");
+    }
+  };
+
+  // When user selects a shop type in Step 1 (under "দোকানের হিসাব"), immediately proceed to Step 2
   const handleSelectShopType = (type: ShopType) => {
     setSelectedShopType(type);
     setOpenCategories(new Set());
     setShowAllCategories(false);
-    if (type === "service") {
-      const srv = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId) || SERVICE_BUSINESS_TYPES[0];
-      setSelectedProductIds(new Set(srv.defaultItems.map((p) => p.id)));
-    } else {
-      setSelectedProductIds(defaultSelectedIds(type));
-    }
+    setSelectedProductIds(defaultSelectedIds(type));
     setStep("step-2-products");
-  };
-
-  // When user selects a service business type in Step 2, immediately proceed to Step 3
-  const handleSelectServiceType = (serviceId: string) => {
-    setSelectedServiceTypeId(serviceId);
-    const srv = SERVICE_BUSINESS_TYPES.find((s) => s.id === serviceId);
-    if (srv) {
-      setSelectedProductIds(new Set(srv.defaultItems.map((p) => p.id)));
-    }
-    setStep("step-3-phone");
   };
 
   // Toggle individual product selection in Step 2
@@ -302,12 +305,9 @@ const Login = () => {
         }
       } else {
         // New user signup
-        const isService = selectedShopType === "service";
-        const chosenTemplates = isService
-          ? (SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId)?.defaultItems || [])
-          : SHOP_TYPE_PRODUCTS[selectedShopType]
-              .filter((p) => selectedProductIds.has(p.id))
-              .map((p) => ({ ...p, name: (productNames[p.id] ?? p.name).trim() || p.name }));
+        const chosenTemplates = (SHOP_TYPE_PRODUCTS[selectedShopType] || [])
+          .filter((p) => selectedProductIds.has(p.id))
+          .map((p) => ({ ...p, name: (productNames[p.id] ?? p.name).trim() || p.name }));
 
         // Phone + PIN only: the account is created already-confirmed on the
         // server (no email is ever sent), then we sign in with it.
@@ -340,14 +340,12 @@ const Login = () => {
             setPin("");
             setConfirmPin("");
           } else {
-            const serviceTitle = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId)?.title;
+            const currentInfo = getOnboardingTypeInfo(selectedShopType);
             toast({
               title: alreadyRegistered ? "স্বাগতম" : "স্বাগতম!",
               description: alreadyRegistered
                 ? "লগইন সফল হয়েছে।"
-                : isService
-                  ? `আপনার ${serviceTitle || "সেবা"} ব্যবসা প্রস্তুত করা হয়েছে।`
-                  : `আপনার দোকান ও ${chosenTemplates.length}টি পণ্য প্রস্তুত করা হয়েছে।`,
+                : `আপনার ${currentInfo.title} ও ${chosenTemplates.length}টি এন্ট্রি প্রস্তুত করা হয়েছে।`,
             });
             const accountId = signInData.user?.id;
             if (accountId) {
@@ -374,15 +372,21 @@ const Login = () => {
       hasError && "border-destructive text-destructive"
     );
 
-  const isServiceShop = selectedShopType === "service";
-  const selectedServiceInfo = SERVICE_BUSINESS_TYPES.find((s) => s.id === selectedServiceTypeId) || SERVICE_BUSINESS_TYPES[0];
   const currentProductsList = SHOP_TYPE_PRODUCTS[selectedShopType] || [];
   const productCategories = Array.from(
     currentProductsList.reduce((m, p) => m.set(p.category, [...(m.get(p.category) ?? []), p]), new Map<string, typeof currentProductsList>()),
   ).map(([category, items]) => ({ category, items }));
   const visibleCategories = showAllCategories ? productCategories : productCategories.slice(0, VISIBLE_CATEGORIES);
   const hiddenCategoryCount = Math.max(0, productCategories.length - VISIBLE_CATEGORIES);
-  const currentShopInfo = ONBOARDING_SHOP_TYPES.find((s) => s.id === selectedShopType) || ONBOARDING_SHOP_TYPES[0];
+  const currentShopInfo = getOnboardingTypeInfo(selectedShopType);
+
+  const getProductHeaderTitle = () => {
+    if (selectedShopType === "salon") return "সেলুন / পার্লারের সেবা";
+    if (selectedShopType === "samity") return "সঞ্চয় ও সমিতির এন্ট্রি";
+    if (selectedShopType === "personal") return "ব্যক্তিগত / পারিবারিক তালিকা";
+    if (selectedShopType === "education") return "শিক্ষা প্রতিষ্ঠানের ফি তালিকা";
+    return `${currentShopInfo.shortTitle}র পণ্য`;
+  };
 
   return (
     <main className="min-h-[100svh] w-full bg-background flex flex-col items-center justify-start p-3 sm:p-4 pt-[max(20px,env(safe-area-inset-top))] pb-10 overflow-y-auto">
@@ -400,49 +404,50 @@ const Login = () => {
         </div>
 
         <CardContent className="bg-brand-50/70 px-4 sm:px-6 pt-5 pb-6 dark:bg-brand-950/20">
-          {/* ================= STEP 1: SHOP TYPE SELECTION ================= */}
-          {step === "step-1-shop" && (
+          {/* ================= STEP 0: MOTHER TYPE SELECTION (NEW SPLASH ONBOARDING) ================= */}
+          {step === "step-0-mother" && (
             <div className="space-y-4">
-              <div className="text-center">
+              <div className="text-center space-y-1">
                 <h2 className={typography("h4", "text-foreground font-bold")}>
-                  দোকানের ধরন বেছে নিন
+                  কিসের হিসাব রাখতে চান?
                 </h2>
+                <p className="text-xs text-muted-foreground">
+                  আপনার ব্যবসার ধরন বা হিসাবের প্রধান ক্যাটাগরি বেছে নিন
+                </p>
               </div>
 
-              {/* Shop type list: one full-width card per row, icon left, check circle right (vertically centered) */}
+              {/* Mother type list: one full-width card per row, icon left, arrow right */}
               <div className="grid grid-cols-1 gap-2.5 pt-1">
-                {ONBOARDING_SHOP_TYPES.map((shop) => {
-                  const isSelected = selectedShopType === shop.id;
+                {ONBOARDING_MOTHER_TYPES.map((mother) => {
+                  const isSelected = selectedMotherType === mother.id;
                   return (
                     <button
-                      key={shop.id}
+                      key={mother.id}
                       type="button"
-                      onClick={() => handleSelectShopType(shop.id)}
+                      onClick={() => handleSelectMotherType(mother.id)}
                       className={cn(
-                        "relative flex w-full items-center gap-3 p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] min-h-[64px]",
+                        "group relative flex w-full items-center gap-3.5 p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] min-h-[66px]",
                         isSelected
                           ? "border-brand-600 bg-brand-500/15 ring-2 ring-brand-600/60 dark:bg-brand-500/20"
                           : "border-border/80 bg-white/80 hover:bg-white hover:border-brand-300 dark:bg-white/5 dark:hover:bg-white/10"
                       )}
                     >
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/50 text-2xl">
-                        <span aria-hidden="true">{shop.emoji}</span>
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/50 text-2xl group-hover:scale-105 transition-transform">
+                        <span aria-hidden="true">{mother.emoji}</span>
                       </div>
 
-                      <span className="min-w-0 flex-1 font-bold text-sm sm:text-base text-foreground leading-snug line-clamp-2">
-                        {shop.title}
-                      </span>
+                      <div className="min-w-0 flex-1">
+                        <span className="block font-bold text-sm sm:text-base text-foreground leading-snug">
+                          {mother.title}
+                        </span>
+                        <span className="block text-[11px] sm:text-xs text-muted-foreground leading-tight mt-0.5 line-clamp-1">
+                          {mother.description}
+                        </span>
+                      </div>
 
-                      {/* Radio / Check indicator, right middle */}
-                      <div
-                        className={cn(
-                          "h-5 w-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
-                          isSelected
-                            ? "border-brand-600 bg-brand-600 text-white"
-                            : "border-muted-foreground/40 bg-transparent"
-                        )}
-                      >
-                        {isSelected && <span className="text-[11px] leading-none font-bold">✓</span>}
+                      {/* Right indicator arrow */}
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100/70 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300 group-hover:translate-x-0.5 transition-transform text-xs font-bold">
+                        ➔
                       </div>
                     </button>
                   );
@@ -467,244 +472,272 @@ const Login = () => {
             </div>
           )}
 
-          {/* ================= STEP 2: PRODUCT / SERVICE SELECTION ================= */}
-          {step === "step-2-products" && (
-            <div className="space-y-3.5">
-              {isServiceShop ? (
-                /* Service Business Type Single-Selection */
-                <>
-                  <div className="flex items-center justify-between gap-2 border-b border-brand-200/60 pb-2.5 dark:border-brand-800/40">
-                    <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
-                      <span>🛠️</span>
-                      <span>সেবার ধরন বেছে নিন</span>
-                    </h2>
+          {/* ================= STEP 1: SHOP TYPE SELECTION (UNDER "দোকানের হিসাব") ================= */}
+          {step === "step-1-shop" && (
+            <div className="space-y-4">
+              <div className="text-center space-y-1">
+                <h2 className={typography("h4", "text-foreground font-bold")}>
+                  দোকানের ধরন বেছে নিন
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  আপনার দোকানের প্রধান ক্যাটাগরি নির্বাচন করুন
+                </p>
+              </div>
 
-                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold bg-brand-600 text-white">
-                      ১টি নির্বাচিত
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-muted-foreground">
-                    আপনার ব্যবসার প্রধান সেবার ক্যাটাগরি বেছে নিন:
-                  </p>
-
-                  {/* 2-Column Service Types Grid (Single-Selection) */}
-                  <div className="grid grid-cols-2 gap-2 max-h-[340px] overflow-y-auto p-1 rounded-xl bg-white/40 dark:bg-white/5 border border-brand-200/40 dark:border-white/10">
-                    {SERVICE_BUSINESS_TYPES.map((service) => {
-                      const isSelected = selectedServiceTypeId === service.id;
-                      return (
-                        <button
-                          key={service.id}
-                          type="button"
-                          onClick={() => handleSelectServiceType(service.id)}
-                          className={cn(
-                            "relative flex items-center justify-between p-3 rounded-xl border text-left transition-all duration-150 active:scale-95 select-none min-h-[58px]",
-                            isSelected
-                              ? "border-brand-600 bg-brand-100/70 dark:bg-brand-500/25 ring-1 ring-brand-500/50"
-                              : "border-border/70 bg-white dark:bg-white/5 opacity-80 hover:opacity-100"
-                          )}
-                        >
-                          <div className="flex items-center gap-2 min-w-0 pr-1">
-                            <span className="text-xl shrink-0" aria-hidden="true">{service.emoji}</span>
-                            <span className="font-bold text-xs text-foreground leading-tight line-clamp-2">
-                              {service.title}
-                            </span>
-                          </div>
-                          <div
-                            className={cn(
-                              "h-4 w-4 shrink-0 rounded-full border flex items-center justify-center transition-colors",
-                              isSelected
-                                ? "border-brand-600 bg-brand-600 text-white"
-                                : "border-muted-foreground/40 bg-white dark:bg-white/10"
-                            )}
-                          >
-                            {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </>
-              ) : (
-                /* Standard Products Multi-Selection Checklist */
-                <>
-                  <div className="flex items-center justify-between gap-2 border-b border-brand-200/60 pb-2.5 dark:border-brand-800/40">
-                    <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
-                      <span>{currentShopInfo.emoji}</span>
-                      <span>{currentShopInfo.shortTitle}র পণ্য</span>
-                    </h2>
-
-                    <span
+              {/* Shop type list */}
+              <div className="grid grid-cols-1 gap-2.5 pt-1">
+                {ONBOARDING_SHOP_TYPES.map((shop) => {
+                  const isSelected = selectedShopType === shop.id;
+                  return (
+                    <button
+                      key={shop.id}
+                      type="button"
+                      onClick={() => handleSelectShopType(shop.id)}
                       className={cn(
-                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold",
-                        selectedProductIds.size >= 1
-                          ? "bg-brand-600 text-white"
-                          : "bg-rose-600 text-white animate-pulse"
+                        "relative flex w-full items-center gap-3 p-3 rounded-2xl border text-left transition-all duration-200 active:scale-[0.98] min-h-[64px]",
+                        isSelected
+                          ? "border-brand-600 bg-brand-500/15 ring-2 ring-brand-600/60 dark:bg-brand-500/20"
+                          : "border-border/80 bg-white/80 hover:bg-white hover:border-brand-300 dark:bg-white/5 dark:hover:bg-white/10"
                       )}
                     >
-                      {selectedProductIds.size}টি নির্বাচিত
-                    </span>
-                  </div>
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 dark:bg-brand-900/50 text-2xl">
+                        <span aria-hidden="true">{shop.emoji}</span>
+                      </div>
 
-                  {/* Quick Select All / Deselect All */}
-                  <div className="flex items-center justify-between text-xs px-0.5">
-                    <span className="text-muted-foreground text-[11px]">
-                      {productCategories.length}টি ক্যাটাগরি · মোট {currentProductsList.length}টি পণ্য
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={selectAllProducts}
-                        className="text-[11px] font-semibold text-brand-700 dark:text-brand-300 hover:underline"
+                      <div className="min-w-0 flex-1">
+                        <span className="block font-bold text-sm sm:text-base text-foreground leading-snug">
+                          {shop.title}
+                        </span>
+                        <span className="block text-[11px] sm:text-xs text-muted-foreground leading-tight line-clamp-1 mt-0.5">
+                          {shop.description}
+                        </span>
+                      </div>
+
+                      {/* Radio / Check indicator, right middle */}
+                      <div
+                        className={cn(
+                          "h-5 w-5 rounded-full border flex items-center justify-center transition-colors shrink-0",
+                          isSelected
+                            ? "border-brand-600 bg-brand-600 text-white"
+                            : "border-muted-foreground/40 bg-transparent"
+                        )}
                       >
-                        সব নির্বাচন
-                      </button>
-                      <span className="text-muted-foreground/40">•</span>
-                      <button
-                        type="button"
-                        onClick={deselectAllProducts}
-                        className="text-[11px] font-semibold text-rose-600 hover:underline"
-                      >
-                        সব মুছুন
-                      </button>
-                    </div>
-                  </div>
+                        {isSelected && <span className="text-[11px] leading-none font-bold">✓</span>}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
 
-                  {/* Categories: tick a category to include all its products, open it to pick/rename products */}
-                  <div className="grid grid-cols-1 gap-2">
-                    {visibleCategories.map(({ category, items }) => {
-                      const selectedCount = items.filter((p) => selectedProductIds.has(p.id)).length;
-                      const allOn = selectedCount === items.length;
-                      const someOn = selectedCount > 0 && !allOn;
-                      const open = openCategories.has(category);
-                      return (
-                        <div key={category} className="rounded-xl border border-brand-200/60 bg-white/80 dark:border-white/10 dark:bg-white/5">
-                          <div className="flex items-center gap-2 px-2 py-1.5">
-                            <button
-                              type="button"
-                              role="checkbox"
-                              aria-checked={allOn ? true : someOn ? "mixed" : false}
-                              aria-label={`${category} ক্যাটাগরি নির্বাচন`}
-                              onClick={() => toggleCategory(items, !allOn)}
-                              className={cn(
-                                "h-6 w-6 shrink-0 rounded-md flex items-center justify-center border transition-colors active:scale-95",
-                                allOn || someOn
-                                  ? "bg-brand-600 border-brand-600 text-white"
-                                  : "border-muted-foreground/40 bg-white dark:bg-white/10"
-                              )}
-                            >
-                              {allOn && <span className="text-xs font-bold leading-none">✓</span>}
-                              {someOn && <span className="text-xs font-bold leading-none">–</span>}
-                            </button>
-                            <button
-                              type="button"
-                              aria-expanded={open}
-                              onClick={() => toggleCategoryOpen(category)}
-                              className="flex min-w-0 flex-1 items-center justify-between gap-2 py-1.5 text-left"
-                            >
-                              <span className="truncate text-sm font-semibold text-foreground">{category}</span>
-                              <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-                                {selectedCount}/{items.length}টি
-                                <span aria-hidden="true" className={cn("transition-transform", open && "rotate-180")}>▾</span>
-                              </span>
-                            </button>
-                          </div>
-                          {open && (
-                            <div className="space-y-1.5 border-t border-brand-200/50 px-2 py-2 dark:border-white/10">
-                              {items.map((product) => {
-                                const isChecked = selectedProductIds.has(product.id);
-                                return (
-                                  <div key={product.id} className="flex items-center gap-2">
-                                    <button
-                                      type="button"
-                                      role="checkbox"
-                                      aria-checked={isChecked}
-                                      aria-label={`${productNames[product.id] ?? product.name} নির্বাচন`}
-                                      onClick={() => toggleProduct(product.id)}
-                                      className={cn(
-                                        "h-6 w-6 shrink-0 rounded-md flex items-center justify-center border transition-colors active:scale-95",
-                                        isChecked
-                                          ? "bg-brand-600 border-brand-600 text-white"
-                                          : "border-muted-foreground/40 bg-white dark:bg-white/10"
-                                      )}
-                                    >
-                                      {isChecked && <span className="text-xs font-bold leading-none">✓</span>}
-                                    </button>
-                                    <Input
-                                      value={productNames[product.id] ?? product.name}
-                                      onChange={(e) => setProductNames((prev) => ({ ...prev, [product.id]: e.target.value }))}
-                                      onBlur={(e) => {
-                                        if (!e.target.value.trim()) {
-                                          setProductNames((prev) => {
-                                            const { [product.id]: _drop, ...rest } = prev;
-                                            return rest;
-                                          });
-                                        }
-                                      }}
-                                      maxLength={60}
-                                      aria-label="পণ্যের নাম"
-                                      className={cn(
-                                        "h-10 rounded-lg bg-white text-sm dark:bg-white/10",
-                                        !isChecked && "text-muted-foreground"
-                                      )}
-                                    />
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+              {/* Back button to Mother Types + Direct login link */}
+              <div className="pt-2 flex flex-col items-center gap-1.5">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setStep("step-0-mother")}
+                  className="text-xs text-muted-foreground hover:text-foreground hover:bg-transparent"
+                >
+                  ← পূর্ববর্তী ধাপে যান
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setStep("step-3-phone");
+                    setErrors({});
+                  }}
+                  className="text-xs font-semibold text-brand-800 dark:text-brand-300 hover:bg-transparent hover:underline"
+                >
+                  ইতিমধ্যে অ্যাকাউন্ট আছে? সরাসরি লগইন করুন
+                </Button>
+              </div>
+            </div>
+          )}
 
-                  {hiddenCategoryCount > 0 || showAllCategories ? (
-                    <div className="flex justify-end">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        aria-expanded={showAllCategories}
-                        onClick={() => setShowAllCategories((v) => !v)}
-                        className="h-8 rounded-full px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100/70 dark:text-brand-300"
-                      >
-                        {showAllCategories ? "কম দেখান ▴" : `আরও ${hiddenCategoryCount}টি ক্যাটাগরি ▾`}
-                      </Button>
-                    </div>
-                  ) : null}
+          {/* ================= STEP 2: PRODUCT / ENTRY SELECTION ================= */}
+          {step === "step-2-products" && (
+            <div className="space-y-3.5">
+              <div className="flex items-center justify-between gap-2 border-b border-brand-200/60 pb-2.5 dark:border-brand-800/40">
+                <h2 className="text-sm sm:text-[15px] font-bold text-foreground flex items-center gap-1.5">
+                  <span>{currentShopInfo.emoji}</span>
+                  <span>{getProductHeaderTitle()}</span>
+                </h2>
 
-                  {selectedProductIds.size === 0 && (
-                    <p role="alert" className="text-xs text-rose-600 font-medium text-center bg-rose-50 dark:bg-rose-950/30 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/40">
-                      ⚠️ কমপক্ষে ১টি পণ্য নির্বাচন করুন।
-                    </p>
+                <span
+                  className={cn(
+                    "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold",
+                    selectedProductIds.size >= 1
+                      ? "bg-brand-600 text-white"
+                      : "bg-rose-600 text-white animate-pulse"
                   )}
-                </>
+                >
+                  {selectedProductIds.size}টি নির্বাচিত
+                </span>
+              </div>
+
+              {/* Quick Select All / Deselect All */}
+              <div className="flex items-center justify-between text-xs px-0.5">
+                <span className="text-muted-foreground text-[11px]">
+                  {productCategories.length}টি ক্যাটাগরি · মোট {currentProductsList.length}টি এন্ট্রি/পণ্য
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={selectAllProducts}
+                    className="text-[11px] font-semibold text-brand-700 dark:text-brand-300 hover:underline"
+                  >
+                    সব নির্বাচন
+                  </button>
+                  <span className="text-muted-foreground/40">•</span>
+                  <button
+                    type="button"
+                    onClick={deselectAllProducts}
+                    className="text-[11px] font-semibold text-rose-600 hover:underline"
+                  >
+                    সব মুছুন
+                  </button>
+                </div>
+              </div>
+
+              {/* Categories: tick a category to include all its products, open it to pick/rename products */}
+              <div className="grid grid-cols-1 gap-2">
+                {visibleCategories.map(({ category, items }) => {
+                  const selectedCount = items.filter((p) => selectedProductIds.has(p.id)).length;
+                  const allOn = selectedCount === items.length;
+                  const someOn = selectedCount > 0 && !allOn;
+                  const open = openCategories.has(category);
+                  return (
+                    <div key={category} className="rounded-xl border border-brand-200/60 bg-white/80 dark:border-white/10 dark:bg-white/5">
+                      <div className="flex items-center gap-2 px-2 py-1.5">
+                        <button
+                          type="button"
+                          role="checkbox"
+                          aria-checked={allOn ? true : someOn ? "mixed" : false}
+                          aria-label={`${category} ক্যাটাগরি নির্বাচন`}
+                          onClick={() => toggleCategory(items, !allOn)}
+                          className={cn(
+                            "h-6 w-6 shrink-0 rounded-md flex items-center justify-center border transition-colors active:scale-95",
+                            allOn || someOn
+                              ? "bg-brand-600 border-brand-600 text-white"
+                              : "border-muted-foreground/40 bg-white dark:bg-white/10"
+                          )}
+                        >
+                          {allOn && <span className="text-xs font-bold leading-none">✓</span>}
+                          {someOn && <span className="text-xs font-bold leading-none">–</span>}
+                        </button>
+                        <button
+                          type="button"
+                          aria-expanded={open}
+                          onClick={() => toggleCategoryOpen(category)}
+                          className="flex min-w-0 flex-1 items-center justify-between gap-2 py-1.5 text-left"
+                        >
+                          <span className="truncate text-sm font-semibold text-foreground">{category}</span>
+                          <span className="flex shrink-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+                            {selectedCount}/{items.length}টি
+                            <span aria-hidden="true" className={cn("transition-transform", open && "rotate-180")}>▾</span>
+                          </span>
+                        </button>
+                      </div>
+                      {open && (
+                        <div className="space-y-1.5 border-t border-brand-200/50 px-2 py-2 dark:border-white/10">
+                          {items.map((product) => {
+                            const isChecked = selectedProductIds.has(product.id);
+                            return (
+                              <div key={product.id} className="flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  role="checkbox"
+                                  aria-checked={isChecked}
+                                  aria-label={`${productNames[product.id] ?? product.name} নির্বাচন`}
+                                  onClick={() => toggleProduct(product.id)}
+                                  className={cn(
+                                    "h-6 w-6 shrink-0 rounded-md flex items-center justify-center border transition-colors active:scale-95",
+                                    isChecked
+                                      ? "bg-brand-600 border-brand-600 text-white"
+                                      : "border-muted-foreground/40 bg-white dark:bg-white/10"
+                                  )}
+                                >
+                                  {isChecked && <span className="text-xs font-bold leading-none">✓</span>}
+                                </button>
+                                <Input
+                                  value={productNames[product.id] ?? product.name}
+                                  onChange={(e) => setProductNames((prev) => ({ ...prev, [product.id]: e.target.value }))}
+                                  onBlur={(e) => {
+                                    if (!e.target.value.trim()) {
+                                      setProductNames((prev) => {
+                                        const { [product.id]: _drop, ...rest } = prev;
+                                        return rest;
+                                      });
+                                    }
+                                  }}
+                                  maxLength={60}
+                                  aria-label="পণ্যের নাম"
+                                  className={cn(
+                                    "h-10 rounded-lg bg-white text-sm dark:bg-white/10",
+                                    !isChecked && "text-muted-foreground"
+                                  )}
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {hiddenCategoryCount > 0 || showAllCategories ? (
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    aria-expanded={showAllCategories}
+                    onClick={() => setShowAllCategories((v) => !v)}
+                    className="h-8 rounded-full px-3 text-xs font-semibold text-brand-700 hover:bg-brand-100/70 dark:text-brand-300"
+                  >
+                    {showAllCategories ? "কম দেখান ▴" : `আরও ${hiddenCategoryCount}টি ক্যাটাগরি ▾`}
+                  </Button>
+                </div>
+              ) : null}
+
+              {selectedProductIds.size === 0 && (
+                <p role="alert" className="text-xs text-rose-600 font-medium text-center bg-rose-50 dark:bg-rose-950/30 py-1.5 rounded-lg border border-rose-200 dark:border-rose-900/40">
+                  ⚠️ কমপক্ষে ১টি এন্ট্রি বা পণ্য নির্বাচন করুন।
+                </p>
               )}
 
               {/* Action Buttons: Primary CTA for multi-select + Center-aligned Ghost Back Button */}
               <div className="pt-2 space-y-2">
-                {!isServiceShop && (
-                  <Button
-                    type="button"
-                    size="lg"
-                    disabled={selectedProductIds.size === 0}
-                    onClick={() => {
-                      if (selectedProductIds.size >= 1) {
-                        setStep("step-3-phone");
-                      }
-                    }}
-                    className="w-full rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white shadow-md shadow-brand-700/20 hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
-                  >
-                    পরবর্তী ধাপ ➔
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  size="lg"
+                  disabled={selectedProductIds.size === 0}
+                  onClick={() => {
+                    if (selectedProductIds.size >= 1) {
+                      setStep("step-3-phone");
+                    }
+                  }}
+                  className="w-full rounded-2xl bg-gradient-to-r from-brand-700 via-brand-600 to-brand-500 font-semibold text-white shadow-md shadow-brand-700/20 hover:from-brand-600 hover:via-brand-500 hover:to-brand-400 active:scale-[0.98]"
+                >
+                  পরবর্তী ধাপ ➔
+                </Button>
 
                 <div className="flex justify-center">
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => setStep("step-1-shop")}
+                    onClick={() => {
+                      if (selectedMotherType === "dokan") {
+                        setStep("step-1-shop");
+                      } else {
+                        setStep("step-0-mother");
+                      }
+                    }}
                     className="text-xs text-muted-foreground hover:text-foreground hover:bg-transparent"
                   >
                     ← পূর্ববর্তী ধাপে যান
@@ -720,16 +753,14 @@ const Login = () => {
               <div className="flex items-center justify-between bg-brand-100/60 dark:bg-brand-900/30 p-2.5 rounded-2xl border border-brand-200 dark:border-brand-800/40">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">
-                    {isServiceShop ? selectedServiceInfo.emoji : currentShopInfo.emoji}
+                    {currentShopInfo.emoji}
                   </span>
                   <div>
                     <p className="text-xs font-bold text-foreground leading-tight">
-                      {isServiceShop ? selectedServiceInfo.title : currentShopInfo.shortTitle}
+                      {currentShopInfo.title}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                      {isServiceShop
-                        ? "সেবামূলক ব্যবসা নির্বাচিত"
-                        : `${selectedProductIds.size}টি প্রারম্ভিক পণ্য নির্বাচিত`}
+                      {`${selectedProductIds.size}টি প্রারম্ভিক হিসাব/পণ্য নির্বাচিত`}
                     </p>
                   </div>
                 </div>

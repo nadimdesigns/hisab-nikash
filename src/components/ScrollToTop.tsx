@@ -43,7 +43,7 @@ export function ScrollToTop({
       nodes.forEach((node) => {
         const el = node as HTMLElement;
         try {
-          el.scrollTo({ top: 0, left: 0, behavior });
+          el.scrollTo({ top: 0, left: 0, behavior: "auto" });
         } catch {
           el.scrollTop = 0;
           el.scrollLeft = 0;

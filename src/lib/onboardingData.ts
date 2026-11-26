@@ -1,7 +1,72 @@
 import { type UnitCode } from "@/lib/copy";
 import { scopedKey } from "@/lib/accountScope";
 
-export type ShopType = "grocery" | "pharmacy" | "tea_stall" | "raw_market" | "service" | "other";
+export type MotherType = "dokan" | "samity" | "personal" | "education" | "salon" | "other";
+
+export type ShopType =
+  | "grocery"
+  | "pharmacy"
+  | "tea_stall"
+  | "raw_market"
+  | "other"
+  | "salon"
+  | "samity"
+  | "personal"
+  | "education"
+  | "service";
+
+export type MotherTypeInfo = {
+  id: MotherType;
+  title: string;
+  shortTitle: string;
+  emoji: string;
+  description: string;
+};
+
+export const ONBOARDING_MOTHER_TYPES: readonly MotherTypeInfo[] = [
+  {
+    id: "dokan",
+    title: "দোকানের হিসাব",
+    shortTitle: "দোকানের হিসাব",
+    emoji: "🏪",
+    description: "মুদি, ফার্মেসী, টি স্টোর, কাঁচা বাজার বা পণ্য বিক্রির দোকান",
+  },
+  {
+    id: "samity",
+    title: "সঞ্চয় ও সমিতি",
+    shortTitle: "সঞ্চয় ও সমিতি",
+    emoji: "💰",
+    description: "সমিতি, সঞ্চয় তহবিল, কিস্তি আদায় ও ঋণ বিতরণের হিসাব",
+  },
+  {
+    id: "personal",
+    title: "ব্যক্তিগত / পারিবারিক",
+    shortTitle: "ব্যক্তিগত / পারিবারিক",
+    emoji: "👨‍👩‍👧‍👦",
+    description: "দৈনন্দিন বাজার, পারিবারিক আয়-ব্যয় ও ব্যক্তিগত খরচের হিসাব",
+  },
+  {
+    id: "education",
+    title: "শিক্ষা প্রতিষ্ঠান",
+    shortTitle: "শিক্ষা প্রতিষ্ঠান",
+    emoji: "🎓",
+    description: "স্কুল, মাদ্রাসা, কোচিং সেন্টার ও শিক্ষার্থীদের ফি ব্যবস্থাপনা",
+  },
+  {
+    id: "salon",
+    title: "সেলুন / পার্লার",
+    shortTitle: "সেলুন / পার্লার",
+    emoji: "✂️",
+    description: "হেয়ারকাট, রূপচর্চা, ফেসিয়াল ও বিউটি পার্লারের সেবা ও পণ্য",
+  },
+  {
+    id: "other",
+    title: "অন্যান্য",
+    shortTitle: "অন্যান্য",
+    emoji: "📋",
+    description: "যেকোনো ব্যবসা, ফ্রিল্যান্সিং বা সাধারণ আয়-ব্যয়ের হিসাব",
+  },
+] as const;
 
 export type OnboardingProductTemplate = {
   id: string;
@@ -52,15 +117,8 @@ export const ONBOARDING_SHOP_TYPES: readonly ShopTypeInfo[] = [
     description: "শাকসবজি, আলু, পেঁয়াজ, তাজা মাছ, ব্রয়লার ও দেশি মুরগি",
   },
   {
-    id: "service",
-    title: "সেবাদান ব্যবসা",
-    shortTitle: "সেবা ব্যবসা",
-    emoji: "🛠️",
-    description: "ডেন্টাল, পার্লার, ইলেকট্রিক, এসি, পরিবহন ও নানা সেবা",
-  },
-  {
     id: "other",
-    title: "অন্যান্য",
+    title: "অন্যান্য দোকান",
     shortTitle: "অন্যান্য দোকান",
     emoji: "🏪",
     description: "স্টেশনারি, ইলেকট্রনিক্স, উপহার সামগ্রী বা যেকোনো খুচরা দোকান",
@@ -241,6 +299,62 @@ export const SHOP_TYPE_PRODUCTS: Record<ShopType, OnboardingProductTemplate[]> =
 
   service: SERVICE_BUSINESS_TYPES.flatMap((s) => s.defaultItems),
 
+  salon: [
+    { id: "sln-haircut", name: "চুল কাটা / হেয়ারকাট", category: "হেয়ারকেয়ার", unit: "piece", costPrice: 20, sellPrice: 120, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-shave", name: "দাড়ি কাটা / শেভিং", category: "শেভিং", unit: "piece", costPrice: 15, sellPrice: 60, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-beard-trim", name: "দাড়ি ট্রিম ও স্টাইলিশ শেপ", category: "শেভিং", unit: "piece", costPrice: 20, sellPrice: 80, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-haircut-child", name: "বাচ্চাদের চুল কাটা", category: "হেয়ারকেয়ার", unit: "piece", costPrice: 20, sellPrice: 100, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-facial", name: "ফেসিয়াল / স্কিন ক্লিনআপ", category: "স্কিনকেয়ার", unit: "piece", costPrice: 150, sellPrice: 500, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-gold-facial", name: "গোল্ড ফেসিয়াল ও স্ক্রাব", category: "স্কিনকেয়ার", unit: "piece", costPrice: 250, sellPrice: 800, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-hair-spa", name: "হেয়ার স্পা ও ডিপ কন্ডিশনিং", category: "স্পা", unit: "piece", costPrice: 200, sellPrice: 700, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-hair-color", name: "চুল কালার / হেয়ার ডাই", category: "কালার", unit: "piece", costPrice: 150, sellPrice: 400, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-head-massage", name: "হেড ও শোল্ডার ম্যাসাজ", category: "ম্যাসাজ", unit: "piece", costPrice: 30, sellPrice: 200, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-bleach", name: "ফেস ব্লিচ ও গ্লো প্যাক", category: "স্কিনকেয়ার", unit: "piece", costPrice: 100, sellPrice: 350, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-shampoo", name: "হেয়ার ওয়াশ ও শ্যাম্পু", category: "হেয়ারকেয়ার", unit: "piece", costPrice: 30, sellPrice: 100, initialStock: 999, reorderLevel: 5 },
+    { id: "sln-pedicure", name: "ম্যানিকিওর ও পেডিকিওর", category: "স্কিনকেয়ার", unit: "piece", costPrice: 120, sellPrice: 450, initialStock: 999, reorderLevel: 5 },
+  ],
+
+  samity: [
+    { id: "smt-month-save", name: "মাসিক সঞ্চয় কিস্তি", category: "সঞ্চয়", unit: "piece", costPrice: 0, sellPrice: 1000, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-week-save", name: "সাপ্তাহিক সঞ্চয় কিস্তি", category: "সঞ্চয়", unit: "piece", costPrice: 0, sellPrice: 250, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-daily-save", name: "দৈনিক ক্ষুদ্র সঞ্চয়", category: "সঞ্চয়", unit: "piece", costPrice: 0, sellPrice: 50, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-member-fee", name: "সদস্য ভর্তি ফি", category: "ফি", unit: "piece", costPrice: 0, sellPrice: 200, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-loan-issue", name: "ঋণ বিতরণ / লোন", category: "ঋণ", unit: "piece", costPrice: 0, sellPrice: 10000, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-loan-kisti-m", name: "ঋণের মাসিক কিস্তি আদায়", category: "কিস্তি", unit: "piece", costPrice: 0, sellPrice: 1200, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-loan-kisti-w", name: "ঋণের সাপ্তাহিক কিস্তি আদায়", category: "কিস্তি", unit: "piece", costPrice: 0, sellPrice: 300, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-welfare-fund", name: "জরুরি কল্যাণ তহবিল অনুদান", category: "তহবিল", unit: "piece", costPrice: 0, sellPrice: 100, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-share-cap", name: "শেয়ার মূলধন ক্রয়", category: "মূলধন", unit: "piece", costPrice: 0, sellPrice: 500, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-passbook", name: "পাসবই ও আবেদন ফরম ফি", category: "ডকুমেন্ট", unit: "piece", costPrice: 15, sellPrice: 50, initialStock: 999, reorderLevel: 5 },
+    { id: "smt-late-fine", name: "বিলম্ব কিস্তি জরিমানা", category: "চার্জ", unit: "piece", costPrice: 0, sellPrice: 50, initialStock: 999, reorderLevel: 5 },
+  ],
+
+  personal: [
+    { id: "prs-grocery", name: "দৈনন্দিন বাজার খরচ", category: "বাজার", unit: "piece", costPrice: 0, sellPrice: 600, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-bazar-fish", name: "মাছ, মাংস ও ডিম কেনা", category: "বাজার", unit: "piece", costPrice: 0, sellPrice: 1200, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-house-rent", name: "মাসিক বাসা ভাড়া", category: "আবাসন", unit: "piece", costPrice: 0, sellPrice: 12000, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-electric-bill", name: "বিদ্যুৎ ও গ্যাস বিল", category: "ইউটিলিটি", unit: "piece", costPrice: 0, sellPrice: 1800, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-water-waste", name: "পানি ও ময়লা বিল", category: "ইউটিলিটি", unit: "piece", costPrice: 0, sellPrice: 400, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-medical", name: "ডাক্তার ভিজিট ও ওষুধ খরচ", category: "স্বাস্থ্য", unit: "piece", costPrice: 0, sellPrice: 1000, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-commute", name: "রিকশা, বাস ও যাতায়াত", category: "যাতায়াত", unit: "piece", costPrice: 0, sellPrice: 200, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-child-edu", name: "সন্তানদের পড়াশোনা ও বেতন", category: "শিক্ষা", unit: "piece", costPrice: 0, sellPrice: 2500, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-mobile-net", name: "মোবাইল রিচার্জ ও ইন্টারনেট", category: "যোগাযোগ", unit: "piece", costPrice: 0, sellPrice: 600, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-household", name: "গৃহস্থালি ও তৈজসপত্র কেনাকাটা", category: "গৃহস্থালি", unit: "piece", costPrice: 0, sellPrice: 800, initialStock: 999, reorderLevel: 5 },
+    { id: "prs-gift-event", name: "পারিবারিক অনুষ্ঠান ও উপহার", category: "উপহার", unit: "piece", costPrice: 0, sellPrice: 1500, initialStock: 999, reorderLevel: 5 },
+  ],
+
+  education: [
+    { id: "edu-tuition-fee", name: "মাসিক টিউশন ফি", category: "টিউশন", unit: "piece", costPrice: 0, sellPrice: 1500, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-admission-fee", name: "নতুন শিক্ষার্থী ভর্তি ফি", category: "ভর্তি", unit: "piece", costPrice: 0, sellPrice: 3000, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-session-charge", name: "বাৎসরিক সেশন চার্জ", category: "সেশন", unit: "piece", costPrice: 0, sellPrice: 2000, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-exam-fee", name: "সেমিস্টার / টার্ম পরীক্ষার ফি", category: "পরীক্ষা", unit: "piece", costPrice: 0, sellPrice: 500, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-books-stationery", name: "পাঠ্যবই, খাতা ও ডায়েরি সেট", category: "উপকরণ", unit: "piece", costPrice: 500, sellPrice: 850, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-uniform-badge", name: "স্কুল ড্রেস ও ব্যাজ ফি", category: "উপকরণ", unit: "piece", costPrice: 400, sellPrice: 650, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-coaching-fee", name: "কোচিং ও স্পেশাল ক্লাস ফি", category: "কোচিং", unit: "piece", costPrice: 0, sellPrice: 1200, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-transport-fee", name: "পরিবহন / স্কুল বাস ভাড়া", category: "পরিবহন", unit: "piece", costPrice: 0, sellPrice: 1000, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-lab-fee", name: "ল্যাব ও কম্পিউটার চার্জ", category: "ল্যাব", unit: "piece", costPrice: 0, sellPrice: 300, initialStock: 999, reorderLevel: 5 },
+    { id: "edu-certificate-fee", name: "সনদপত্র ও প্রশংসাপত্র ফি", category: "সনদ", unit: "piece", costPrice: 50, sellPrice: 200, initialStock: 999, reorderLevel: 5 },
+  ],
+
   other: [
     { id: "o-khata", name: "খাতা / নোটবুক", category: "স্টেশনারি", unit: "piece", costPrice: 35, sellPrice: 45, initialStock: 60, reorderLevel: 15 },
     { id: "o-pen", name: "বলপেন কলম (পিস)", category: "স্টেশনারি", unit: "piece", costPrice: 3.5, sellPrice: 5, initialStock: 200, reorderLevel: 50 },
@@ -366,3 +480,12 @@ export function seedCustomShopProducts(
     /* quota ignore */
   }
 }
+
+export function getOnboardingTypeInfo(id: string): { title: string; shortTitle: string; emoji: string } {
+  const mother = ONBOARDING_MOTHER_TYPES.find((m) => m.id === id);
+  if (mother) return mother;
+  const shop = ONBOARDING_SHOP_TYPES.find((s) => s.id === id);
+  if (shop) return shop;
+  return { title: "দোকানের হিসাব", shortTitle: "দোকান", emoji: "🏪" };
+}
+

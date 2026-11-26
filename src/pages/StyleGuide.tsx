@@ -31,6 +31,7 @@ import { BalanceCard } from "@/components/BalanceCard";
 import { typography, TYPOGRAPHY, type TypographyVariant } from "@/lib/typography";
 import { APP_NAME } from "@/lib/copy";
 import { cn } from "@/lib/utils";
+import { ONBOARDING_MOTHER_TYPES, ONBOARDING_SHOP_TYPES } from "@/lib/onboardingData";
 
 /* ----------------------------------------------------------------------------
  * Helpers
@@ -161,6 +162,7 @@ export default function StyleGuide() {
   const [radio, setRadio] = useState("a");
   const [otp, setOtp] = useState("");
   const [picked, setPicked] = useState("grocery");
+  const [motherPicked, setMotherPicked] = useState("dokan");
 
   // --- Section navigation: smooth scroll to the exact section, below the sticky bar ---
   const headerRef = useRef<HTMLElement | null>(null);
@@ -523,22 +525,57 @@ export default function StyleGuide() {
             </div>
           </Block>
 
-          <Block title="Onboarding option cards" note="step 1 list: icon left · check circle right-middle">
+          <Block title="Onboarding mother type cards" note="Step 0 (splash onboarding): icon left · title & description · arrow right">
             <div className="grid gap-2.5">
-              {[["grocery", "🛒", "মুদি / ভ্যারাইটিজ স্টোর"], ["pharmacy", "💊", "ফার্মেসী"], ["tea", "☕", "টি স্টোর"]].map(([id, emoji, title]) => {
-                const on = picked === id;
+              {ONBOARDING_MOTHER_TYPES.slice(0, 3).map((mother) => {
+                const on = motherPicked === mother.id;
                 return (
                   <button
-                    key={id}
+                    key={mother.id}
                     type="button"
-                    onClick={() => setPicked(id)}
+                    onClick={() => setMotherPicked(mother.id)}
+                    className={cn(
+                      "group relative flex min-h-[66px] w-full items-center gap-3.5 rounded-2xl border p-3 text-left transition-all active:scale-[0.98]",
+                      on
+                        ? "border-brand-600 bg-brand-500/15 ring-2 ring-brand-600/60 dark:bg-brand-500/20"
+                        : "border-border/80 bg-white/80 hover:border-brand-300 hover:bg-white dark:bg-white/5",
+                    )}
+                  >
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-2xl transition-transform group-hover:scale-105 dark:bg-brand-900/50">
+                      {mother.emoji}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-sm font-bold text-foreground sm:text-base">{mother.title}</span>
+                      <span className="mt-0.5 block line-clamp-1 text-[11px] text-muted-foreground sm:text-xs">{mother.description}</span>
+                    </div>
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100/70 text-xs font-bold text-brand-700 transition-transform group-hover:translate-x-0.5 dark:bg-brand-900/40 dark:text-brand-300">
+                      ➔
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </Block>
+
+          <Block title="Onboarding shop type cards" note="Step 1 list (under 'দোকানের হিসাব'): icon left · check circle right-middle">
+            <div className="grid gap-2.5">
+              {ONBOARDING_SHOP_TYPES.slice(0, 3).map((shop) => {
+                const on = picked === shop.id;
+                return (
+                  <button
+                    key={shop.id}
+                    type="button"
+                    onClick={() => setPicked(shop.id)}
                     className={cn(
                       "relative flex min-h-[64px] w-full items-center gap-3 rounded-2xl border p-3 text-left transition-all active:scale-[0.98]",
                       on ? "border-brand-600 bg-brand-500/15 ring-2 ring-brand-600/60 dark:bg-brand-500/20" : "border-border/80 bg-white/80 hover:border-brand-300 hover:bg-white dark:bg-white/5",
                     )}
                   >
-                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-2xl dark:bg-brand-900/50">{emoji}</div>
-                    <span className="min-w-0 flex-1 text-sm font-bold sm:text-base">{title}</span>
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-2xl dark:bg-brand-900/50">{shop.emoji}</div>
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-sm font-bold text-foreground sm:text-base">{shop.title}</span>
+                      <span className="mt-0.5 block line-clamp-1 text-[11px] text-muted-foreground sm:text-xs">{shop.description}</span>
+                    </div>
                     <div className={cn("flex h-5 w-5 shrink-0 items-center justify-center rounded-full border", on ? "border-brand-600 bg-brand-600 text-white" : "border-muted-foreground/40")}>
                       {on && <span className="text-[11px] font-bold leading-none">✓</span>}
                     </div>
